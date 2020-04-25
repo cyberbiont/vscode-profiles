@@ -1,231 +1,140 @@
-import UserInteractions from './userInteractions';
-import VpFileSystem from './fileSystem';
+import User from './user';
 import VpPaths from './paths';
 import ProfilesRepository from './profilesRepository';
-import { FileType, window, commands } from 'vscode';
-import Errors, { errorHandlers } from './errors';
+import { commands } from 'vscode';
+import { errorsLibrary, errorHandlers } from './errors';
+import Link from './link';
 
-export type OActions = {
-	paths: {
-		profiles: string;
-		extensionsStandard: string;
-		extensionsStorage: string;
-	};
-};
+export type OActions = {};
 
 export default class Actions {
 	constructor(
 		public cfg: OActions,
-		public userInteractions: UserInteractions,
-		public fs: VpFileSystem,
-		public paths: VpPaths,
+		public user: User,
+		private link: Link,
+		public p: VpPaths,
 		public pool: ProfilesRepository,
 		public on: ReturnType<typeof errorHandlers>,
-		public errors: ReturnType<typeof Errors>,
+		public errors: ReturnType<typeof errorsLibrary>,
 	) {}
 
-	async createProfile() {
-		const name = await this.createNewProfileDirectory();
-		return this.switchProfile(name);
+	// COMMAND ACTIONS
+	async createProfileCommand() {
+		const newProfileName = await this.createNewProfileDirectory();
+		return this.switchProfile(newProfileName);
 	}
 
-	async cloneProfile() {
-		const baseProfileName = await this.userInteractions.selectProfileName();
-		const newProfileName = await this.createNewProfileDirectory();
+	async cloneProfileCommand() {
+		const srcProfileName = await this.user.selectProfileName();
+		const destProfileName = await this.createNewProfileDirectory();
 
-		await this.symlinkifyExtensions(
-			this.paths.join(this.cfg.paths.profiles, baseProfileName),
+		await this.symlinkifyExtensions(srcProfileName).then(
+			undefined,
+			this.on.error,
 		);
 
-		// пересканируем, т.к после simlinkify папки должны были стать симлинками, и мы должны это учесть, чтобы скопировать их
-		const folderContentsTuples: [
-			string,
-			FileType,
-		][] = await this.fs
-			.readDirectory(
-				this.paths.joinToUri(this.cfg.paths.profiles, baseProfileName),
-			)
-			.then(undefined, this.on.error);
+		await this.copyProfileContents(srcProfileName, destProfileName).then(
+			undefined,
+			this.on.error,
+		);
 		//! 🕮 <cyberbiont> 3189b2cc-81ad-4e34-a8aa-565f8ce5ef28.md
 
-		return Promise.all(
-			folderContentsTuples.map((tuple) =>
-				this.copyContent(tuple, baseProfileName, newProfileName),
-			),
-		);
+		return this.switchProfile(destProfileName);
 	}
 
-	async copyContent(
-		tuple: [string, FileType],
-		srcProfileName: string,
-		destProfileName: string,
-	): Promise<void> {
-		const [name, type] = tuple;
-		if (this.isSymbolicLink(type))
-			return this.copyExtensionSymlink(srcProfileName, destProfileName, name);
-		else if (!this.isDirectory(type))
-			// copy .obsolete and .wtid files
-			return this.fs
-				.copy(
-					this.paths.joinToUri(this.cfg.paths.profiles, srcProfileName, name),
-					this.paths.joinToUri(this.cfg.paths.profiles, destProfileName, name),
-				)
-				.then(undefined, this.on.error);
-		else return Promise.resolve();
-	}
-
-	async switchProfile(name?: string) {
-		await this.symlinkifyExtensions();
-		// 🕮 <cyberbiont> 7e1a1010-7d14-43a2-89af-cf7c41ebdcc2.md
-
-		name = name ? name : await this.userInteractions.selectProfileName();
-		await this.checkMatchWithCurrentProfile(name);
-
-		await this.fs
-			.switchSymlink(
-				this.paths.join(this.cfg.paths.profiles, name),
-				this.cfg.paths.extensionsStandard,
-			)
-			.then(undefined, this.on.error);
-		commands.executeCommand('settings.cycle' + name);
+	async switchProfileCommand() {
+		const chosenProfileName = await this.user.selectProfileName();
+		await this.link.checkMatchWithCurrentProfile(chosenProfileName);
+		await this.switchProfile(chosenProfileName);
 		return commands.executeCommand('workbench.action.reloadWindow');
 	}
 
-	async renameProfile() {
-		const name = await this.userInteractions.selectProfileName();
-		const newName = await this.userInteractions.promptProfileName(name);
+	async renameProfileCommand() {
+		const oldName = await this.user.selectProfileName();
+		const newName = await this.user.promptProfileName(oldName);
 
 		// 🕮 <cyberbiont> a56eac98-df44-4194-94ab-a0e952ad8fc4.md
-		await this.fs
-			.rename(
-				this.paths.joinToUri(this.cfg.paths.profiles, name),
-				this.paths.joinToUri(this.cfg.paths.profiles, newName),
-			)
+		await this.link
+			.renameProfileFolder(oldName, newName)
 			.then(undefined, this.on.error);
 
-		await this.fs
-			.switchSymlink(
-				this.paths.join(this.cfg.paths.profiles, newName),
-				this.cfg.paths.extensionsStandard,
-			)
-			.then(undefined, this.on.error);
+		await this.link.switchLinkToProfile(newName).then(undefined, this.on.error);
 
-		return this.rescan();
+		return this.pool.rescanProfiles();
 	}
 
-	async checkMatchWithCurrentProfile(name: string): Promise<void> {
-		const currentProfileName = await this.getCurrentProfileName();
-		if (name === currentProfileName) {
-			window.showInformationMessage('This is your current profile');
-			throw new this.errors.InteractionError(
-				'selected profile name matches current profile',
-			);
-		}
-	}
+	async deleteProfileCommand() {
+		const name = await this.user.selectProfileName();
+		this.link.checkMatchWithCurrentProfile(name);
 
-	async deleteProfile() {
-		const name = await this.userInteractions.selectProfileName();
-		this.checkMatchWithCurrentProfile(name);
-
-		await this.fs.delete(this.paths.joinToUri(this.cfg.paths.profiles, name));
-		return this.rescan();
+		await this.link.deleteProfileFolder(name);
+		return this.pool.rescanProfiles();
 		// 🕮 <cyberbiont> 33336010-437b-4ac1-b264-9cd671cba40a.md
 	}
 
-	cleanExtensionsHeap() {
+	cleanExtensionsHeapCommand() {
 		// 🕮 <cyberbiont> 89f90333-ac82-490b-91bc-0b677bc643c3.md
-	}
-
-	private async getCurrentProfileName() {
-		return this.paths.getBasename(
-			await this.fs.readSymlink(this.cfg.paths.extensionsStandard),
-		);
-	}
-
-	private async createNewProfileDirectory() {
-		const name = await this.userInteractions.promptProfileName();
-		await this.fs
-			.createDirectory(this.paths.joinToUri(this.cfg.paths.profiles, name))
-			.then(undefined, this.on.error);
-		await this.rescan();
-		return name;
-	}
-
-	private async copyExtensionSymlink(
-		baseProfileName: string,
-		newProfileName: string,
-		name: string,
-	): Promise<void> {
-		return this.fs
-			.symlinkCopy(
-				this.paths.join(this.cfg.paths.profiles, baseProfileName, name),
-				this.paths.join(this.cfg.paths.profiles, newProfileName, name),
-			)
-			.then(undefined, this.on.error);
 	}
 
 	public async rescan() {
 		return this.pool.rescanProfiles();
 	}
 
-	private async transportExtension(
-		profileFolder: string,
-		extensionFolderName: string,
-	): Promise<void> {
-		// move to heap
-		const pathInHeap = this.paths.joinToUri(
-			this.cfg.paths.extensionsStorage,
-			extensionFolderName,
-		);
-		return this.fs
-			.rename(
-				this.paths.joinToUri(
-					// this.cfg.paths.profiles,
-					profileFolder,
-					extensionFolderName,
-				),
-				pathInHeap,
-			)
+	// ACTIONS
+	// 🕮 <cyberbiont> 4936ede9-783b-465a-b760-56d1a0d858d3.md
+
+	async switchProfile(profileNameToActivate: string) {
+		const currentProfileName = await this.link.getCurrentProfileName();
+		await this.symlinkifyExtensions(currentProfileName);
+		// 🕮 <cyberbiont> 7e1a1010-7d14-43a2-89af-cf7c41ebdcc2.md
+
+		await this.link
+			.switchLinkToProfile(profileNameToActivate)
 			.then(undefined, this.on.error);
+
+		return commands.executeCommand(`settings.cycle.${profileNameToActivate}`);
 	}
 
-	private isSymbolicLink(type: FileType): type is FileType.SymbolicLink {
-		return [64, 65, 66].includes(type);
+	private async createNewProfileDirectory() {
+		const name = await this.user.promptProfileName();
+		await this.link.checkMatchWithCurrentProfile(name);
+		await this.link.createProfileDirectory(name).then(undefined, this.on.error);
+		await this.pool.rescanProfiles();
+		return name;
 	}
+	// симлинк на vscode-profile должен создаваться автоматически в новых профилях!
+	// вести список "глобальных" расширений, которые будут удаляться / устанавливаться во всех профилях?
+	// следить за изенениями в файле obsolete (парсить его, т.к. там  JSON) и синхронизировать изменения для этих расширений
 
-	private isDirectory(type: FileType): type is FileType.SymbolicLink {
-		return type === 2;
-	}
-
-	private async symlinkifyExtensions(
-		profileFolder: string = this.cfg.paths.extensionsStandard,
+	async copyProfileContents(
+		srcProfileFolderName: string,
+		destProfileFolderName: string,
 	) {
+		const subfoldersInfo = await this.link.getSubfoldersInfo(
+			srcProfileFolderName,
+		);
+		return Promise.all(
+			subfoldersInfo.map((subfolderInfo) =>
+				this.link.copyProfileContent(
+					subfolderInfo,
+					srcProfileFolderName,
+					destProfileFolderName,
+				),
+			),
+		);
+	}
+
+	async symlinkifyExtensions(profileFolderName: string) {
 		// 🕮 <cyberbiont> f7ea2dc2-10d1-4915-8cb2-4b6aa3c3fff0.md
 		// 🕮 <cyberbiont> b2fcd0c9-db59-4981-ae8a-bbba8edbbedd.md
-		const folderContentsTuples: [
-			string,
-			FileType,
-		][] = await this.fs
-			.readDirectory(this.paths.getUri(profileFolder))
-			.then(undefined, this.on.error);
+		const subfoldersInfo = await this.link.getSubfoldersInfo(profileFolderName);
 
 		await Promise.all(
-			folderContentsTuples.map(async (tuple) => {
-				const [extensionFolderName, type] = tuple;
-				if (this.isDirectory(type)) {
-					await this.transportExtension(profileFolder, extensionFolderName);
-					return this.fs.symlinkCreate(
-						this.paths.join(
-							this.cfg.paths.extensionsStorage,
-							extensionFolderName,
-						),
-						this.paths.join(profileFolder, extensionFolderName),
-					);
-				} else return Promise.resolve();
-			}),
+			subfoldersInfo.map((subfolderInfo) =>
+				this.link.symlinkifyExtension(subfolderInfo, profileFolderName),
+			),
 		);
-
-		return folderContentsTuples;
+		return subfoldersInfo;
 	}
 }
 // 🕮 <cyberbiont> ded39fb3-1135-4fba-a581-07b06b82306e.md

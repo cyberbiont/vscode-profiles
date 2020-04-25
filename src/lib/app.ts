@@ -1,23 +1,22 @@
 import { commands, ExtensionContext } from 'vscode';
-import { Cfg } from './cfg';
+import ConfigMaker from './cfg';
 import Actions from './actions';
 import ProfilesRepository from './profilesRepository';
-import UserInteractions from './userInteractions';
+import User from './user';
 import VpPaths from './paths';
 import VpFileSystem from './fileSystem';
 import MapDictionary from './mapDictionary';
 import { ProfilesDictionary } from './types';
-import Errors from './errors';
-import { errorHandlers } from './errors';
+import { errorsLibrary, errorHandlers } from './errors';
+import Link from './link';
 
 export default class App {
 	public actions: Actions;
 	// private events: SnEvents;
 
 	constructor(
-		private cfg: Cfg,
 		private context: ExtensionContext,
-		private resolveAppInit,
+		private resolveAppInit: Function,
 	) {
 		this.init();
 	}
@@ -34,18 +33,20 @@ export default class App {
 	}
 
 	async compose() {
-		const errors = Errors();
+		const errors = errorsLibrary();
 		const on = errorHandlers();
-		const paths = new VpPaths();
-		const fs = new VpFileSystem(this.cfg, paths, errors);
+		const p = new VpPaths();
+		const cfg = new ConfigMaker(p).create();
+		const fs = new VpFileSystem(cfg, errors);
+		const link = new Link(cfg, fs, p, on, errors);
 		const map: ProfilesDictionary = new MapDictionary();
-		const pool = new ProfilesRepository(this.cfg, map, paths, fs);
-		const userInteractions = new UserInteractions(pool, errors);
+		const pool = new ProfilesRepository(cfg, map, fs, p);
+		const userInteractions = new User(pool, errors);
 		const actions = new Actions(
-			this.cfg,
+			cfg,
 			userInteractions,
-			fs,
-			paths,
+			link,
+			p,
 			pool,
 			on,
 			errors,
@@ -62,32 +63,32 @@ export default class App {
 		return this.context.subscriptions.push(
 			commands.registerCommand(
 				'vscode-profiles.switch',
-				this.actions.switchProfile,
+				this.actions.switchProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
 				'vscode-profiles.create',
-				this.actions.createProfile,
+				this.actions.createProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
 				'vscode-profiles.clone',
-				this.actions.cloneProfile,
+				this.actions.cloneProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
 				'vscode-profiles.rename',
-				this.actions.renameProfile,
+				this.actions.renameProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
 				'vscode-profiles.delete',
-				this.actions.deleteProfile,
+				this.actions.deleteProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
 				'vscode-profiles.clean',
-				this.actions.cleanExtensionsHeap,
+				this.actions.cleanExtensionsHeapCommand,
 				this.actions,
 			),
 		);

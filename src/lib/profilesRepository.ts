@@ -1,12 +1,12 @@
 import VpPaths from './paths';
 import VpFileSystem from './fileSystem';
 import Profile from './profile';
-import path from 'path';
 import { ProfilesDictionary } from './types';
+import { Uri } from 'vscode';
 
 export type OProfilesRepository = {
 	paths: {
-		profiles: string;
+		profiles: Uri;
 	};
 };
 
@@ -14,8 +14,8 @@ export default class ProfilesRepository {
 	constructor(
 		private cfg: OProfilesRepository,
 		public map: ProfilesDictionary,
-		private paths: VpPaths,
 		private fs: VpFileSystem,
+		private p: VpPaths,
 	) {
 		this.rescanProfiles();
 	}
@@ -23,14 +23,12 @@ export default class ProfilesRepository {
 	async rescanProfiles() {
 		this.map.clear();
 
-		const results = await this.fs.readDirectory(
-			this.paths.getUri(this.cfg.paths.profiles),
-		);
+		const results = await this.fs.readDirectory(this.cfg.paths.profiles);
 
 		results.forEach((result) => {
 			const [folder, type] = result;
 			if (type !== 2) return;
-			const fileName = path.basename(folder);
+			const fileName = this.p.getBasename(folder);
 
 			const profile = new Profile(fileName);
 			this.map.add(fileName, profile);

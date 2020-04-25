@@ -1,22 +1,28 @@
-import path from 'path';
+import path, { PlatformPath } from 'path';
 import { Uri } from 'vscode';
 
 export default class VpPaths {
-	constructor() {}
+	constructor(private pPath: PlatformPath = path) {}
 
-	getUri(path: string): Uri {
+	extendUriPath(uri: Uri, ...pathFragments: string[]) {
+		// 🕮 <cyberbiont> ba729b18-2140-42bc-bea8-2843fceb530f.md
+		return Uri.parse(
+			`file:${this.pPath.join(uri.fsPath, ...pathFragments)}`,
+			true,
+		);
+
+		// return uri.with({ path: this.pPath.join(uri.path, ...pathFragments) });
+	}
+
+	getUri(path: string) {
 		return Uri.parse(`file:${path}`, true);
 	}
 
-	join(...paths: string[]) {
-		return path.join(...paths);
-	}
-
-	joinToUri(...paths: string[]) {
-		return this.getUri(this.join(...paths));
-	}
-
 	getBasename(folder: string) {
-		return path.basename(folder);
+		return this.pPath.basename(folder);
+	}
+
+	join(...pathFragments: string[]) {
+		return this.pPath.join(...pathFragments);
 	}
 }

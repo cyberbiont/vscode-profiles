@@ -9,7 +9,8 @@ type ErrorHandlers = {
 export function errorHandlers(): ErrorHandlers {
 	async function error(error: Error) {
 		console.log(error);
-		return Promise.resolve();
+		throw new Error();
+		// return Promise.resolve();
 	}
 
 	return {
@@ -17,7 +18,7 @@ export function errorHandlers(): ErrorHandlers {
 	};
 }
 
-export default function errorsLibrary(): ErrorsLibrary {
+export function errorsLibrary(): ErrorsLibrary {
 	class VpError extends Error {
 		readonly name = this.constructor.name;
 		constructor(message: string) {

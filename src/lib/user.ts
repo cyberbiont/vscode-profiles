@@ -1,11 +1,11 @@
 import { window } from 'vscode';
 import ProfilesRepository from './profilesRepository';
-import Errors from './errors';
+import { errorsLibrary } from './errors';
 
-export default class UserInteractions {
+export default class User {
 	constructor(
 		private pool: ProfilesRepository,
-		private errors: ReturnType<typeof Errors>,
+		private errors: ReturnType<typeof errorsLibrary>,
 	) {}
 
 	async selectProfileName() {
