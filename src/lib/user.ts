@@ -4,18 +4,24 @@ import { errorsLibrary } from './errors';
 
 export default class User {
 	constructor(
-		private pool: ProfilesRepository,
+		private profiles: ProfilesRepository,
 		private errors: ReturnType<typeof errorsLibrary>,
 	) {}
 
-	async selectProfileName() {
-		const profiles = this.pool.getProfileNames();
+	async selectProfileName({
+		activeIsChoosable = false,
+	}: { activeIsChoosable?: boolean } = {}) {
+		let profiles = this.profiles.getProfileNames();
+		if (!activeIsChoosable)
+			profiles = profiles.filter(
+				(profileName) => !(profileName === this.profiles.active.name),
+			);
 		const response = await window.showQuickPick(
 			profiles.map((ext) => ({
 				label: ext,
 			})),
 			{
-				placeHolder: `select profile`,
+				placeHolder: `select profile. <${this.profiles.active.name}>`,
 			},
 		);
 		if (!response) throw new this.errors.InteractionError('selectProfileName');
@@ -29,5 +35,14 @@ export default class User {
 		});
 		if (!response) throw new this.errors.InteractionError('promptProfileName');
 		else return response;
+	}
+
+	async checkMatchWithCurrentProfile(profileName: string) {
+		if (profileName === this.profiles.active.name) {
+			window.showInformationMessage('This is your current profile');
+			throw new this.errors.InteractionError(
+				'selected profile name matches current profile',
+			);
+		}
 	}
 }

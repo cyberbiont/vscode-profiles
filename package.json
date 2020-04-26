@@ -21,7 +21,8 @@
 		"onCommand:vscode-profiles.create",
 		"onCommand:vscode-profiles.clone",
 		"onCommand:vscode-profiles.rename",
-		"onCommand:vscode-profiles.delete"
+		"onCommand:vscode-profiles.delete",
+		"onCommand:vscode-profiles.rescan"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -39,27 +40,31 @@
 		"commands": [
 			{
 				"command": "vscode-profiles.switch",
-				"title": "Profiles: switch"
+				"title": "Profiles: Switch"
 			},
 			{
 				"command": "vscode-profiles.create",
-				"title": "Profiles: create"
+				"title": "Profiles: Create"
 			},
 			{
 				"command": "vscode-profiles.clone",
-				"title": "Profiles: clone"
+				"title": "Profiles: Clone"
 			},
 			{
 				"command": "vscode-profiles.delete",
-				"title": "Profiles: delete"
+				"title": "Profiles: Delete"
 			},
 			{
 				"command": "vscode-profiles.rename",
-				"title": "Profiles: rename"
+				"title": "Profiles: Rename"
 			},
 			{
 				"command": "vscode-profiles.clean",
-				"title": "Profiles: rename"
+				"title": "Profiles: Clean"
+			},
+			{
+				"command": "vscode-profiles.rescan",
+				"title": "Profiles: Rescan"
 			}
 		]
 	},

@@ -19,7 +19,8 @@
 				"<node_internals>/**/*.js",
 				"${workspaceFolder}/node_modules/**/*.js"
 			],
-			"preLaunchTask": "npm: watch"
+			"preLaunchTask": "npm: watch",
+			"smartStep": true
 		},
 		{
 			"name": "do not disable extensions",

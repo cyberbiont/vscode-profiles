@@ -28,26 +28,26 @@ export default class App {
 
 		this.registerCommands();
 		this.setEventListeners();
-		await this.actions.rescan();
+		// await this.actions.rescanCommand();
 		this.resolveAppInit();
 	}
 
 	async compose() {
 		const errors = errorsLibrary();
 		const on = errorHandlers();
-		const p = new VpPaths();
-		const cfg = new ConfigMaker(p).create();
+		const cfg = new ConfigMaker().create();
+		const p = new VpPaths(cfg);
 		const fs = new VpFileSystem(cfg, errors);
 		const link = new Link(cfg, fs, p, on, errors);
 		const map: ProfilesDictionary = new MapDictionary();
-		const pool = new ProfilesRepository(cfg, map, fs, p);
-		const userInteractions = new User(pool, errors);
+		const profiles = new ProfilesRepository(cfg, map, fs, p, errors);
+		const userInteractions = new User(profiles, errors);
 		const actions = new Actions(
 			cfg,
 			userInteractions,
 			link,
 			p,
-			pool,
+			profiles,
 			on,
 			errors,
 		);
@@ -89,6 +89,11 @@ export default class App {
 			commands.registerCommand(
 				'vscode-profiles.clean',
 				this.actions.cleanExtensionsHeapCommand,
+				this.actions,
+			),
+			commands.registerCommand(
+				'vscode-profiles.rescan',
+				this.actions.rescanCommand,
 				this.actions,
 			),
 		);

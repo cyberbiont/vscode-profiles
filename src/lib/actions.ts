@@ -1,7 +1,7 @@
 import User from './user';
 import VpPaths from './paths';
 import ProfilesRepository from './profilesRepository';
-import { commands } from 'vscode';
+import { commands, window } from 'vscode';
 import { errorsLibrary, errorHandlers } from './errors';
 import Link from './link';
 
@@ -13,7 +13,7 @@ export default class Actions {
 		public user: User,
 		private link: Link,
 		public p: VpPaths,
-		public pool: ProfilesRepository,
+		public profiles: ProfilesRepository,
 		public on: ReturnType<typeof errorHandlers>,
 		public errors: ReturnType<typeof errorsLibrary>,
 	) {}
@@ -28,13 +28,8 @@ export default class Actions {
 		const srcProfileName = await this.user.selectProfileName();
 		const destProfileName = await this.createNewProfileDirectory();
 
-		await this.symlinkifyExtensions(srcProfileName).then(
-			undefined,
-			this.on.error,
-		);
-
-		await this.copyProfileContents(srcProfileName, destProfileName).then(
-			undefined,
+		await this.symlinkifyExtensions(srcProfileName).catch(this.on.error);
+		await this.copyProfileContents(srcProfileName, destProfileName).catch(
 			this.on.error,
 		);
 		//! 🕮 <cyberbiont> 3189b2cc-81ad-4e34-a8aa-565f8ce5ef28.md
@@ -43,32 +38,28 @@ export default class Actions {
 	}
 
 	async switchProfileCommand() {
+		// 🕮 <cyberbiont> b90fbfb4-6c4f-4750-ac8c-5c53699a2d08.md
 		const chosenProfileName = await this.user.selectProfileName();
-		await this.link.checkMatchWithCurrentProfile(chosenProfileName);
+		// await this.user.checkMatchWithCurrentProfile(chosenProfileName); // предотвратить повторное определение current profile name
+		// TODO тогда не выводить вообще current в списке
 		await this.switchProfile(chosenProfileName);
-		return commands.executeCommand('workbench.action.reloadWindow');
+		// return commands.executeCommand('workbench.action.reloadWindow');
 	}
 
 	async renameProfileCommand() {
 		const oldName = await this.user.selectProfileName();
 		const newName = await this.user.promptProfileName(oldName);
-
 		// 🕮 <cyberbiont> a56eac98-df44-4194-94ab-a0e952ad8fc4.md
-		await this.link
-			.renameProfileFolder(oldName, newName)
-			.then(undefined, this.on.error);
-
+		await this.link.renameProfileFolder(oldName, newName).catch(this.on.error);
 		// await this.link.switchLinkToProfile(newName).then(undefined, this.on.error);
-
-		return this.pool.rescanProfiles();
+		return this.profiles.rescanProfiles();
 	}
 
 	async deleteProfileCommand() {
 		const name = await this.user.selectProfileName();
-		this.link.checkMatchWithCurrentProfile(name);
 
 		await this.link.deleteProfileFolder(name);
-		return this.pool.rescanProfiles();
+		return this.profiles.deleteProfileEntry(name);
 		// 🕮 <cyberbiont> 33336010-437b-4ac1-b264-9cd671cba40a.md
 	}
 
@@ -76,30 +67,38 @@ export default class Actions {
 		// 🕮 <cyberbiont> 89f90333-ac82-490b-91bc-0b677bc643c3.md
 	}
 
-	public async rescan() {
-		return this.pool.rescanProfiles();
+	public async rescanCommand() {
+		return this.profiles.rescanProfiles();
 	}
 
 	// ACTIONS
 	// 🕮 <cyberbiont> 4936ede9-783b-465a-b760-56d1a0d858d3.md
 
 	async switchProfile(profileNameToActivate: string) {
-		const currentProfileName = await this.link.getCurrentProfileName();
-		await this.symlinkifyExtensions(currentProfileName);
+		// throw new this.errors.ExtensionsSymlinkError(); // TODO впилить куда-то где реально такая оибка возникает
+		// await this.symlinkifyExtensions(this.profiles.active.name); // сделать currentprofile name по дефолту
 		// 🕮 <cyberbiont> 7e1a1010-7d14-43a2-89af-cf7c41ebdcc2.md
 
 		await this.link
 			.switchLinkToProfile(profileNameToActivate)
-			.then(undefined, this.on.error);
+			.catch(this.on.error);
 
-		return commands.executeCommand(`settings.cycle.${profileNameToActivate}`);
+		this.profiles.activateProfile(profileNameToActivate);
+
+		return commands
+			.executeCommand(`settings.cycle.${profileNameToActivate}`)
+			.then(undefined, (e) => {
+				// обработать ошибку, когда нет такой команды
+				window.showWarningMessage(`There is no configuration registered in setting.json for this profile.
+				You won't be able to sync your profile with settings sync!`);
+			});
 	}
 
 	private async createNewProfileDirectory() {
 		const name = await this.user.promptProfileName();
-		await this.link.checkMatchWithCurrentProfile(name);
+		await this.user.checkMatchWithCurrentProfile(name);
 		await this.link.createProfileDirectory(name).then(undefined, this.on.error);
-		await this.pool.rescanProfiles();
+		await this.profiles.rescanProfiles();
 		return name;
 	}
 	// симлинк на vscode-profile должен создаваться автоматически в новых профилях!

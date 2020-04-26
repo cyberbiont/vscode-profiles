@@ -16,5 +16,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate(): void {
-	this._subscriptions.dispose();
+	try {
+		this._subscriptions.dispose();
+	} catch (e) {
+		console.log(e);
+	}
 }
