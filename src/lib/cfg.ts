@@ -2,8 +2,9 @@ import { workspace, Uri } from 'vscode';
 import { OActions } from './actions';
 import { OLink } from './link';
 import VpPaths from './paths';
+import os from 'os';
 
-const homedir: string = require('os').homedir();
+const homedir = os.homedir();
 const settings = workspace.getConfiguration('sidenotes');
 
 export type Cfg = OActions & OLink;

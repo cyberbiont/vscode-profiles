@@ -37,7 +37,7 @@ export default class Link {
 		const a = this.p.getUri('C:/Users/larin/.vscode/profiles/ert');
 		const b = this.p.extendUriPath(this.cfg.paths.profiles, name);
 		return this.fs.createDirectory(
-			this.p.extendUriPath(this.cfg.paths.profiles, name),
+			this.p.extendUriPath(this.cfg.paths.profiles, name).fsPath,
 		);
 	}
 

@@ -58,7 +58,7 @@ export default class Actions {
 			.renameProfileFolder(oldName, newName)
 			.then(undefined, this.on.error);
 
-		await this.link.switchLinkToProfile(newName).then(undefined, this.on.error);
+		// await this.link.switchLinkToProfile(newName).then(undefined, this.on.error);
 
 		return this.pool.rescanProfiles();
 	}

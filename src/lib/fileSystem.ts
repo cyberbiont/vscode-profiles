@@ -1,7 +1,6 @@
 import { workspace, Uri } from 'vscode';
 import nodeFs from 'fs';
 import npath from 'path';
-import VpPaths from './paths';
 import { errorsLibrary } from './errors';
 
 export type OVpFileSystem = {};
@@ -23,11 +22,6 @@ export default class VpFileSystem {
 		return this.fs.readDirectory(folder);
 	}
 
-	createDirectory(folder: Uri) {
-		//! 🕮 <cyberbiont> 13061c0b-4283-410f-9d66-1ab5ef079e02.md
-		return this.fs.createDirectory(folder);
-	}
-
 	copy(src: Uri, dest: Uri) {
 		return this.fs.copy(src, dest, {
 			overwrite: false,
@@ -40,6 +34,11 @@ export default class VpFileSystem {
 			recursive: true,
 			useTrash: true,
 		});
+	}
+
+	createDirectory(folder: string) {
+		//! 🕮 <cyberbiont> 13061c0b-4283-410f-9d66-1ab5ef079e02.md
+		return this.nfs.promises.mkdir(folder);
 	}
 
 	// SYMLINK methods (nodeJS)
