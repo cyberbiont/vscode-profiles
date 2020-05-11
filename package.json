@@ -17,14 +17,9 @@
 		"configuration"
 	],
 	"activationEvents": [
-		"onCommand:vscode-profiles.switch",
-		"onCommand:vscode-profiles.create",
-		"onCommand:vscode-profiles.clone",
-		"onCommand:vscode-profiles.rename",
-		"onCommand:vscode-profiles.delete",
-		"onCommand:vscode-profiles.rescan"
+		"*"
 	],
-	"main": "./out/extension.js",
+	"main": "./out/src/extension.js",
 	"contributes": {
 		"configuration": [
 			{
@@ -65,14 +60,18 @@
 			{
 				"command": "vscode-profiles.rescan",
 				"title": "Profiles: Rescan"
+			},
+			{
+				"command": "vscode-profiles.symlinkify",
+				"title": "Profiles: Symlinkify"
 			}
 		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
+		"compile": "tsc -p ./ && ts-cleaner -d out",
 		"lint": "eslint src --ext ts",
-		"watch": "tsc -watch -p ./",
+		"watch": "tsc -watch -p ./ && ts-cleaner -d out --watch",
 		"pretest": "npm run compile && npm run lint",
 		"test": "node ./out/test/runTest.js"
 	},
@@ -87,6 +86,7 @@
 		"glob": "^7.1.6",
 		"mocha": "^7.1.1",
 		"typescript": "^3.8.3",
-		"vscode-test": "^1.3.0"
+		"vscode-test": "^1.3.0",
+		"ts-cleaner": "^1.0.5"
 	}
 }

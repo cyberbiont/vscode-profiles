@@ -1,18 +1,22 @@
-import { commands, ExtensionContext } from 'vscode';
-import ConfigMaker from './cfg';
-import Actions from './actions';
-import ProfilesRepository from './profilesRepository';
-import User from './user';
-import VpPaths from './paths';
-import VpFileSystem from './fileSystem';
-import MapDictionary from './mapDictionary';
-import { ProfilesDictionary } from './types';
-import { errorsLibrary, errorHandlers } from './errors';
-import Link from './link';
+import { commands, ExtensionContext } from "vscode";
+import ConfigMaker from "./cfg";
+import Actions from "./actions";
+import ProfilesRepository from "./profilesRepository";
+import User from "./user";
+import VpPaths from "./paths";
+import VpFileSystem from "./fileSystem";
+import MapDictionary from "./mapDictionary";
+import { ProfilesDictionary } from "./types";
+import { errorsLibrary, errorHandlers } from "./errors";
+import Link from "./link";
+import Status from "./status";
+import pkg from "../../package.json";
+import VpOutputChannel from "./outputChannel";
+import Utils from "./utils";
 
 export default class App {
 	public actions: Actions;
-	// private events: SnEvents;
+	// private events: VPEvents;
 
 	constructor(
 		private context: ExtensionContext,
@@ -28,20 +32,24 @@ export default class App {
 
 		this.registerCommands();
 		this.setEventListeners();
-		// await this.actions.rescanCommand();
+		await this.actions.rescanCommand();
+		// 🕮 <cyberbiont> df6f9de4-57b5-4aa6-8dc6-a7ba9a2c9be4.md
 		this.resolveAppInit();
 	}
 
 	async compose() {
+		const utils = new Utils();
+		const outChannel = new VpOutputChannel(utils, pkg.name);
 		const errors = errorsLibrary();
 		const on = errorHandlers();
 		const cfg = new ConfigMaker().create();
+		const status = new Status(utils, `${pkg.name}.switch`);
 		const p = new VpPaths(cfg);
 		const fs = new VpFileSystem(cfg, errors);
 		const link = new Link(cfg, fs, p, on, errors);
 		const map: ProfilesDictionary = new MapDictionary();
-		const profiles = new ProfilesRepository(cfg, map, fs, p, errors);
-		const userInteractions = new User(profiles, errors);
+		const profiles = new ProfilesRepository(cfg, map, fs, p, errors, status);
+		const userInteractions = new User(utils, profiles, errors);
 		const actions = new Actions(
 			cfg,
 			userInteractions,
@@ -57,45 +65,48 @@ export default class App {
 	setEventListeners(): void {}
 
 	registerCommands(): number {
-		// The command has been defined in the package.json file
-		// Now provide the implementation of the command with registerCommand
-		// The commandId parameter must match the command field in package.json
 		return this.context.subscriptions.push(
 			commands.registerCommand(
-				'vscode-profiles.switch',
+				"vscode-profiles.switch",
 				this.actions.switchProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
-				'vscode-profiles.create',
+				"vscode-profiles.create",
 				this.actions.createProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
-				'vscode-profiles.clone',
+				"vscode-profiles.clone",
 				this.actions.cloneProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
-				'vscode-profiles.rename',
+				"vscode-profiles.rename",
 				this.actions.renameProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
-				'vscode-profiles.delete',
+				"vscode-profiles.delete",
 				this.actions.deleteProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
-				'vscode-profiles.clean',
-				this.actions.cleanExtensionsHeapCommand,
+				"vscode-profiles.clean",
+				this.actions.clean,
 				this.actions,
 			),
 			commands.registerCommand(
-				'vscode-profiles.rescan',
+				"vscode-profiles.rescan",
 				this.actions.rescanCommand,
+				this.actions,
+			),
+			commands.registerCommand(
+				"vscode-profiles.symlinkify",
+				this.actions.symlinkifyCurrentProfile,
 				this.actions,
 			),
 		);
 	}
+	// activation events 🕮 <cyberbiont> 7b5ea811-b28e-47e1-a9b0-e26618330a99.md
 }

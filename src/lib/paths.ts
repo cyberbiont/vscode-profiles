@@ -40,24 +40,28 @@ export default class VpPaths {
 		this.extensionsStorage = new Path(this.cfg.paths.extensionsStorage);
 	}
 
-	extend(uri: Uri, ...pathFragments: string[]) {
-		//! 🕮 <cyberbiont> ba729b18-2140-42bc-bea8-2843fceb530f.md
-		return Uri.parse(
-			`file:${this.pPath.join(uri.fsPath, ...pathFragments)}`,
-			true,
-		);
-	}
+	// uriJoin(uri: Uri, ...pathFragments: string[]) {
+	// 	return uri.joinPath(...pathFragments)
+	// }
 
-	getUri(path: string) {
-		// return new URL(path);
-		return Uri.parse(`file:${path}`, true);
-	}
+	// extend(uri: Uri, ...pathFragments: string[]) {
+	// 	//! 🕮 <cyberbiont> ba729b18-2140-42bc-bea8-2843fceb530f.md
+	// 	return Uri.parse(
+	// 		`file:${this.pPath.join(uri.fsPath, ...pathFragments)}`,
+	// 		true,
+	// 	);
+	// }
 
-	getBasename(folder: string) {
-		return this.pPath.basename(folder);
-	}
+	// getUri(path: string) {
+	// 	// return new URL(path);
+	// 	return Uri.parse(`file:${path}`, true);
+	// }
 
-	join(...pathFragments: string[]) {
-		return this.pPath.join(...pathFragments);
-	}
+	// getBasename(folder: string) {
+	// 	return this.pPath.basename(folder);
+	// }
+
+	// join(...pathFragments: string[]) {
+	// 	return this.pPath.join(...pathFragments);
+	// }
 }

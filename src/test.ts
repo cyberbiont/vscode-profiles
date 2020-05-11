@@ -24,6 +24,10 @@ base;
 
 const extendedBase = base.derive('..', 'profilename');
 extendedBase;
+const text = 'current';
+
+const up = `⚙ ${text.replace(/^\w/, (c) => c.toUpperCase())}`;
+up;
 
 (async function () {
 	// fs.promises.symlink(

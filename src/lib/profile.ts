@@ -1,4 +1,3 @@
-import { Uri } from 'vscode';
 import { Path } from './paths';
 
 enum ExtensionState {

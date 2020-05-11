@@ -1,8 +1,7 @@
-import { workspace, Uri } from 'vscode';
-import nodeFs from 'fs';
-import npath from 'path';
-import { errorsLibrary } from './errors';
-import { Path } from './paths';
+import { workspace, Uri } from "vscode";
+import nodeFs from "fs";
+import { errorsLibrary } from "./errors";
+import { Path } from "./paths";
 
 export type OVpFileSystem = {};
 export default class VpFileSystem {
@@ -15,13 +14,11 @@ export default class VpFileSystem {
 
 	// thenables 🕮 <cyberbiont> 214f5bb7-b6dc-4ff6-b9f5-3d0142e9addd.md
 
-	// async rename(source: Uri, target: Uri) {
-	// 	return this.fs.rename(source, target, { overwrite: true });
-	// }
-
 	async rename(source: Path, target: Path) {
-		// return this.fs.rename(source, target, { overwrite: true });
-		return this.nfs.promises.rename(source, target);
+		// return this.nfs.promises.rename(source, target);
+		return this.fs.rename(Uri.parse(source.href), Uri.parse(target.href), {
+			overwrite: true,
+		});
 	}
 
 	// async readDirectory(folder: Uri) {
@@ -50,7 +47,14 @@ export default class VpFileSystem {
 	// }
 
 	async delete(location: Path) {
-		return this.nfs.promises.unlink(location);
+		// return this.nfs.promises.unlink(location);
+		// у Ноды возникает EPERM при удалении и копировании (rename)...
+		// возможно дело в том что все находится в юзерской папке, а node не от имени администратора работает?
+
+		return this.fs.delete(Uri.parse(location.href), {
+			recursive: true,
+			useTrash: true,
+		});
 	}
 
 	async createDirectory(dir: Path) {
@@ -65,7 +69,7 @@ export default class VpFileSystem {
 	}
 
 	async symlinkCreate(shouldPointTo: string, location: Path) {
-		let type = process.platform === 'win32' ? 'junction' : 'dir';
+		let type = process.platform === "win32" ? "junction" : "dir";
 		return this.nfs.promises.symlink(shouldPointTo, location, type);
 		// 🕮 <cyberbiont> 13748a26-b142-4e10-b218-e8954eecd6e1.md
 		//! 🕮 <cyberbiont> fb0bb676-d894-42c9-ab28-be6b527427fa.md
@@ -78,9 +82,9 @@ export default class VpFileSystem {
 
 	async symlinkSwitch(shouldPointTo: string, location: Path) {
 		const currentlyPointsTo = await this.symlinkRead(location).catch((e) => {
-			if (e.code === 'ENOENT') {
+			if (e.code === "ENOENT") {
 				throw new this.errors.MissingSymlink(
-					'no symlink found in themes folder',
+					"no symlink found in themes folder",
 				);
 			}
 			throw e;
@@ -97,13 +101,9 @@ export default class VpFileSystem {
 
 	async symlinkRead(location: Path) {
 		let value = await this.nfs.promises.readlink(location);
-		if (value.endsWith('\\')) value = value.slice(0, -1); // исправлляем глюк с обратным слэшем в коне, см. про fs.symlink
+		if (value.endsWith("\\")) value = value.slice(0, -1); // исправлляем глюк с обратным слэшем в конце, см. про fs.symlink
 		return value;
-		// str.slice(0, -1);
 	}
 
-	// convertToPosix(path: string) {
-	// 	// тут можно npm модуль slash использовать
-	// 	return path.split(npath.sep).join('/');
-	// }
+	// 🕮 <cyberbiont> 7b4e7c7c-f0e5-4244-809d-6ee4696b9bf4.md
 }

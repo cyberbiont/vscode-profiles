@@ -1,16 +1,9 @@
-import { errorHandlers, errorsLibrary } from './errors';
-import VpPaths from './paths';
-import VpFileSystem from './fileSystem';
-import { FileType, window, Uri } from 'vscode';
-import { Dirent } from 'fs';
+import { errorHandlers, errorsLibrary } from "./errors";
+import VpPaths from "./paths";
+import VpFileSystem from "./fileSystem";
+import { Dirent } from "fs";
 
-export type OLink = {
-	// paths: {
-	// 	profiles: Uri;
-	// 	extensionsStandard: Uri;
-	// 	extensionsStorage: Uri;
-	// };
-};
+export type OLink = {};
 
 // 🕮 <cyberbiont> da2aa1bd-b0d0-41ac-b924-72016cb985fd.md
 export default class Link {
@@ -105,7 +98,13 @@ export default class Link {
 	// 🕮 <cyberbiont> 68360ca5-87b0-4d79-99aa-ade28c328601.md
 
 	private isExtensionDirectory(subfolder: Dirent) {
-		// учесть также что теоретически могут быть директории, не являющиеся расщирениями
-		return subfolder.isDirectory();
+		// учесть также, что теоретически могут быть директории, не являющиеся расширениями
+		const excludedExtensionsRules = ["ms-vsliveshare.vsliveshare-"];
+		return (
+			subfolder.isDirectory() &&
+			!excludedExtensionsRules.some((rule) => subfolder.name.includes(rule))
+		);
+		// С Live share существует проблема - процесс vsls-agent.exe, который запускается автоматически при активации приложения,
+		// не дает нам переместить папку (получаем ошибку доступа). Поэтому прижется исключить из симлинкфикации
 	}
 }
