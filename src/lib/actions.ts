@@ -1,7 +1,7 @@
+import { commands, window } from "vscode";
 import User from "./user";
 import VpPaths from "./paths";
 import ProfilesRepository from "./profilesRepository";
-import { commands, window } from "vscode";
 import { errorsLibrary, errorHandlers } from "./errors";
 import Link from "./link";
 
@@ -77,7 +77,7 @@ export default class Actions {
 				e instanceof this.errors.MissingSymlink ||
 				e instanceof this.errors.BrokenSymlink
 			) {
-				return this.repairExtensionsSymlink();
+				this.repairExtensionsSymlink();
 			}
 		});
 	}
@@ -94,7 +94,7 @@ export default class Actions {
 		console.log("clean command is running");
 	}
 
-	cleanExtensionsHeap() {}
+	// cleanExtensionsHeap() {}
 
 	// ACTIONS
 	// 🕮 <cyberbiont> 4936ede9-783b-465a-b760-56d1a0d858d3.md
@@ -173,6 +173,4 @@ export default class Actions {
 		);
 		return subfoldersInfo;
 	}
-
-	createStatusBarItem() {}
 }

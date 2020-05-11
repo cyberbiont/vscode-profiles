@@ -31,7 +31,7 @@ export default class App {
 		// this.registerProviders();
 
 		this.registerCommands();
-		this.setEventListeners();
+		// this.setEventListeners();
 		await this.actions.rescanCommand();
 		// 🕮 <cyberbiont> df6f9de4-57b5-4aa6-8dc6-a7ba9a2c9be4.md
 		this.resolveAppInit();
@@ -62,7 +62,7 @@ export default class App {
 		this.actions = actions;
 	}
 
-	setEventListeners(): void {}
+	// setEventListeners(): void {}
 
 	registerCommands(): number {
 		return this.context.subscriptions.push(
