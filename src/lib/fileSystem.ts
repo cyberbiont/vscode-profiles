@@ -69,7 +69,7 @@ export default class VpFileSystem {
 	}
 
 	async symlinkCreate(shouldPointTo: string, location: Path) {
-		let type = process.platform === "win32" ? "junction" : "dir";
+		const type = process.platform === "win32" ? "junction" : "dir";
 		return this.nfs.promises.symlink(shouldPointTo, location, type);
 		// 🕮 <cyberbiont> 13748a26-b142-4e10-b218-e8954eecd6e1.md
 		//! 🕮 <cyberbiont> fb0bb676-d894-42c9-ab28-be6b527427fa.md

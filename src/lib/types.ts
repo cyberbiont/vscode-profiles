@@ -1,4 +1,5 @@
-import Profile from './profile';
+import Profile from "./profile";
 
-import MapDictionary from './mapDictionary';
+import MapDictionary from "./mapDictionary";
+
 export type ProfilesDictionary = MapDictionary<string, Profile>;

@@ -42,15 +42,15 @@ export function errorsLibrary() {
 	// TODO переделать в класс, зависимостью передать output channel
 	class VpError extends Error {
 		readonly name = this.constructor.name;
-		constructor(message: string) {
-			super(message);
-		}
+		// constructor(message: string) {
+		// 	super(message);
+		// }
 	}
 
 	class InteractionError extends VpError {
 		readonly name = this.constructor.name;
 		constructor(public message = "") {
-			super(`User hasn't provided input. ${message ? message : ""}`);
+			super(`User hasn't provided input. ${message}`);
 		}
 	}
 

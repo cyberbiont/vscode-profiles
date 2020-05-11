@@ -1,7 +1,7 @@
+import { Dirent } from "fs";
 import { errorHandlers, errorsLibrary } from "./errors";
 import VpPaths from "./paths";
 import VpFileSystem from "./fileSystem";
-import { Dirent } from "fs";
 
 export type OLink = {};
 
@@ -55,13 +55,13 @@ export default class Link {
 				destProfileFolderName,
 				subfolder.name,
 			);
-		else if (!this.isExtensionDirectory(subfolder))
+		if (!this.isExtensionDirectory(subfolder))
 			// copy .obsolete and .wtid files
 			return this.fs.copy(
 				this.p.profiles.derive(srcProfileFolderName, subfolder.name),
 				this.p.profiles.derive(destProfileFolderName, subfolder.name),
 			);
-		else return Promise.resolve();
+		return Promise.resolve();
 	}
 
 	async symlinkifyExtension(subfolder: Dirent, profileFolder: string) {
@@ -71,7 +71,8 @@ export default class Link {
 				this.p.extensionsStorage.derive(subfolder.name).pathname,
 				this.p.extensionsStorage.derive(profileFolder, subfolder.name),
 			);
-		} else return Promise.resolve();
+		}
+		return Promise.resolve();
 	}
 
 	private async transportExtension(

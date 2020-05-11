@@ -1,9 +1,9 @@
+import { Dirent } from "fs";
 import VpPaths from "./paths";
 import VpFileSystem from "./fileSystem";
 import Profile from "./profile";
 import { ProfilesDictionary } from "./types";
 import { errorsLibrary } from "./errors";
-import { Dirent } from "fs";
 import Status from "./status";
 
 export type OProfilesRepository = {};
@@ -67,10 +67,9 @@ export default class ProfilesRepository {
 			(profile) => profile.path.fsPath === link,
 		); // (profile) => false, // имитируем ошибку
 		if (result) return result;
-		else
-			throw new this.errors.BrokenSymlink(
-				"swapper symlink path value is not in the known profiles list",
-			);
+		throw new this.errors.BrokenSymlink(
+			"swapper symlink path value is not in the known profiles list",
+		);
 		// надо сразу же починить, но обработать нужно уже в actions
 		// в данный момент это может быть как ссылка на несуществующую папку, так и ссылка на папку за пределами папки profiles, нам все равно на самом деле
 	}
@@ -104,10 +103,9 @@ export default class ProfilesRepository {
 	searchProfileInMap(profile: string) {
 		const result = this.map.get(profile);
 		if (result) return result;
-		else
-			throw new this.errors.MissingProfileFolder(
-				"profile name was not found in profiles list",
-			);
+		throw new this.errors.MissingProfileFolder(
+			"profile name was not found in profiles list",
+		);
 	}
 
 	getProfileNames(): string[] {

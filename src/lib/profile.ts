@@ -1,4 +1,4 @@
-import { Path } from './paths';
+import { Path } from "./paths";
 
 enum ExtensionState {
 	Folder,

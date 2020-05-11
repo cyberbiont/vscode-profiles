@@ -1,7 +1,5 @@
-import path, { PlatformPath } from 'path';
-import { Uri } from 'vscode';
-import { URL } from 'url';
-import url from 'url';
+import path, { PlatformPath } from "path";
+import url, { URL } from "url";
 
 export type OPaths = {
 	paths: {
