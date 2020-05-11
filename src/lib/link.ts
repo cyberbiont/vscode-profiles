@@ -100,7 +100,7 @@ export default class Link {
 
 	private isExtensionDirectory(subfolder: Dirent) {
 		// учесть также, что теоретически могут быть директории, не являющиеся расширениями
-		const excludedExtensionsRules = ["ms-vsliveshare.vsliveshare-"];
+		const excludedExtensionsRules = [`ms-vsliveshare.vsliveshare-`];
 		return (
 			subfolder.isDirectory() &&
 			!excludedExtensionsRules.some((rule) => subfolder.name.includes(rule))

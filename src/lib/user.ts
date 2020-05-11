@@ -26,24 +26,24 @@ export default class User {
 				placeHolder: `⚙ ${this.profiles.active?.name}`,
 			},
 		);
-		if (!response) throw new this.errors.InteractionError("selectProfileName");
+		if (!response) throw new this.errors.InteractionError(`selectProfileName`);
 		else return response.label.slice(2);
 	}
 
 	async promptProfileName(placeholder?: string) {
 		const name = await window.showInputBox({
-			prompt: "Enter the name of the profile",
-			value: placeholder || "",
+			prompt: `Enter the name of the profile`,
+			value: placeholder || ``,
 		});
-		if (!name) throw new this.errors.InteractionError("promptProfileName");
+		if (!name) throw new this.errors.InteractionError(`promptProfileName`);
 		else return this.utils.capitalize(name);
 	}
 
 	async checkMatchWithCurrentProfile(profileName: string) {
 		if (profileName === this.profiles.active.name) {
-			window.showInformationMessage("This is your current profile");
+			window.showInformationMessage(`This is your current profile`);
 			throw new this.errors.InteractionError(
-				"selected profile name matches current profile",
+				`selected profile name matches current profile`,
 			);
 		}
 		return Promise.resolve(); // надо возвращать всегда что-то, иначе промис вечно висит как pending

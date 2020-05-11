@@ -128,6 +128,7 @@ module.exports = {
 						exceptAfterSingleLine: true,
 					},
 				],
+				"quotes": ["error", "backtick"],
 			},
 		},
 	],

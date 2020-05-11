@@ -67,42 +67,42 @@ export default class App {
 	registerCommands(): number {
 		return this.context.subscriptions.push(
 			commands.registerCommand(
-				"vscode-profiles.switch",
+				`vscode-profiles.switch`,
 				this.actions.switchProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
-				"vscode-profiles.create",
+				`vscode-profiles.create`,
 				this.actions.createProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
-				"vscode-profiles.clone",
+				`vscode-profiles.clone`,
 				this.actions.cloneProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
-				"vscode-profiles.rename",
+				`vscode-profiles.rename`,
 				this.actions.renameProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
-				"vscode-profiles.delete",
+				`vscode-profiles.delete`,
 				this.actions.deleteProfileCommand,
 				this.actions,
 			),
 			commands.registerCommand(
-				"vscode-profiles.clean",
+				`vscode-profiles.clean`,
 				this.actions.clean,
 				this.actions,
 			),
 			commands.registerCommand(
-				"vscode-profiles.rescan",
+				`vscode-profiles.rescan`,
 				this.actions.rescanCommand,
 				this.actions,
 			),
 			commands.registerCommand(
-				"vscode-profiles.symlinkify",
+				`vscode-profiles.symlinkify`,
 				this.actions.symlinkifyCurrentProfile,
 				this.actions,
 			),

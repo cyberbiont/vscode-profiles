@@ -68,7 +68,7 @@ export default class ProfilesRepository {
 		); // (profile) => false, // имитируем ошибку
 		if (result) return result;
 		throw new this.errors.BrokenSymlink(
-			"swapper symlink path value is not in the known profiles list",
+			`swapper symlink path value is not in the known profiles list`,
 		);
 		// надо сразу же починить, но обработать нужно уже в actions
 		// в данный момент это может быть как ссылка на несуществующую папку, так и ссылка на папку за пределами папки profiles, нам все равно на самом деле
@@ -76,8 +76,8 @@ export default class ProfilesRepository {
 
 	private async getSwapperLinkValue() {
 		return this.fs.symlinkRead(this.p.extensionsStandard).catch((e) => {
-			if (e.code === "UNKNOWN") throw new this.errors.IsDirectory();
-			if (e.code === "ENOENT") throw new this.errors.MissingSymlink();
+			if (e.code === `UNKNOWN`) throw new this.errors.IsDirectory();
+			if (e.code === `ENOENT`) throw new this.errors.MissingSymlink();
 			throw e;
 		});
 	}
@@ -104,7 +104,7 @@ export default class ProfilesRepository {
 		const result = this.map.get(profile);
 		if (result) return result;
 		throw new this.errors.MissingProfileFolder(
-			"profile name was not found in profiles list",
+			`profile name was not found in profiles list`,
 		);
 	}
 

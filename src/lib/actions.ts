@@ -91,7 +91,7 @@ export default class Actions {
 
 	clean() {
 		// 🕮 <cyberbiont> 89f90333-ac82-490b-91bc-0b677bc643c3.md
-		console.log("clean command is running");
+		console.log(`clean command is running`);
 	}
 
 	// cleanExtensionsHeap() {}
@@ -120,7 +120,7 @@ export default class Actions {
 		);
 
 		return setTimeout(
-			commands.executeCommand.bind(null, "workbench.action.reloadWindow"),
+			commands.executeCommand.bind(null, `workbench.action.reloadWindow`),
 			5000,
 		);
 	}
