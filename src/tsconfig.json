@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    // "rootDir": ".",
+    "outDir": "../out",
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "target": "es2019",
+    "lib": [
+      "es2019",
+      "es2020.string"
+    ],
+    "sourceMap": true,
+    "newLine": "LF",
+    // "strict": true /* enable all strict type-checking options */,
+    /* Additional Checks */
+    // "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
+    // "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
+    // "noUnusedParameters": true,  /* Report errors on unused parameters. */
+    "strictNullChecks": true,
+    "esModuleInterop": true
+  },
+  "exclude": [
+    "../node_modules",
+    "../.vscode-test"
+  ],
+  "references": [
+    {
+      "path": "../"
+    }
+  ]
+  // tsc --build src will build the src project. Because it declares a reference to the root project, it will build that one also, but only if it is out of date. Because the root tsconfig has the same dir as the outDir, tsc will simply do nothing to package.json , the one file it is configured to compile
+  // https://stackoverflow.com/questions/55753163/package-json-is-not-under-rootdir
+}

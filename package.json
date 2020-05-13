@@ -19,7 +19,7 @@
 	"activationEvents": [
 		"*"
 	],
-	"main": "./out/src/extension.js",
+	"main": "./out/extension.js",
 	"contributes": {
 		"configuration": [
 			{
@@ -62,29 +62,27 @@
 				"title": "Profiles: Rescan"
 			},
 			{
-				"command": "vscode-profiles.symlinkify",
-				"title": "Profiles: Symlinkify"
+				"command": "vscode-profiles.maintenance",
+				"title": "Profiles: Maintenance"
 			}
 		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./ && ts-cleaner -d out",
-		"lint": "eslint src --ext ts",
-		"watch": "tsc -watch -p ./ && ts-cleaner -d out --watch",
+		"compile": "tsc --build src && ts-cleaner -d out",
+		"watch": "tsc --build src --watch && ts-cleaner -d out",
 		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.45.0",
 		"@types/glob": "^7.1.1",
-		"@types/mocha": "^7.0.2",
 		"@types/node": "^13.13.5",
 		"eslint": "^7.0.0",
 		"@typescript-eslint/parser": "^2.32.0",
 		"@typescript-eslint/eslint-plugin": "^2.32.0",
 		"glob": "^7.1.6",
-		"mocha": "^7.1.2",
 		"typescript": "^3.8.3",
 		"vscode-test": "^1.3.0",
 		"ts-cleaner": "^1.0.5",
@@ -103,5 +101,6 @@
 		"prettier": "^2.0.5",
 		"ts-jest": "^25.5.1",
 		"ts-node": "^8.10.1"
-	}
+	},
+	"dependencies": {}
 }
