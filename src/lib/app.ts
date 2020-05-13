@@ -1,4 +1,4 @@
-import { commands, ExtensionContext } from "vscode";
+import { commands, ExtensionContext, extensions } from "vscode";
 import ConfigMaker from "./cfg";
 import Actions from "./actions";
 import ProfilesRepository from "./profilesRepository";
@@ -7,12 +7,13 @@ import VpPaths from "./paths";
 import VpFileSystem from "./fileSystem";
 import MapDictionary from "./mapDictionary";
 import { ProfilesDictionary } from "./types";
-import { errorsLibrary, errorHandlers } from "./errors";
 import Link from "./link";
 import Status from "./status";
 import pkg from "../../package.json";
 import VpOutputChannel from "./outputChannel";
 import Utils from "./utils";
+import VpExtensions from "./extensions";
+import Errors, { ErrorHandlers } from "./errors";
 
 export default class App {
 	public actions: Actions;
@@ -39,16 +40,28 @@ export default class App {
 
 	async compose() {
 		const utils = new Utils();
-		const outChannel = new VpOutputChannel(utils, pkg.name);
-		const errors = errorsLibrary();
-		const on = errorHandlers();
+		const outputChannel = new VpOutputChannel(utils, pkg.name);
+		// const errors = errorsLibrary();
+		// const on = errorHandlers();
+		const on = new ErrorHandlers();
+		const errors = new Errors(outputChannel);
 		const cfg = new ConfigMaker().create();
 		const status = new Status(utils, `${pkg.name}.switch`);
 		const p = new VpPaths(cfg);
+		const vpExtensions = new VpExtensions(extensions);
 		const fs = new VpFileSystem(cfg, errors);
-		const link = new Link(cfg, fs, p, on, errors);
+		const link = new Link(cfg, fs, p, on, errors, vpExtensions);
 		const map: ProfilesDictionary = new MapDictionary();
-		const profiles = new ProfilesRepository(cfg, map, fs, p, errors, status);
+		const profiles = new ProfilesRepository(
+			cfg,
+			map,
+			fs,
+			p,
+			errors,
+			status,
+			link,
+			vpExtensions,
+		);
 		const userInteractions = new User(utils, profiles, errors);
 		const actions = new Actions(
 			cfg,
@@ -102,8 +115,8 @@ export default class App {
 				this.actions,
 			),
 			commands.registerCommand(
-				`vscode-profiles.symlinkify`,
-				this.actions.symlinkifyCurrentProfile,
+				`vscode-profiles.maintenance`,
+				this.actions.maintenanceCommand,
 				this.actions,
 			),
 		);

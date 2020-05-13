@@ -1,119 +1,126 @@
-import { FileSystemError } from "vscode";
+import { FileSystemError, OutputChannel } from "vscode";
+import VpOutputChannel from "./outputChannel";
 
 // 🕮 <cyberbiont> f175e603-9464-4bba-b55f-9a632dce8b1e.md
-
-export function errorHandlers() {
-	async function error(error: Error) {
+export class ErrorHandlers {
+	async error(error: Error) {
 		console.log(error);
 		// throw new Error();
 		// return Promise.resolve();
 	}
 
-	async function cancel(error: Error) {
+	async cancel(error: Error) {
 		console.log(error);
 		throw error;
 	}
 
-	async function resume(error: Error) {
+	async resume(error: Error) {
 		// log and continue
 		console.log(error);
 	}
-
-	return {
-		error,
-		resume,
-		cancel,
-	};
 }
 
 // https://stackoverflow.com/questions/32494174/can-you-create-nested-classes-in-typescript
-// export default class Errors {
-// 	constructor(private channel: OutputChannel) {}
-
-// 	public VpError = class extends Error {
-// 		readonly name = this.constructor.name;
-// 		constructor(message: string) {
-// 			super(message);
-// 		}
-// 	};
-// }
-
-export function errorsLibrary() {
-	// TODO переделать в класс, зависимостью передать output channel
-	class VpError extends Error {
+export default class Errors {
+	constructor(public channel: VpOutputChannel) {}
+	/* оптимальный вариант, так как классы-методы у нас находятся в прототипе,
+	т.е. мы можем создать несколько экземляров Errors с разными зависимостями,
+	при этом классы у нас останутся в единичном экземпляре
+	*/
+	public VpError = class VpError extends Error {
 		readonly name = this.constructor.name;
-		// constructor(message: string) {
-		// 	super(message);
-		// }
-	}
-
-	class InteractionError extends VpError {
-		readonly name = this.constructor.name;
-		constructor(public message = ``) {
-			super(`User hasn't provided input. ${message}`);
+		constructor(public rootThis: Errors, public message: string = ``) {
+			super(message);
+			this.rootThis.channel.appendLine(message);
 		}
-	}
+	}.bind(null, this);
 
-	class SwapperSymlinkError extends VpError {
+	public InteractionError = class InteractionError extends this.VpError {
 		readonly name = this.constructor.name;
-		constructor(public message = ``) {
-			super(
-				`It seems that thare's a problem with "extensions" symlink. ${message}`,
-			);
+		constructor(
+			public rootThis: Errors,
+			public message = ``,
+			public description = `User hasn't provided input.`,
+		) {
+			super(description + message);
+			this.rootThis.channel.appendLine(description + message);
 		}
-	}
+	}.bind(null, this);
 
-	class BrokenSymlink extends SwapperSymlinkError {
+	public SwapperSymlinkError = class SwapperSymlinkError extends this.VpError {
 		readonly name = this.constructor.name;
-		constructor(public message = ``) {
-			super(`It seems that "extensions" symlink is broken. ${message}`);
+		constructor(
+			public rootThis: Errors,
+			public message = ``,
+			public description = `It seems that thare's a problem with "extensions" symlink`,
+		) {
+			super(description + message);
+			this.rootThis.channel.appendLine(description + message);
 		}
-	}
+	}.bind(null, this);
 
-	class MissingSymlink extends SwapperSymlinkError {
+	public BrokenSymlink = class BrokenSymlinkError extends this
+		.SwapperSymlinkError {
 		readonly name = this.constructor.name;
-		constructor(public message = ``) {
-			super(
-				`It seems that "extensions" symlink is missing (or the folder is wrongly named). ${message}`,
-			);
+		constructor(
+			public rootThis: Errors,
+			public message = ``,
+			public description = `It seems that "extensions" symlink is broken`,
+		) {
+			super(description + message);
+			this.rootThis.channel.appendLine(description + message);
 		}
-	}
+	}.bind(null, this);
 
-	class IsDirectory extends SwapperSymlinkError {
+	public MissingSymlink = class MissingSymlinkError extends this
+		.SwapperSymlinkError {
 		readonly name = this.constructor.name;
-		constructor(public message = ``) {
-			super(
-				`It seems that there is a normal directory in place of "extensions" symlink. ${message}`,
-			);
+		constructor(
+			public rootThis: Errors,
+			public message = ``,
+			public description = `It seems that "extensions" symlink is missing (or the folder is wrongly named).`,
+		) {
+			super(description + message);
+			this.rootThis.channel.appendLine(description + message);
 		}
-	}
+	}.bind(null, this);
 
-	class SymlinkExists extends SwapperSymlinkError {
+	public IsDirectory = class IsDirectoryError extends this.SwapperSymlinkError {
 		readonly name = this.constructor.name;
-		constructor(public message = ``) {
-			super(
-				`It seems that "extensions" symlink already exists and points to this folder. ${message}`,
-			);
+		constructor(
+			public rootThis: Errors,
+			public message = ``,
+			public description = `It seems that there is a normal directory in place of "extensions" symlink.`,
+		) {
+			super(description + message);
+			this.rootThis.channel.appendLine(description + message);
 		}
-	}
+	}.bind(null, this);
 
-	class MissingProfileFolder extends FileSystemError {
+	public SymlinkExists = class SymlinkExistsError extends this
+		.SwapperSymlinkError {
 		readonly name = this.constructor.name;
-		constructor(public message = ``) {
-			super(`Profile folder was not found. ${message}`);
+		constructor(
+			public rootThis: Errors,
+			public message = ``,
+			public description = `It seems that "extensions" symlink already exists and points to this folder.`,
+		) {
+			super(description + message);
+			this.rootThis.channel.appendLine(description + message);
 		}
-	}
+	}.bind(null, this);
 
-	return {
-		VpError,
-		InteractionError,
-		SwapperSymlinkError,
-		MissingSymlink,
-		BrokenSymlink,
-		IsDirectory,
-		SymlinkExists,
-		MissingProfileFolder,
-	};
+	public MissingProfileFolder = class MissingProfileFolderError extends FileSystemError {
+		readonly name = this.constructor.name;
+		constructor(
+			public rootThis: Errors,
+			public message = ``,
+			public description = `Profile folder was not found.`,
+		) {
+			super(description + message);
+			this.rootThis.channel.appendLine(description + message);
+		}
+	}.bind(null, this);
 }
 
 // лечение

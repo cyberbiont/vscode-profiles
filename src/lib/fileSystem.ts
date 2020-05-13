@@ -1,13 +1,13 @@
-import { workspace, Uri } from "vscode";
+import { workspace, Uri, window } from "vscode";
 import nodeFs from "fs";
-import { errorsLibrary } from "./errors";
 import { Path } from "./paths";
+import Errors from "./errors";
 
 export type OVpFileSystem = {};
 export default class VpFileSystem {
 	constructor(
 		private cfg: OVpFileSystem,
-		private errors: ReturnType<typeof errorsLibrary>,
+		private errors: Errors,
 		private fs = workspace.fs,
 		public nfs = nodeFs,
 	) {}
@@ -83,16 +83,15 @@ export default class VpFileSystem {
 	async symlinkSwitch(shouldPointTo: string, location: Path) {
 		const currentlyPointsTo = await this.symlinkRead(location).catch((e) => {
 			if (e.code === `ENOENT`) {
-				throw new this.errors.MissingSymlink(
-					`no symlink found in themes folder`,
-				);
+				console.info(`no symlink found in themes folder`);
+				return Promise.resolve(undefined);
 			}
 			throw e;
 		});
 		// 🕮 <cyberbiont> 4e1c4e69-1d88-4cfd-b71d-444bda8585a1.md
 		if (currentlyPointsTo !== shouldPointTo) {
 			console.info(`pointing symlink to ${shouldPointTo}`);
-			await this.symlinkDelete(location);
+			if (currentlyPointsTo) await this.symlinkDelete(location);
 			await this.symlinkCreate(shouldPointTo, location);
 		} else {
 			throw new this.errors.SymlinkExists();
@@ -101,7 +100,7 @@ export default class VpFileSystem {
 
 	async symlinkRead(location: Path) {
 		let value = await this.nfs.promises.readlink(location);
-		if (value.endsWith(`\\`)) value = value.slice(0, -1); // исправлляем глюк с обратным слэшем в конце, см. про fs.symlink
+		if (value.endsWith(`\\`)) value = value.slice(0, -1); // исправляем глюк с обратным слэшем в конце, см. про fs.symlink
 		return value;
 	}
 

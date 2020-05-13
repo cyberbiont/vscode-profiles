@@ -1,10 +1,13 @@
 import { Dirent } from "fs";
+import { window } from "vscode";
 import VpPaths from "./paths";
 import VpFileSystem from "./fileSystem";
 import Profile from "./profile";
 import { ProfilesDictionary } from "./types";
-import { errorsLibrary } from "./errors";
 import Status from "./status";
+import Link from "./link";
+import VpExtensions from "./extensions";
+import Errors from "./errors";
 
 export type OProfilesRepository = {};
 
@@ -16,8 +19,11 @@ export default class ProfilesRepository {
 		public map: ProfilesDictionary,
 		private fs: VpFileSystem,
 		private p: VpPaths,
-		private errors: ReturnType<typeof errorsLibrary>,
+		/* private errors: ReturnType<typeof errorsLibrary>, */
+		private errors: Errors,
 		private status: Status,
+		private link: Link,
+		private extensions: VpExtensions,
 	) {}
 
 	async rescanProfiles() {
@@ -70,8 +76,6 @@ export default class ProfilesRepository {
 		throw new this.errors.BrokenSymlink(
 			`swapper symlink path value is not in the known profiles list`,
 		);
-		// надо сразу же починить, но обработать нужно уже в actions
-		// в данный момент это может быть как ссылка на несуществующую папку, так и ссылка на папку за пределами папки profiles, нам все равно на самом деле
 	}
 
 	private async getSwapperLinkValue() {
@@ -110,5 +114,22 @@ export default class ProfilesRepository {
 
 	getProfileNames(): string[] {
 		return [...this.map.list.keys()];
+	}
+
+	async doProfileMaintenance(profileFolderName: string = this.active.name) {
+		// 🕮 <cyberbiont> f7ea2dc2-10d1-4915-8cb2-4b6aa3c3fff0.md
+		// 🕮 <cyberbiont> b2fcd0c9-db59-4981-ae8a-bbba8edbbedd.md
+		const subfoldersInfo = await this.link.getSubfoldersInfo(profileFolderName);
+
+		const results = await Promise.all(
+			subfoldersInfo.map((subfolderInfo) =>
+				this.link.doMaintenance(subfolderInfo, profileFolderName),
+			),
+		);
+		const symlinkified = results.filter((result) => Boolean(result));
+		window.showInformationMessage(
+			`replaced with simlinks: ${symlinkified.length} of ${results.length} total`,
+		);
+		return subfoldersInfo;
 	}
 }

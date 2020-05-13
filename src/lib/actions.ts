@@ -2,8 +2,8 @@ import { commands, window } from "vscode";
 import User from "./user";
 import VpPaths from "./paths";
 import ProfilesRepository from "./profilesRepository";
-import { errorsLibrary, errorHandlers } from "./errors";
 import Link from "./link";
+import Errors, { ErrorHandlers } from "./errors";
 
 export type OActions = {};
 
@@ -14,8 +14,8 @@ export default class Actions {
 		private link: Link,
 		public p: VpPaths,
 		public profiles: ProfilesRepository,
-		public on: ReturnType<typeof errorHandlers>,
-		public errors: ReturnType<typeof errorsLibrary>,
+		public on: ErrorHandlers,
+		public errors: Errors,
 	) {}
 
 	// COMMAND ACTIONS
@@ -29,7 +29,7 @@ export default class Actions {
 		const srcProfileName = await this.user.selectProfileName();
 		const destProfileName = await this.createNewProfileDirectory();
 
-		await this.symlinkifyExtensions(srcProfileName);
+		await this.profiles.doProfileMaintenance(srcProfileName);
 		await this.copyProfileContents(srcProfileName, destProfileName);
 		//! 🕮 <cyberbiont> 3189b2cc-81ad-4e34-a8aa-565f8ce5ef28.md
 		await window.showInformationMessage(
@@ -67,8 +67,8 @@ export default class Actions {
 		// 🕮 <cyberbiont> 33336010-437b-4ac1-b264-9cd671cba40a.md
 	}
 
-	public async symlinkifyCurrentProfile() {
-		return this.symlinkifyExtensions();
+	public async maintenanceCommand() {
+		return this.profiles.doProfileMaintenance();
 	}
 
 	public async rescanCommand() {
@@ -83,10 +83,14 @@ export default class Actions {
 	}
 
 	async repairExtensionsSymlink() {
-		window.showWarningMessage(`it seems that symlink to your extension profile is broken.
-		Choose what profile you want to activate`);
-		const profile = await this.user.selectProfileName();
+		// window.showWarningMessage(`it seems that symlink to your extension profile is broken.
+		// Choose what profile you want to activate`);
+		const profile = await this.user.selectProfileName({
+			placeholder: `it seems that symlink to your extension profile is broken.
+			Choose what profile you want to activate`,
+		});
 		return this.link.switchLinkToProfile(profile);
+		// в данный момент это может быть как ссылка на несуществующую папку, так и ссылка на папку за пределами папки profiles, нам все равно на самом деле
 	}
 
 	clean() {
@@ -101,7 +105,7 @@ export default class Actions {
 
 	async switchToProfile(profileName: string) {
 		// throw new this.errors.ExtensionsSymlinkError(); // TODO впилить куда-то где реально такая оибка возникает
-		await this.symlinkifyExtensions(this.profiles.active.name); // сделать currentprofile name по дефолту
+		await this.profiles.doProfileMaintenance(this.profiles.active.name); // сделать currentprofile name по дефолту
 		// 🕮 <cyberbiont> 7e1a1010-7d14-43a2-89af-cf7c41ebdcc2.md
 
 		await this.link.switchLinkToProfile(profileName).catch(this.on.error);
@@ -153,24 +157,5 @@ export default class Actions {
 				),
 			),
 		);
-	}
-
-	async symlinkifyExtensions(
-		profileFolderName: string = this.profiles.active.name,
-	) {
-		// 🕮 <cyberbiont> f7ea2dc2-10d1-4915-8cb2-4b6aa3c3fff0.md
-		// 🕮 <cyberbiont> b2fcd0c9-db59-4981-ae8a-bbba8edbbedd.md
-		const subfoldersInfo = await this.link.getSubfoldersInfo(profileFolderName);
-
-		const results = await Promise.all(
-			subfoldersInfo.map((subfolderInfo) =>
-				this.link.symlinkifyExtension(subfolderInfo, profileFolderName),
-			),
-		);
-		const symlinkified = results.filter((result) => Boolean(result));
-		window.showInformationMessage(
-			`replaced with simlinks: ${symlinkified.length} of ${results.length} total`,
-		);
-		return subfoldersInfo;
 	}
 }

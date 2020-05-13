@@ -1,18 +1,19 @@
 import { window } from "vscode";
 import ProfilesRepository from "./profilesRepository";
-import { errorsLibrary } from "./errors";
 import Utils from "./utils";
+import Errors from "./errors";
 
 export default class User {
 	constructor(
 		private utils: Utils,
 		private profiles: ProfilesRepository,
-		private errors: ReturnType<typeof errorsLibrary>,
+		private errors: Errors,
 	) {}
 
 	async selectProfileName({
 		filterOutActive = true,
-	}: { filterOutActive?: boolean } = {}) {
+		placeholder = `⚙ ${this.profiles.active?.name}`,
+	}: { filterOutActive?: boolean; placeholder?: string } = {}) {
 		let profiles = this.profiles.getProfileNames();
 		if (filterOutActive && this.profiles.active)
 			profiles = profiles.filter(
@@ -23,7 +24,7 @@ export default class User {
 				label: `⚙ ${this.utils.capitalize(ext)}`,
 			})),
 			{
-				placeHolder: `⚙ ${this.profiles.active?.name}`,
+				placeHolder: placeholder,
 			},
 		);
 		if (!response) throw new this.errors.InteractionError(`selectProfileName`);
