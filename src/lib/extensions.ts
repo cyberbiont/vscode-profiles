@@ -1,10 +1,6 @@
-import { extensions as vscodeExtensions } from "vscode";
-import { Dirent } from "fs";
-import Link from "./link";
+import { Extension, extensions } from "vscode";
 
 export default class VpExtensions {
-	constructor(public extensions: typeof vscodeExtensions) {}
-
 	listExtensions() {
 		// extensions.all.forEach(callbackfn)
 	}
@@ -13,7 +9,9 @@ export default class VpExtensions {
 	// 	return this.link.doMaintenance(subfolderInfo, profileFolderName);
 	// }
 
-	get(name: string) {
-		// return extensions.get();
+	get(id: string) {
+		return extensions.getExtension(id);
+		// !в общем, не получается почему-то вытащить кастомное расширение...
+		// хотя с 'vscode.git' например работает. может только для встроенных?
 	}
 }

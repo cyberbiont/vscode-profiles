@@ -1,8 +1,26 @@
 import { Dirent } from "fs";
-import VpPaths from "./paths";
+import { Extension, commands } from "vscode";
+import VpPaths, { Path } from "./paths";
 import VpFileSystem from "./fileSystem";
 import VpExtensions from "./extensions";
 import Errors, { ErrorHandlers } from "./errors";
+
+export enum LinkMaintenanceStatus {
+	WAS_OK = `no problems found`, // `no problems found`
+	WAS_REPAIRED = `broken link, reinstalled extension`,
+	WAS_SYMLINKIFIED = `symlinkified extension folder`, // `symlinkified extension folder`
+}
+
+enum EntryType {
+	EXT_SYMLINK = `extension symlink`,
+	EXT_DIR = `extension directory`,
+	ELSE = `something else`,
+}
+
+export interface MaintenanceResults {
+	name: string;
+	status: LinkMaintenanceStatus[];
+}
 
 export type OLink = {};
 //! это на самом леое не Link, а folder внутри папки профиля моет быть и ссылкой, и папкой (назвать его Entry?)
@@ -66,40 +84,119 @@ export default class Link {
 		return Promise.resolve();
 	}
 
-	async doMaintenance(subfolderInfo: Dirent, profileFolderName: string) {
-		await this.validateExtension(profileFolderName);
-		if (this.isExtensionSymlink(subfolderInfo))
-			this.validateSymlink(subfolderInfo);
-		if (this.isExtensionDirectory(subfolderInfo))
-			this.symlinkifyExtension(subfolderInfo, profileFolderName);
-		return Promise.resolve();
+	/* если использовать maintenance только на текущем профиле, это позволит нам использоать класс VScode Extensions
+	потому что мы анализируем не текущую папку, то не получится так сделать
+	*/
+	getExtensionId(extensionFolderName: string) {
+		return extensionFolderName.slice(0, extensionFolderName.lastIndexOf(`-`));
+	}
+
+	private async repairBrokenEntry(
+		path: Path,
+		entryType: EntryType,
+		id = this.getExtensionId(path.pathname),
+	) {
+		console.debug(`repairing broken extension directory...`);
+		// delete broken entry
+		if (entryType === EntryType.EXT_SYMLINK) await this.fs.symlinkDelete(path);
+		else await this.fs.delete(path);
+		// re-install extension
+		console.debug(`re-installing extension ${id}...`);
+		return commands.executeCommand(`workbench.extensions.installExtension`, id);
+		// return;
+	}
+
+	private determineEntryType(subfolderInfo: Dirent) {
+		if (this.isExtensionSymlink(subfolderInfo)) return EntryType.EXT_SYMLINK;
+		if (this.isExtensionDirectory(subfolderInfo)) return EntryType.EXT_DIR;
+		return EntryType.ELSE;
+	}
+
+	async doMaintenance(
+		subfolderInfo: Dirent,
+		profileFolderName: string,
+		profileIsActive: boolean,
+	) {
+		const path = this.p.profiles.derive(profileFolderName, subfolderInfo.name);
+		let entryType: EntryType = this.determineEntryType(subfolderInfo);
+		const status: LinkMaintenanceStatus[] = [];
+
+		if (entryType === EntryType.EXT_SYMLINK) {
+			const isOk = await this.validateSymlink(path);
+			if (profileIsActive && !isOk) {
+				await this.repairBrokenEntry(path, entryType);
+				entryType = EntryType.EXT_DIR;
+				// todo: внести это внутрь this.repairBrokenEntry.
+				// entryType возможно надо  сдалать глбальной переменной через св-во класса link вообще
+				status.push(LinkMaintenanceStatus.WAS_REPAIRED);
+			}
+		}
+
+		/* если даже симлинк ОК или не симлинк, (т.е. папка присутствует на складе расширений),
+		она может быть поврежденной - надо проверить, что расширение грузится оттуда)
+		проблема в том, что если мы на предыдущем шаге все исправили / переустановили расширение,
+		оно все равно будет не ОК,пока мы не перезагрузим VScode.
+		Поэтому за один проход нет смысла сразу же проверять (исключаем с помощью WAS_REPAIRED) */
+		/* if (
+			profileIsActive &&
+			(entryType === EntryType.EXT_SYMLINK ||
+				entryType === EntryType.EXT_DIR) &&
+			!status.includes(LinkMaintenanceStatus.WAS_REPAIRED)
+		) {
+			const id = this.getExtensionId(subfolderInfo.name);
+			const isOk = this.extensions.get(id);
+
+			if (!isOk) {
+				await this.repairBrokenEntry(path, entryType, id);
+				entryType = EntryType.EXT_DIR;
+				status.push(LinkMaintenanceStatus.WAS_REPAIRED);
+			}
+		} */
+
+		if (entryType === EntryType.EXT_DIR) {
+			await this.symlinkifyExtension(subfolderInfo, profileFolderName);
+			status.push(LinkMaintenanceStatus.WAS_SYMLINKIFIED);
+			//  = `symlinkified extension folder`;
+		}
+
+		if (!status.length) status.push(LinkMaintenanceStatus.WAS_OK);
+
+		return {
+			name: subfolderInfo.name,
+			status,
+		};
 	}
 
 	async symlinkifyExtension(subfolderInfo: Dirent, profileFolderName: string) {
 		await this.transportExtension(profileFolderName, subfolderInfo.name);
 		return this.fs.symlinkCreate(
-			this.p.extensionsStorage.derive(subfolderInfo.name).pathname,
-			this.p.extensionsStorage.derive(profileFolderName, subfolderInfo.name),
+			this.p.extensionsStorage.derive(subfolderInfo.name).fsPath,
+			this.p.profiles.derive(profileFolderName, subfolderInfo.name),
 		);
 	}
 
-	async validateExtension(profileFolderName) {
-		const ext = this.extensions.get(profileFolderName);
-	}
+	// private async validateExtension(
+	// 	subfolderInfo: Dirent,
+	// 	profileFolderName: string,
+	// ) {
+	// 	return this.extensions.get(subfolderInfo.name);
 
-	private async validateSymlink(subfolder: Dirent) {
-		const link = await this.fs
-			.symlinkRead(this.p.profiles.derive(subfolder.name))
-			.catch((e) => {
-				if (e.code === `ENOENT`) {
-					throw new this.errors.MissingSymlink(
-						`no symlink found in themes folder`,
-					);
-				}
-				console.error(e);
-				throw e;
-			});
-		// if !(link)
+	// 	console.log(profileFolderName);
+	// }
+
+	private async validateSymlink(path: Path) {
+		try {
+			const target = await this.fs.symlinkRead(path);
+			console.log(target);
+			return this.fs.exists(target);
+		} catch (e) {
+			if (e.code === `ENOENT`) {
+				throw new this.errors.MissingSymlink(
+					`no symlink found in profiles folder`,
+				);
+			}
+			throw e;
+		}
 	}
 
 	private async transportExtension(

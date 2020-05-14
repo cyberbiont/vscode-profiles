@@ -12,7 +12,7 @@ export default class User {
 
 	async selectProfileName({
 		filterOutActive = true,
-		placeholder = `⚙ ${this.profiles.active?.name}`,
+		placeholder = ``,
 	}: { filterOutActive?: boolean; placeholder?: string } = {}) {
 		let profiles = this.profiles.getProfileNames();
 		if (filterOutActive && this.profiles.active)
@@ -24,7 +24,7 @@ export default class User {
 				label: `⚙ ${this.utils.capitalize(ext)}`,
 			})),
 			{
-				placeHolder: placeholder,
+				placeHolder: placeholder || `⚙ ${this.profiles.active?.name}`, // ?. doen't worl in default parameters die to the bug
 			},
 		);
 		if (!response) throw new this.errors.InteractionError(`selectProfileName`);

@@ -104,8 +104,8 @@ export default class Actions {
 	// 🕮 <cyberbiont> 4936ede9-783b-465a-b760-56d1a0d858d3.md
 
 	async switchToProfile(profileName: string) {
-		// throw new this.errors.ExtensionsSymlinkError(); // TODO впилить куда-то где реально такая оибка возникает
-		await this.profiles.doProfileMaintenance(this.profiles.active.name); // сделать currentprofile name по дефолту
+		// throw new this.errors.ExtensionsSymlinkError(); // TODO впилить куда-то где реально такая ошибка возникает
+		// await this.profiles.doProfileMaintenance(this.profiles.active.name); // сделать currentprofile name по дефолту
 		// 🕮 <cyberbiont> 7e1a1010-7d14-43a2-89af-cf7c41ebdcc2.md
 
 		await this.link.switchLinkToProfile(profileName).catch(this.on.error);

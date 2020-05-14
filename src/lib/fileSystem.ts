@@ -13,6 +13,9 @@ export default class VpFileSystem {
 	) {}
 
 	// thenables 🕮 <cyberbiont> 214f5bb7-b6dc-4ff6-b9f5-3d0142e9addd.md
+	exists(location: string) {
+		return this.nfs.existsSync(location);
+	}
 
 	async rename(source: Path, target: Path) {
 		// return this.nfs.promises.rename(source, target);

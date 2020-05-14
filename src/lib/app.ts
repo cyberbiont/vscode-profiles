@@ -48,7 +48,7 @@ export default class App {
 		const cfg = new ConfigMaker().create();
 		const status = new Status(utils, `${pkg.name}.switch`);
 		const p = new VpPaths(cfg);
-		const vpExtensions = new VpExtensions(extensions);
+		const vpExtensions = new VpExtensions();
 		const fs = new VpFileSystem(cfg, errors);
 		const link = new Link(cfg, fs, p, on, errors, vpExtensions);
 		const map: ProfilesDictionary = new MapDictionary();

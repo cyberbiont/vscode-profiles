@@ -5,7 +5,10 @@ import VpFileSystem from "./fileSystem";
 import Profile from "./profile";
 import { ProfilesDictionary } from "./types";
 import Status from "./status";
-import Link from "./link";
+import Link, {
+	LinkMaintenanceStatus,
+	MaintenanceResults as MaintenanceResult,
+} from "./link";
 import VpExtensions from "./extensions";
 import Errors from "./errors";
 
@@ -120,16 +123,44 @@ export default class ProfilesRepository {
 		// 🕮 <cyberbiont> f7ea2dc2-10d1-4915-8cb2-4b6aa3c3fff0.md
 		// 🕮 <cyberbiont> b2fcd0c9-db59-4981-ae8a-bbba8edbbedd.md
 		const subfoldersInfo = await this.link.getSubfoldersInfo(profileFolderName);
+		const profileIsActive = profileFolderName === this.active.name;
+		const maintenanceCallback = (subfolderInfo: Dirent) =>
+			this.link.doMaintenance(
+				subfolderInfo,
+				profileFolderName,
+				profileIsActive,
+			);
+		// sequential
+		// const results: MaintenanceResult[] = [];
+		// for (const subfolderInfo of subfoldersInfo) {
+		// 	results.push(await maintenanceCallback(subfolderInfo));
+		// }
 
-		const results = await Promise.all(
-			subfoldersInfo.map((subfolderInfo) =>
-				this.link.doMaintenance(subfolderInfo, profileFolderName),
-			),
-		);
-		const symlinkified = results.filter((result) => Boolean(result));
-		window.showInformationMessage(
-			`replaced with simlinks: ${symlinkified.length} of ${results.length} total`,
-		);
+		// parallel
+		const results = await Promise.all(subfoldersInfo.map(maintenanceCallback));
+
+		this.analyzeMaintenanceResults(results);
 		return subfoldersInfo;
+	}
+
+	analyzeMaintenanceResults(results: MaintenanceResult[]) {
+		console.log(results);
+		let okCount = 0;
+		let repairedCount = 0;
+		let symlinkifiedCount = 0;
+		results.forEach((result) => {
+			if (result.status.includes(LinkMaintenanceStatus.WAS_OK)) okCount++;
+			if (result.status.includes(LinkMaintenanceStatus.WAS_REPAIRED))
+				repairedCount++;
+			if (result.status.includes(LinkMaintenanceStatus.WAS_SYMLINKIFIED))
+				symlinkifiedCount++;
+		});
+		// const symlinkified = results.filter((result) => Boolean(result));
+		window.showInformationMessage(
+			`total: ${results.length};
+			replaced with simlinks: ${symlinkifiedCount};
+			repaired: ${repairedCount};
+			ok: ${okCount}`,
+		);
 	}
 }
