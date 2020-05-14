@@ -1,4 +1,5 @@
-import { StatusBarItem, window, StatusBarAlignment } from "vscode";
+import { StatusBarAlignment, StatusBarItem, window } from "vscode";
+
 import Utils from "./utils";
 
 export default class Status {

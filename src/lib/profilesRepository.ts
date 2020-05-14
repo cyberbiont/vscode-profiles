@@ -1,16 +1,17 @@
-import { Dirent } from "fs";
-import { window } from "vscode";
-import VpPaths from "./paths";
-import VpFileSystem from "./fileSystem";
-import Profile from "./profile";
-import { ProfilesDictionary } from "./types";
-import Status from "./status";
 import Link, {
 	LinkMaintenanceStatus,
 	MaintenanceResults as MaintenanceResult,
 } from "./link";
-import VpExtensions from "./extensions";
+
+import { Dirent } from "fs";
 import Errors from "./errors";
+import Profile from "./profile";
+import { ProfilesDictionary } from "./types";
+import Status from "./status";
+import VpExtensions from "./extensions";
+import VpFileSystem from "./fileSystem";
+import VpPaths from "./paths";
+import { window } from "vscode";
 
 export type OProfilesRepository = {};
 

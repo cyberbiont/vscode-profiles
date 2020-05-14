@@ -1,9 +1,10 @@
-import { Dirent } from "fs";
-import { Extension, commands } from "vscode";
-import VpPaths, { Path } from "./paths";
-import VpFileSystem from "./fileSystem";
-import VpExtensions from "./extensions";
 import Errors, { ErrorHandlers } from "./errors";
+import VpPaths, { Path } from "./paths";
+
+import { Dirent } from "fs";
+import VpExtensions from "./extensions";
+import VpFileSystem from "./fileSystem";
+import { commands } from "vscode";
 
 export enum LinkMaintenanceStatus {
 	WAS_OK = `no problems found`, // `no problems found`

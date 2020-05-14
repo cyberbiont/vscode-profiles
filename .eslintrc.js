@@ -107,6 +107,7 @@ module.exports = {
 			},
 			parser: "@typescript-eslint/parser",
 			rules: {
+				"import/order": "off",
 				"import/no-extraneous-dependencies": [
 					"error",
 					{ devDependencies: ["**/*.{test,spec}.{js,jsx,ts,tsx}"] },

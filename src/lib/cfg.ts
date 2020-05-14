@@ -1,9 +1,9 @@
-import { workspace, Uri } from "vscode";
-import os from "os";
-import path from "path";
 import { OActions } from "./actions";
 import { OLink } from "./link";
-import VpPaths, { OPaths } from "./paths";
+import { OPaths } from "./paths";
+import os from "os";
+import path from "path";
+import { workspace } from "vscode";
 
 const homedir = os.homedir();
 const settings = workspace.getConfiguration(`sidenotes`);

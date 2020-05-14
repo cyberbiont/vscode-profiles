@@ -1,9 +1,10 @@
+import Errors, { ErrorHandlers } from "./errors";
 import { commands, window } from "vscode";
+
+import Link from "./link";
+import ProfilesRepository from "./profilesRepository";
 import User from "./user";
 import VpPaths from "./paths";
-import ProfilesRepository from "./profilesRepository";
-import Link from "./link";
-import Errors, { ErrorHandlers } from "./errors";
 
 export type OActions = {};
 

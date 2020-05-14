@@ -1,7 +1,7 @@
-import { window } from "vscode";
+import Errors from "./errors";
 import ProfilesRepository from "./profilesRepository";
 import Utils from "./utils";
-import Errors from "./errors";
+import { window } from "vscode";
 
 export default class User {
 	constructor(

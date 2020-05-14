@@ -1,7 +1,8 @@
-import { workspace, Uri, window } from "vscode";
-import nodeFs from "fs";
-import { Path } from "./paths";
+import { Uri, workspace } from "vscode";
+
 import Errors from "./errors";
+import { Path } from "./paths";
+import nodeFs from "fs";
 
 export type OVpFileSystem = {};
 export default class VpFileSystem {

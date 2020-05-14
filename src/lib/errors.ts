@@ -1,4 +1,4 @@
-import { FileSystemError, OutputChannel } from "vscode";
+import { FileSystemError } from "vscode";
 import VpOutputChannel from "./outputChannel";
 
 // 🕮 <cyberbiont> f175e603-9464-4bba-b55f-9a632dce8b1e.md

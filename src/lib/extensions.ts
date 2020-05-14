@@ -1,4 +1,4 @@
-import { Extension, extensions } from "vscode";
+import { extensions } from "vscode";
 
 export default class VpExtensions {
 	listExtensions() {
