@@ -27,7 +27,6 @@ export default class ProfilesRepository {
 		public map: ProfilesDictionary,
 		private fs: VpFileSystem,
 		private p: VpPaths,
-		/* private errors: ReturnType<typeof errorsLibrary>, */
 		private errors: Errors,
 		private status: Status,
 		private link: Link,
