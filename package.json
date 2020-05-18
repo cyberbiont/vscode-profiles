@@ -28,6 +28,10 @@
 					"sidenotes.path": {
 						"type": "string",
 						"description": "Specifies the folder where profiles are stored"
+					},
+					"symlinkifyExtensions": {
+						"type": "boolean",
+						"description": "It true, all extensions are replaced with symlinks in profile folders"
 					}
 				}
 			}
@@ -102,5 +106,9 @@
 		"ts-jest": "^25.5.1",
 		"ts-node": "^8.10.1"
 	},
-	"dependencies": {}
+	"dependencies": {},
+	"extensionDependencies": [
+		"shan.code-settings-sync",
+		"hoovercj.vscode-settings-cycler"
+	]
 }

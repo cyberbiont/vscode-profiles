@@ -13,7 +13,11 @@ import VpFileSystem from "./fileSystem";
 import VpPaths from "./paths";
 import { window } from "vscode";
 
-export type OProfilesRepository = {};
+export type OProfilesRepository = {
+	extensions: {
+		symlinkifyExtensions: boolean
+	}
+};
 
 export default class ProfilesRepository {
 	public active: Profile;
@@ -123,6 +127,7 @@ export default class ProfilesRepository {
 	async doProfileMaintenance(profileFolderName: string = this.active.name) {
 		// 🕮 <cyberbiont> f7ea2dc2-10d1-4915-8cb2-4b6aa3c3fff0.md
 		// 🕮 <cyberbiont> b2fcd0c9-db59-4981-ae8a-bbba8edbbedd.md
+		if (!this.cfg.extensions.symlinkifyExtensions) return;
 		const subfoldersInfo = await this.link.getSubfoldersInfo(profileFolderName);
 		const profileIsActive = profileFolderName === this.active.name;
 		const maintenanceCallback = (subfolderInfo: Dirent) =>

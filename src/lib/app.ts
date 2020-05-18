@@ -1,5 +1,5 @@
 import Errors, { ErrorHandlers } from "./errors";
-import { ExtensionContext, commands } from "vscode";
+import { ExtensionContext, commands, extensions } from "vscode";
 
 import Actions from "./actions";
 import ConfigMaker from "./cfg";
@@ -10,6 +10,7 @@ import ProfilesRepository from "./profilesRepository";
 import Status from "./status";
 import User from "./user";
 import Utils from "./utils";
+import VpEvents from "./events";
 import VpExtensions from "./extensions";
 import VpFileSystem from "./fileSystem";
 import VpOutputChannel from "./outputChannel";
@@ -18,7 +19,7 @@ import pkg from "../../package.json";
 
 export default class App {
 	public actions: Actions;
-	// private events: VPEvents;
+	private events: VpEvents;
 
 	constructor(
 		private context: ExtensionContext,
@@ -33,7 +34,7 @@ export default class App {
 		// this.registerProviders();
 
 		this.registerCommands();
-		// this.setEventListeners();
+		this.setEventListeners();
 		await this.actions.rescanCommand();
 		// 🕮 <cyberbiont> df6f9de4-57b5-4aa6-8dc6-a7ba9a2c9be4.md
 		this.resolveAppInit();
@@ -42,8 +43,6 @@ export default class App {
 	async compose() {
 		const utils = new Utils();
 		const outputChannel = new VpOutputChannel(utils, pkg.name);
-		// const errors = errorsLibrary();
-		// const on = errorHandlers();
 		const on = new ErrorHandlers();
 		const errors = new Errors(outputChannel);
 		const cfg = new ConfigMaker().create();
@@ -73,10 +72,14 @@ export default class App {
 			on,
 			errors,
 		);
+		const events = new VpEvents(profiles);
 		this.actions = actions;
+		this.events = events;
 	}
 
-	// setEventListeners(): void {}
+	setEventListeners() {
+		extensions.onDidChange(this.events.onExtensionsChange);
+	}
 
 	registerCommands(): number {
 		return this.context.subscriptions.push(
