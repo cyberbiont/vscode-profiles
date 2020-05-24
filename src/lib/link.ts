@@ -1,10 +1,10 @@
-import Errors, { ErrorHandlers } from "./errors";
-import VpPaths, { Path } from "./paths";
+import Errors, { ErrorHandlers } from './errors';
+import VpPaths, { Path } from './paths';
 
-import { Dirent } from "fs";
-import VpExtensions from "./extensions";
-import VpFileSystem from "./fileSystem";
-import { commands } from "vscode";
+import { Dirent } from 'fs';
+import VpExtensions from './extensions';
+import VpFileSystem from './fileSystem';
+import { commands } from 'vscode';
 
 export enum LinkMaintenanceStatus {
 	WAS_OK = `no problems found`, // `no problems found`
@@ -72,13 +72,12 @@ export default class Link {
 		destProfileFolderName: string,
 	) {
 		if (this.isExcluded(subfolder)) return Promise.resolve();
-		else if (this.isExtensionSymlink(subfolder))
+		if (this.isExtensionSymlink(subfolder))
 			return this.copyExtensionSymlink(
 				srcProfileFolderName,
 				destProfileFolderName,
 				subfolder.name,
 			);
-
 
 		// if (!this.isExtensionDirectory(subfolder))
 		// 	// copy .obsolete and .wtid files
@@ -86,10 +85,11 @@ export default class Link {
 		// 		this.p.profiles.derive(srcProfileFolderName, subfolder.name),
 		// 		this.p.profiles.derive(destProfileFolderName, subfolder.name),
 		// 	);
-		else if (!this.isExtensionDirectory(subfolder)) return this.fs.copy(
-			this.p.profiles.derive(srcProfileFolderName, subfolder.name),
-			this.p.profiles.derive(destProfileFolderName, subfolder.name),
-		);
+		if (!this.isExtensionDirectory(subfolder))
+			return this.fs.copy(
+				this.p.profiles.derive(srcProfileFolderName, subfolder.name),
+				this.p.profiles.derive(destProfileFolderName, subfolder.name),
+			);
 		return Promise.resolve();
 	}
 
@@ -130,7 +130,7 @@ export default class Link {
 		let entryType: EntryType = this.determineEntryType(subfolderInfo);
 		const status: LinkMaintenanceStatus[] = [];
 		const isExcluded = this.isExcluded(subfolderInfo);
-		if (isExcluded)	status.push(LinkMaintenanceStatus.WAS_EXCLUDED);
+		if (isExcluded) status.push(LinkMaintenanceStatus.WAS_EXCLUDED);
 		if (entryType === EntryType.EXT_SYMLINK) {
 			const isOk = await this.validateSymlink(path);
 			if (profileIsActive && !isOk && !isExcluded) {
@@ -169,7 +169,8 @@ export default class Link {
 			//  = `symlinkified extension folder`;
 		}
 
-		if (!isExcluded && !status.length) status.push(LinkMaintenanceStatus.WAS_OK);
+		if (!isExcluded && !status.length)
+			status.push(LinkMaintenanceStatus.WAS_OK);
 
 		return {
 			name: subfolderInfo.name,
@@ -239,11 +240,13 @@ export default class Link {
 		// С Live share существует проблема - процесс vsls-agent.exe, который запускается автоматически при активации приложения,
 		// не дает нам переместить папку (получаем ошибку доступа). Поэтому прижется исключить из симлинкфикации
 		const excludedExtensionsRules = [`ms-vsliveshare.vsliveshare-`];
-		return excludedExtensionsRules.some((rule) => subfolder.name.includes(rule));
+		return excludedExtensionsRules.some((rule) =>
+			subfolder.name.includes(rule),
+		);
 	}
 
 	private isExtensionDirectory(subfolder: Dirent) {
 		// учесть также, что теоретически могут быть директории, не являющиеся расширениями
-		return subfolder.isDirectory()
+		return subfolder.isDirectory();
 	}
 }

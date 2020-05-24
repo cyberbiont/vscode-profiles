@@ -1,10 +1,10 @@
-import { OActions } from "./actions";
-import { OLink } from "./link";
-import { OPaths } from "./paths";
-import os from "os";
-import path from "path";
-import { workspace } from "vscode";
-import { OProfilesRepository } from "./profilesRepository";
+import { OActions } from './actions';
+import { OLink } from './link';
+import { OPaths } from './paths';
+import os from 'os';
+import path from 'path';
+import { workspace } from 'vscode';
+import { OProfilesRepository } from './profilesRepository';
 
 const homedir = os.homedir();
 const settings = workspace.getConfiguration(`sidenotes`);
@@ -15,7 +15,7 @@ export default class ConfigMaker {
 	create(): Cfg {
 		return {
 			extensions: {
-				symlinkifyExtensions: settings.get(`symlinkifyExtensions`) || true
+				symlinkifyExtensions: settings.get(`symlinkifyExtensions`) || true,
 			},
 			paths: {
 				profiles:

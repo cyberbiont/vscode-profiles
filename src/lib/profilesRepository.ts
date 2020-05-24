@@ -1,22 +1,22 @@
 import Link, {
 	LinkMaintenanceStatus,
 	MaintenanceResults as MaintenanceResult,
-} from "./link";
+} from './link';
 
-import { Dirent } from "fs";
-import Errors from "./errors";
-import Profile from "./profile";
-import { ProfilesDictionary } from "./types";
-import Status from "./status";
-import VpExtensions from "./extensions";
-import VpFileSystem from "./fileSystem";
-import VpPaths from "./paths";
-import { window } from "vscode";
+import { Dirent } from 'fs';
+import Errors from './errors';
+import Profile from './profile';
+import { ProfilesDictionary } from './types';
+import Status from './status';
+import VpExtensions from './extensions';
+import VpFileSystem from './fileSystem';
+import VpPaths from './paths';
+import { window } from 'vscode';
 
 export type OProfilesRepository = {
 	extensions: {
-		symlinkifyExtensions: boolean
-	}
+		symlinkifyExtensions: boolean;
+	};
 };
 
 export default class ProfilesRepository {
@@ -145,7 +145,7 @@ export default class ProfilesRepository {
 		const results = await Promise.all(subfoldersInfo.map(maintenanceCallback));
 
 		this.analyzeMaintenanceResults(results);
-		return subfoldersInfo;
+		// return subfoldersInfo;
 	}
 
 	analyzeMaintenanceResults(results: MaintenanceResult[]) {
