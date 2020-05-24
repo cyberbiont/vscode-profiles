@@ -168,4 +168,26 @@ export default class ProfilesRepository {
 			ok: ${okCount}`,
 		);
 	}
+
+	// симлинк на vscode-profile должен создаваться автоматически в новых профилях!
+	// вести список "глобальных" расширений, которые будут удаляться / устанавливаться во всех профилях?
+	// следить за изменениями в файле obsolete (парсить его, т.к. там  JSON) и синхронизировать изменения для этих расширений
+
+	async copyProfileContents(
+		srcProfileFolderName: string,
+		destProfileFolderName: string,
+	) {
+		const subfoldersInfo = await this.link.getSubfoldersInfo(
+			srcProfileFolderName,
+		);
+		return Promise.all(
+			subfoldersInfo.map((subfolderInfo) =>
+				this.link.copyProfileContent(
+					subfolderInfo,
+					srcProfileFolderName,
+					destProfileFolderName,
+				),
+			),
+		);
+	}
 }

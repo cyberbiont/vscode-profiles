@@ -1,10 +1,10 @@
-import Errors, { ErrorHandlers } from "./errors";
-import { commands, window } from "vscode";
+import Errors, { ErrorHandlers } from './errors';
+import { commands, window } from 'vscode';
 
-import Link from "./link";
-import ProfilesRepository from "./profilesRepository";
-import User from "./user";
-import VpPaths from "./paths";
+import Link from './link';
+import ProfilesRepository from './profilesRepository';
+import User from './user';
+import VpPaths from './paths';
 
 export type OActions = {};
 
@@ -27,11 +27,16 @@ export default class Actions {
 	}
 
 	public async cloneProfileCommand() {
-		const srcProfileName = await this.user.selectProfileName();
-		const destProfileName = await this.createNewProfileDirectory();
+		const srcProfileName = await this.user.selectProfileName({
+			filterOutActive: false,
+			placeholder: `select the profile you want to clone`,
+		});
+		const destProfileName = await this.createNewProfileDirectory({
+			useExisting: true,
+		});
 
 		await this.profiles.doProfileMaintenance(srcProfileName);
-		await this.copyProfileContents(srcProfileName, destProfileName);
+		await this.profiles.copyProfileContents(srcProfileName, destProfileName);
 		//! 🕮 <cyberbiont> 3189b2cc-81ad-4e34-a8aa-565f8ce5ef28.md
 		await window.showInformationMessage(
 			`Created profile ${destProfileName} from ${srcProfileName}`,
@@ -129,33 +134,19 @@ export default class Actions {
 		);
 	}
 
-	private async createNewProfileDirectory() {
+	private async createNewProfileDirectory({
+		useExisting = false,
+	}: { useExisting?: boolean } = {}) {
+		const a = `2`;
 		const name = await this.user.promptProfileName();
 		await this.user.checkMatchWithCurrentProfile(name);
-		await this.link.createProfileDirectory(name);
+		await this.link.createProfileDirectory(name).catch((e: Error) => {
+			console.log(e);
+			if (e.name === `EEXIST` && !useExisting) throw e;
+			// return srcProfileName;
+		});
 		// await this.link.installLinkToVScodeProfilesExtension(name);
 		await this.profiles.rescanProfiles();
-		return name;
-	}
-	// симлинк на vscode-profile должен создаваться автоматически в новых профилях!
-	// вести список "глобальных" расширений, которые будут удаляться / устанавливаться во всех профилях?
-	// следить за изменениями в файле obsolete (парсить его, т.к. там  JSON) и синхронизировать изменения для этих расширений
-
-	async copyProfileContents(
-		srcProfileFolderName: string,
-		destProfileFolderName: string,
-	) {
-		const subfoldersInfo = await this.link.getSubfoldersInfo(
-			srcProfileFolderName,
-		);
-		return Promise.all(
-			subfoldersInfo.map((subfolderInfo) =>
-				this.link.copyProfileContent(
-					subfolderInfo,
-					srcProfileFolderName,
-					destProfileFolderName,
-				),
-			),
-		);
+		return Promise.resolve(name);
 	}
 }

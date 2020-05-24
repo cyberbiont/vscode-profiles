@@ -1,30 +1,33 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "files.exclude": {
-        "out": false // set this to true to hide the "out" folder with the compiled JS files
-    },
-    "search.exclude": {
-        "out": true // set this to false to include "out" folder in search results
-    },
-    // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-    "typescript.tsc.autoDetect": "off",
-    "workbench.colorCustomizations": {
-        "activityBar.activeBackground": "#1b2831",
-        "activityBar.activeBorder": "#7b4465",
-        "activityBar.background": "#1b2831",
-        "activityBar.foreground": "#e7e7e7",
-        "activityBar.inactiveForeground": "#e7e7e799",
-        "activityBarBadge.background": "#7b4465",
-        "activityBarBadge.foreground": "#e7e7e7",
-        "statusBar.background": "#090d10",
-        "statusBar.border": "#090d10",
-        "statusBar.foreground": "#e7e7e7",
-        "statusBarItem.hoverBackground": "#1b2831",
-        "titleBar.activeBackground": "#090d10",
-        "titleBar.activeForeground": "#e7e7e7",
-        "titleBar.border": "#090d10",
-        "titleBar.inactiveBackground": "#090d1099",
-        "titleBar.inactiveForeground": "#e7e7e799"
-    },
-    "peacock.color": "hsl(207, 29%, 5%)"
+	"files.exclude": {
+		"out": false // set this to true to hide the "out" folder with the compiled JS files
+	},
+	"search.exclude": {
+		"out": true // set this to false to include "out" folder in search results
+	},
+	// Turn off tsc task auto detection since we have the necessary tasks as npm scripts
+	"typescript.tsc.autoDetect": "off",
+	"workbench.colorCustomizations": {
+		"activityBar.activeBackground": "#1b2831",
+		"activityBar.activeBorder": "#7b4465",
+		"activityBar.background": "#1b2831",
+		"activityBar.foreground": "#e7e7e7",
+		"activityBar.inactiveForeground": "#e7e7e799",
+		"activityBarBadge.background": "#7b4465",
+		"activityBarBadge.foreground": "#e7e7e7",
+		"statusBar.background": "#090d10",
+		"statusBar.border": "#090d10",
+		"statusBar.foreground": "#e7e7e7",
+		"statusBarItem.hoverBackground": "#1b2831",
+		"titleBar.activeBackground": "#090d10",
+		"titleBar.activeForeground": "#e7e7e7",
+		"titleBar.border": "#090d10",
+		"titleBar.inactiveBackground": "#090d1099",
+		"titleBar.inactiveForeground": "#e7e7e799"
+	},
+	"peacock.color": "hsl(207, 29%, 5%)",
+	"eslint.options": {
+		"configFile": ""
+	}
 }

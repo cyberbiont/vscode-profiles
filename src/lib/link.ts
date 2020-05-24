@@ -9,7 +9,8 @@ import { commands } from "vscode";
 export enum LinkMaintenanceStatus {
 	WAS_OK = `no problems found`, // `no problems found`
 	WAS_REPAIRED = `broken link, reinstalled extension`,
-	WAS_SYMLINKIFIED = `symlinkified extension folder`, // `symlinkified extension folder`
+	WAS_SYMLINKIFIED = `symlinkified extension folder`, // `symlinkified extension folder`,
+	WAS_EXCLUDED = `extension was excluded from processing in settings`,
 }
 
 enum EntryType {
@@ -70,18 +71,25 @@ export default class Link {
 		srcProfileFolderName: string,
 		destProfileFolderName: string,
 	) {
-		if (this.isExtensionSymlink(subfolder))
+		if (this.isExcluded(subfolder)) return Promise.resolve();
+		else if (this.isExtensionSymlink(subfolder))
 			return this.copyExtensionSymlink(
 				srcProfileFolderName,
 				destProfileFolderName,
 				subfolder.name,
 			);
-		if (!this.isExtensionDirectory(subfolder))
-			// copy .obsolete and .wtid files
-			return this.fs.copy(
-				this.p.profiles.derive(srcProfileFolderName, subfolder.name),
-				this.p.profiles.derive(destProfileFolderName, subfolder.name),
-			);
+
+
+		// if (!this.isExtensionDirectory(subfolder))
+		// 	// copy .obsolete and .wtid files
+		// 	return this.fs.copy(
+		// 		this.p.profiles.derive(srcProfileFolderName, subfolder.name),
+		// 		this.p.profiles.derive(destProfileFolderName, subfolder.name),
+		// 	);
+		else if (!this.isExtensionDirectory(subfolder)) return this.fs.copy(
+			this.p.profiles.derive(srcProfileFolderName, subfolder.name),
+			this.p.profiles.derive(destProfileFolderName, subfolder.name),
+		);
 		return Promise.resolve();
 	}
 
@@ -121,10 +129,11 @@ export default class Link {
 		const path = this.p.profiles.derive(profileFolderName, subfolderInfo.name);
 		let entryType: EntryType = this.determineEntryType(subfolderInfo);
 		const status: LinkMaintenanceStatus[] = [];
-
+		const isExcluded = this.isExcluded(subfolderInfo);
+		if (isExcluded)	status.push(LinkMaintenanceStatus.WAS_EXCLUDED);
 		if (entryType === EntryType.EXT_SYMLINK) {
 			const isOk = await this.validateSymlink(path);
-			if (profileIsActive && !isOk) {
+			if (profileIsActive && !isOk && !isExcluded) {
 				await this.repairBrokenEntry(path, entryType);
 				entryType = EntryType.EXT_DIR;
 				// todo: внести это внутрь this.repairBrokenEntry.
@@ -154,13 +163,13 @@ export default class Link {
 			}
 		} */
 
-		if (entryType === EntryType.EXT_DIR) {
+		if (entryType === EntryType.EXT_DIR && !isExcluded) {
 			await this.symlinkifyExtension(subfolderInfo, profileFolderName);
 			status.push(LinkMaintenanceStatus.WAS_SYMLINKIFIED);
 			//  = `symlinkified extension folder`;
 		}
 
-		if (!status.length) status.push(LinkMaintenanceStatus.WAS_OK);
+		if (!isExcluded && !status.length) status.push(LinkMaintenanceStatus.WAS_OK);
 
 		return {
 			name: subfolderInfo.name,
@@ -188,7 +197,7 @@ export default class Link {
 	private async validateSymlink(path: Path) {
 		try {
 			const target = await this.fs.symlinkRead(path);
-			console.log(target);
+			// console.log(target);
 			return this.fs.exists(target);
 		} catch (e) {
 			if (e.code === `ENOENT`) {
@@ -226,14 +235,15 @@ export default class Link {
 		return subfolder.isSymbolicLink();
 	}
 
-	private isExtensionDirectory(subfolder: Dirent) {
-		// учесть также, что теоретически могут быть директории, не являющиеся расширениями
-		const excludedExtensionsRules = [`ms-vsliveshare.vsliveshare-`];
-		return (
-			subfolder.isDirectory() &&
-			!excludedExtensionsRules.some((rule) => subfolder.name.includes(rule))
-		);
+	private isExcluded(subfolder: Dirent) {
 		// С Live share существует проблема - процесс vsls-agent.exe, который запускается автоматически при активации приложения,
 		// не дает нам переместить папку (получаем ошибку доступа). Поэтому прижется исключить из симлинкфикации
+		const excludedExtensionsRules = [`ms-vsliveshare.vsliveshare-`];
+		return excludedExtensionsRules.some((rule) => subfolder.name.includes(rule));
+	}
+
+	private isExtensionDirectory(subfolder: Dirent) {
+		// учесть также, что теоретически могут быть директории, не являющиеся расширениями
+		return subfolder.isDirectory()
 	}
 }

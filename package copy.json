@@ -7,18 +7,9 @@
 		"vscode": "^1.44.0",
 		"node": "^10.16.0"
 	},
-	"categories": [
-		"Other"
-	],
-	"keywords": [
-		"profiles",
-		"extensions",
-		"settings",
-		"configuration"
-	],
-	"activationEvents": [
-		"*"
-	],
+	"categories": ["Other"],
+	"keywords": ["profiles", "extensions", "settings", "configuration"],
+	"activationEvents": ["*"],
 	"main": "./out/extension.js",
 	"contributes": {
 		"configuration": [
@@ -106,5 +97,10 @@
 		"eslint-plugin-prettier": "^3.1.3",
 		"prettier": "^2.0.5"
 	},
+	// 🕮 <cyberbiont> afdb156c-723a-4651-a578-8eb2b11bfe5c.md
+	"extensionDependencies": [
+		"shan.code-settings-sync",
+		"hoovercj.vscode-settings-cycler"
+	],
 	"prettier": "eslint-config-cyberbiont/.prettierrc"
 }

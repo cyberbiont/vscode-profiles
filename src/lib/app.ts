@@ -1,21 +1,21 @@
-import Errors, { ErrorHandlers } from "./errors";
-import { ExtensionContext, commands, extensions } from "vscode";
+import Errors, { ErrorHandlers } from './errors';
+import { ExtensionContext, commands, extensions } from 'vscode';
 
-import Actions from "./actions";
-import ConfigMaker from "./cfg";
-import Link from "./link";
-import MapDictionary from "./mapDictionary";
-import { ProfilesDictionary } from "./types";
-import ProfilesRepository from "./profilesRepository";
-import Status from "./status";
-import User from "./user";
-import Utils from "./utils";
-import VpEvents from "./events";
-import VpExtensions from "./extensions";
-import VpFileSystem from "./fileSystem";
-import VpOutputChannel from "./outputChannel";
-import VpPaths from "./paths";
-import pkg from "../../package.json";
+import Actions from './actions';
+import ConfigMaker from './cfg';
+import Link from './link';
+import MapDictionary from './mapDictionary';
+import { ProfilesDictionary } from './types';
+import ProfilesRepository from './profilesRepository';
+import Status from './status';
+import User from './user';
+import Utils from './utils';
+import VpEvents from './events';
+import VpExtensions from './extensions';
+import VpFileSystem from './fileSystem';
+import VpOutputChannel from './outputChannel';
+import VpPaths from './paths';
+import pkg from '../../package.json';
 
 export default class App {
 	public actions: Actions;

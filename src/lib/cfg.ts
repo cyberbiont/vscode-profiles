@@ -15,7 +15,7 @@ export default class ConfigMaker {
 	create(): Cfg {
 		return {
 			extensions: {
-				symlinkifyExtensions: settings.get(`symlinkifyExtensions`) || false
+				symlinkifyExtensions: settings.get(`symlinkifyExtensions`) || true
 			},
 			paths: {
 				profiles:
