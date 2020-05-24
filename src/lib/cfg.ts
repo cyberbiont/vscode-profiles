@@ -17,6 +17,7 @@ export default class ConfigMaker {
 			extensions: {
 				symlinkifyExtensions: settings.get(`symlinkifyExtensions`) || true,
 			},
+			workspaceProfile: settings.get(`workspaceProfile`) || undefined,
 			paths: {
 				profiles:
 					settings.get(`profilesPath`) ||

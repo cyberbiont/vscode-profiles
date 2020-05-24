@@ -6,7 +6,9 @@ import ProfilesRepository from './profilesRepository';
 import User from './user';
 import VpPaths from './paths';
 
-export type OActions = {};
+export type OActions = {
+	workspaceProfile?: string;
+};
 
 export default class Actions {
 	constructor(
@@ -78,14 +80,18 @@ export default class Actions {
 	}
 
 	public async rescanCommand() {
-		return this.profiles.rescanProfiles().catch((e) => {
+		const profile = await this.profiles.rescanProfiles().catch((e) => {
 			if (
 				e instanceof this.errors.MissingSymlink ||
 				e instanceof this.errors.BrokenSymlink
 			) {
 				this.repairExtensionsSymlink();
+				return this.profiles.rescanProfiles();
 			}
+			throw e;
 		});
+		if (this.cfg.workspaceProfile !== profile.name)
+			this.switchToProfile(profile.name);
 	}
 
 	async repairExtensionsSymlink() {

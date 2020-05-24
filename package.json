@@ -32,6 +32,10 @@
 					"symlinkifyExtensions": {
 						"type": "boolean",
 						"description": "It true, all extensions are replaced with symlinks in profile folders"
+					},
+					"workspaceProfile": {
+						"type": "string",
+						"description": "Use this in your workspace settings to initialize the profile you need for your project on load"
 					}
 				}
 			}
