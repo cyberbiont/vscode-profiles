@@ -1,13 +1,14 @@
 import Errors, { ErrorHandlers } from './errors';
 import { commands, window } from 'vscode';
 
-import Link from './link';
+import Link, { EntryType } from './link';
 import ProfilesRepository from './profilesRepository';
 import User from './user';
 import VpPaths from './paths';
 
 export type OActions = {
 	workspaceProfile?: string;
+	autoSwitchToWorkspaceProfile: boolean;
 };
 
 export default class Actions {
@@ -90,7 +91,8 @@ export default class Actions {
 			}
 			throw e;
 		});
-		if (this.cfg.workspaceProfile !== profile.name)
+
+		if (this.cfg.workspaceProfile && this.cfg.workspaceProfile !== profile.name)
 			this.switchToProfile(profile.name);
 	}
 
@@ -105,9 +107,32 @@ export default class Actions {
 		// в данный момент это может быть как ссылка на несуществующую папку, так и ссылка на папку за пределами папки profiles, нам все равно на самом деле
 	}
 
-	clean() {
+	async clean() {
 		// 🕮 <cyberbiont> 89f90333-ac82-490b-91bc-0b677bc643c3.md
-		console.log(`clean command is running`);
+		const extensionSymlinks = new Set(
+			(
+				await Promise.all(
+					Array.from(this.profiles.map).map((profile) =>
+						this.link.getSubfoldersInfo(profile.name, {
+							filter: EntryType.EXT_SYMLINK,
+						}),
+					),
+				)
+			)
+				.flat()
+				.map((dirent) => dirent.name),
+		);
+		const storedExtensions = await this.link.getStoredExtensions();
+		const extraneousExtensions = storedExtensions.filter(
+			(dirent) => !extensionSymlinks.has(dirent.name),
+		);
+
+		const results = await Promise.all(
+			extraneousExtensions.map(this.link.deleteStoredExtension, this.link),
+		);
+		window.showInformationMessage(
+			`deleted ${results.length} extraneous extensions`,
+		);
 	}
 
 	// cleanExtensionsHeap() {}

@@ -13,11 +13,27 @@ export enum LinkMaintenanceStatus {
 	WAS_EXCLUDED = `extension was excluded from processing in settings`,
 }
 
-enum EntryType {
+export enum EntryType {
 	EXT_SYMLINK = `extension symlink`,
 	EXT_DIR = `extension directory`,
 	ELSE = `something else`,
 }
+
+const entryTypes = {
+	[EntryType.EXT_SYMLINK]: {
+		test: function isExtensionSymlink(subfolder: Dirent) {
+			return subfolder.isSymbolicLink();
+		},
+	},
+	[EntryType.EXT_DIR]: {
+		test: function isExtensionDirectory(subfolder: Dirent) {
+			return subfolder.isDirectory();
+			// учесть также, что теоретически могут быть директории, не являющиеся расширениями
+		},
+	},
+};
+
+// const entryTypes = new Map([[EntryType.EXT_SYMLINK]]);
 
 export interface MaintenanceResults {
 	name: string;
@@ -62,8 +78,16 @@ export default class Link {
 		);
 	}
 
-	async getSubfoldersInfo(profileFolderName: string) {
-		return this.fs.readDirectory(this.p.profiles.derive(profileFolderName));
+	async getSubfoldersInfo(
+		profileFolderName: string,
+		{ filter }: { filter?: EntryType } = {},
+	) {
+		const dirents = await this.fs.readDirectory(
+			this.p.profiles.derive(profileFolderName),
+		);
+		const result = filter ? dirents.filter(entryTypes[filter].test) : dirents;
+		// 🕮 <cyberbiont> 29489f9f-cc46-4e00-9425-33e48f067c72.md
+		return result;
 	}
 
 	async copyProfileContent(
@@ -72,7 +96,7 @@ export default class Link {
 		destProfileFolderName: string,
 	) {
 		if (this.isExcluded(subfolder)) return Promise.resolve();
-		if (this.isExtensionSymlink(subfolder))
+		if (entryTypes[EntryType.EXT_SYMLINK].test(subfolder))
 			return this.copyExtensionSymlink(
 				srcProfileFolderName,
 				destProfileFolderName,
@@ -85,7 +109,7 @@ export default class Link {
 		// 		this.p.profiles.derive(srcProfileFolderName, subfolder.name),
 		// 		this.p.profiles.derive(destProfileFolderName, subfolder.name),
 		// 	);
-		if (!this.isExtensionDirectory(subfolder))
+		if (!entryTypes[EntryType.EXT_DIR].test(subfolder))
 			return this.fs.copy(
 				this.p.profiles.derive(srcProfileFolderName, subfolder.name),
 				this.p.profiles.derive(destProfileFolderName, subfolder.name),
@@ -116,8 +140,11 @@ export default class Link {
 	}
 
 	private determineEntryType(subfolderInfo: Dirent) {
-		if (this.isExtensionSymlink(subfolderInfo)) return EntryType.EXT_SYMLINK;
-		if (this.isExtensionDirectory(subfolderInfo)) return EntryType.EXT_DIR;
+		if (entryTypes[EntryType.EXT_SYMLINK].test(subfolderInfo))
+			return EntryType.EXT_SYMLINK;
+		if (entryTypes[EntryType.EXT_DIR].test(subfolderInfo))
+			return EntryType.EXT_DIR;
+		// if (this.isExtensionDirectory(subfolderInfo)) return EntryType.EXT_DIR;
 		return EntryType.ELSE;
 	}
 
@@ -232,9 +259,9 @@ export default class Link {
 	}
 
 	// 🕮 <cyberbiont> 68360ca5-87b0-4d79-99aa-ade28c328601.md
-	private isExtensionSymlink(subfolder: Dirent) {
-		return subfolder.isSymbolicLink();
-	}
+	// private isExtensionSymlink(subfolder: Dirent) {
+	// 	return subfolder.isSymbolicLink();
+	// }
 
 	private isExcluded(subfolder: Dirent) {
 		// С Live share существует проблема - процесс vsls-agent.exe, который запускается автоматически при активации приложения,
@@ -245,8 +272,16 @@ export default class Link {
 		);
 	}
 
-	private isExtensionDirectory(subfolder: Dirent) {
-		// учесть также, что теоретически могут быть директории, не являющиеся расширениями
-		return subfolder.isDirectory();
+	// private isExtensionDirectory(subfolder: Dirent) {
+	// 	// учесть также, что теоретически могут быть директории, не являющиеся расширениями
+	// 	return subfolder.isDirectory();
+	// }
+
+	async getStoredExtensions() {
+		return this.fs.readDirectory(this.p.extensionsStorage);
+	}
+
+	async deleteStoredExtension(dirent: Dirent) {
+		return this.fs.delete(this.p.extensionsStorage.derive(dirent.name));
 	}
 }

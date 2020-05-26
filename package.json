@@ -36,6 +36,10 @@
 					"workspaceProfile": {
 						"type": "string",
 						"description": "Use this in your workspace settings to initialize the profile you need for your project on load"
+					},
+					"autoSwitchToWorkspaceProfile": {
+						"type": "boolean",
+						"description": "Wether extension should automatically switch to profile, that is specified in workspace settings"
 					}
 				}
 			}
