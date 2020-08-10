@@ -15,18 +15,21 @@ export default class User {
 		placeholder = ``,
 	}: { filterOutActive?: boolean; placeholder?: string } = {}) {
 		let profiles = this.profiles.getProfileNames();
+
 		if (filterOutActive && this.profiles.active)
 			profiles = profiles.filter(
 				(profileName) => !(profileName === this.profiles.active.name),
 			);
+
 		const response = await window.showQuickPick(
 			profiles.map((ext) => ({
 				label: `⚙ ${this.utils.capitalize(ext)}`,
 			})),
 			{
-				placeHolder: placeholder || `⚙ ${this.profiles.active?.name}`, // ?. doen't worl in default parameters die to the bug
+				placeHolder: placeholder || `⚙ ${this.profiles.active?.name}`, // ?. doesn't work in default parameters due to the bug
 			},
 		);
+		
 		if (!response) throw new this.errors.InteractionError(`selectProfileName`);
 		else return response.label.slice(2);
 	}

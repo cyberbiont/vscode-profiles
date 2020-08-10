@@ -29,5 +29,6 @@
 	"peacock.color": "hsl(207, 29%, 5%)",
 	"eslint.options": {
 		"configFile": ""
-	}
+	},
+	"eslint.enable": true
 }

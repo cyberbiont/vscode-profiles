@@ -1,4 +1,4 @@
-import ProfilesRepository from "./profilesRepository";
+import ProfilesRepository from './profilesRepository';
 
 export default class VpEvents {
 	constructor(private profiles: ProfilesRepository) {}

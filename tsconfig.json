@@ -3,12 +3,12 @@
 		"composite": true, // required on the dependency project for references to work
 		"outDir": ".",
 		"rootDir": ".", // if out path for a file is same as its src path, nothing will be emitted
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"importHelpers": true,
+		"removeComments": true
 	},
 	// by whitelisting the files to include, TS won't automatically include all source below root, which is the default.
 	"files": ["package.json"]
-	// "exclude": [
-	// 	"node_modules",
-	// 	".vscode-test"
-	// ]
 }

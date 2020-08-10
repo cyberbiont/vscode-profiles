@@ -20,7 +20,7 @@ export type OProfilesRepository = {
 };
 
 export default class ProfilesRepository {
-	public active: Profile;
+	public active!: Profile;
 
 	constructor(
 		private cfg: OProfilesRepository,
@@ -77,7 +77,7 @@ export default class ProfilesRepository {
 		// надо проверить не только что папка, на которую указывает swapper, существует, но и то что она именно среди папок в profiles, а не какая-то левая папка
 		// console.log(link);
 		const result = Array.from(this.map).find(
-			(profile) => profile.path.fsPath === link,
+			profile => profile.path.fsPath === link,
 		); // (profile) => false, // имитируем ошибку
 		if (result) return result;
 		throw new this.errors.BrokenSymlink(
@@ -86,7 +86,7 @@ export default class ProfilesRepository {
 	}
 
 	private async getSwapperLinkValue() {
-		return this.fs.symlinkRead(this.p.extensionsStandard).catch((e) => {
+		return this.fs.symlinkRead(this.p.extensionsStandard).catch(e => {
 			if (e.code === `UNKNOWN`) throw new this.errors.IsDirectory();
 			if (e.code === `ENOENT`) throw new this.errors.MissingSymlink();
 			throw e;
@@ -142,8 +142,12 @@ export default class ProfilesRepository {
 		// }
 
 		// parallel
-		const results = await Promise.all(subfoldersInfo.map(maintenanceCallback));
-
+		const resultsPromise = Promise.all(subfoldersInfo.map(maintenanceCallback));
+		window.setStatusBarMessage(
+			`$(sync~spin) Analyzing profile...`,
+			resultsPromise,
+		);
+		const results = await resultsPromise;
 		this.analyzeMaintenanceResults(results);
 		// return subfoldersInfo;
 	}
@@ -153,7 +157,7 @@ export default class ProfilesRepository {
 		let okCount = 0;
 		let repairedCount = 0;
 		let symlinkifiedCount = 0;
-		results.forEach((result) => {
+		results.forEach(result => {
 			if (result.status.includes(LinkMaintenanceStatus.WAS_OK)) okCount++;
 			if (result.status.includes(LinkMaintenanceStatus.WAS_REPAIRED))
 				repairedCount++;
@@ -181,7 +185,7 @@ export default class ProfilesRepository {
 			srcProfileFolderName,
 		);
 		return Promise.all(
-			subfoldersInfo.map((subfolderInfo) =>
+			subfoldersInfo.map(subfolderInfo =>
 				this.link.copyProfileContent(
 					subfolderInfo,
 					srcProfileFolderName,

@@ -85,7 +85,7 @@ export default class VpFileSystem {
 	}
 
 	async symlinkSwitch(shouldPointTo: string, location: Path) {
-		const currentlyPointsTo = await this.symlinkRead(location).catch((e) => {
+		const currentlyPointsTo = await this.symlinkRead(location).catch(e => {
 			if (e.code === `ENOENT`) {
 				console.info(`no symlink found in themes folder`);
 				return Promise.resolve(undefined);

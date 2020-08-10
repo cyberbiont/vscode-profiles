@@ -2,7 +2,17 @@
 	"name": "vscode-profiles",
 	"displayName": "Profiles",
 	"description": "Quickly change your settings and extensions configuration",
-	"version": "0.0.1",
+	"version": "1.0.0",
+	"author": {
+		"name": "Yaroslav Larin",
+		"email": "cyberbiont@gmail.com"
+	},
+	"publisher": "cyberbiont",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/cyberbiont/vscode-profiles.git"
+	},
+	"license": "ISC",
 	"engines": {
 		"vscode": "^1.44.0",
 		"node": "^10.16.0"
@@ -90,29 +100,51 @@
 	"devDependencies": {
 		"@types/node": "^14.0.1",
 		"@types/vscode": "^1.45.1",
-		"chai": "^4.2.0",
-		"eslint-config-cyberbiont": "file:../../eslint-config-cyberbiont",
-		"jest": "^26.0.1",
-		"jest-html-reporters": "^1.2.1",
-		"jest-stare": "^2.0.1",
-		"omnimock": "^0.8.1",
-		"ts-cleaner": "^1.0.5",
-		"ts-jest": "^26.0.0",
-		"ts-node": "^8.10.1",
-		"typescript": "^3.9.2",
-		"vscode-test": "^1.3.0",
 		"@typescript-eslint/eslint-plugin": "^2.34.0",
 		"@typescript-eslint/parser": "^2.34.0",
+		"@vue/eslint-config-prettier": "^6.0.0",
+		"@vue/eslint-config-typescript": "^5.0.2",
+		"chai": "^4.2.0",
 		"eslint": "^7.0.0",
 		"eslint-config-airbnb": "^18.1.0",
 		"eslint-config-airbnb-base": "^14.1.0",
+		"eslint-config-cyberbiont": "1.0.0",
 		"eslint-config-prettier": "^6.11.0",
+		"eslint-import-resolver-typescript": "^2.2.0",
+		"eslint-import-resolver-webpack": "^0.12.2",
 		"eslint-plugin-chai-expect": "^2.1.0",
 		"eslint-plugin-chai-friendly": "^0.6.0",
 		"eslint-plugin-import": "^2.20.2",
 		"eslint-plugin-jest": "^23.13.1",
+		"eslint-plugin-jsx-a11y": "^6.3.1",
 		"eslint-plugin-prettier": "^3.1.3",
-		"prettier": "^2.0.5"
+		"eslint-plugin-react": "^7.20.5",
+		"eslint-plugin-react-hooks": "^2.5.1",
+		"eslint-plugin-vue": "^6.2.2",
+		"hint": "^6.0.7",
+		"jest": "^26.0.1",
+		"jest-html-reporters": "^1.2.1",
+		"jest-stare": "^2.0.1",
+		"omnimock": "^0.8.1",
+		"prettier": "^2.0.5",
+		"pug-lint": "^2.6.0",
+		"pug-lint-config-clock": "^2.0.0",
+		"stylelint": "^13.6.1",
+		"stylelint-config-prettier": "^8.0.2",
+		"stylelint-config-standard": "^20.0.0",
+		"stylelint-plugin-stylus": "^0.9.0",
+		"stylelint-prettier": "^1.1.2",
+		"ts-cleaner": "^1.0.5",
+		"ts-jest": "^26.0.0",
+		"ts-node": "^8.10.1",
+		"typescript": "^3.9.2",
+		"vscode-test": "^1.3.0"
 	},
-	"prettier": "eslint-config-cyberbiont/.prettierrc"
+	"dependencies": {
+		"ts-essentials": "^7.0.0"
+	},
+	"prettier": "eslint-config-cyberbiont/prettier.config.js",
+	"eslintConfig": {
+		"extends": "cyberbiont"
+	}
 }

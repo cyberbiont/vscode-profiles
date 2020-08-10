@@ -18,8 +18,8 @@ import VpPaths from './paths';
 import pkg from '../../package.json';
 
 export default class App {
-	public actions: Actions;
-	private events: VpEvents;
+	public actions!: Actions;
+	private events!: VpEvents;
 
 	constructor(
 		private context: ExtensionContext,
@@ -110,7 +110,7 @@ export default class App {
 			),
 			commands.registerCommand(
 				`vscode-profiles.clean`,
-				this.actions.clean,
+				this.actions.cleanCommand,
 				this.actions,
 			),
 			commands.registerCommand(

@@ -19,6 +19,7 @@ export enum EntryType {
 	ELSE = `something else`,
 }
 
+// TODO переделать как-то здесь убрать ELSE, потому что это не пойми что?
 const entryTypes = {
 	[EntryType.EXT_SYMLINK]: {
 		test: function isExtensionSymlink(subfolder: Dirent) {
@@ -31,6 +32,9 @@ const entryTypes = {
 			// учесть также, что теоретически могут быть директории, не являющиеся расширениями
 		},
 	},
+	[EntryType.ELSE]: {
+		test: () => true,
+	},
 };
 
 // const entryTypes = new Map([[EntryType.EXT_SYMLINK]]);
@@ -41,7 +45,7 @@ export interface MaintenanceResults {
 }
 
 export type OLink = {};
-//! это на самом леое не Link, а folder внутри папки профиля моет быть и ссылкой, и папкой (назвать его Entry?)
+//! это на самом деле не Link, а folder внутри папки профиля может быть и ссылкой, и папкой (назвать его Entry?)
 // 🕮 <cyberbiont> da2aa1bd-b0d0-41ac-b924-72016cb985fd.md
 export default class Link {
 	constructor(
@@ -117,7 +121,7 @@ export default class Link {
 		return Promise.resolve();
 	}
 
-	/* если использовать maintenance только на текущем профиле, это позволит нам использоать класс VScode Extensions
+	/* если использовать maintenance только на текущем профиле, это позволит нам использовать класс VScode Extensions
 	потому что мы анализируем не текущую папку, то не получится так сделать
 	*/
 	getExtensionId(extensionFolderName: string) {
@@ -267,9 +271,7 @@ export default class Link {
 		// С Live share существует проблема - процесс vsls-agent.exe, который запускается автоматически при активации приложения,
 		// не дает нам переместить папку (получаем ошибку доступа). Поэтому прижется исключить из симлинкфикации
 		const excludedExtensionsRules = [`ms-vsliveshare.vsliveshare-`];
-		return excludedExtensionsRules.some((rule) =>
-			subfolder.name.includes(rule),
-		);
+		return excludedExtensionsRules.some(rule => subfolder.name.includes(rule));
 	}
 
 	// private isExtensionDirectory(subfolder: Dirent) {
