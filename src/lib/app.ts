@@ -3,7 +3,7 @@ import { ExtensionContext, commands, extensions } from 'vscode';
 
 import Actions from './actions';
 import ConfigMaker from './cfg';
-import Link from './link';
+import Entry from './entry';
 import MapDictionary from './mapDictionary';
 import { ProfilesDictionary } from './types';
 import ProfilesRepository from './profilesRepository';
@@ -50,7 +50,7 @@ export default class App {
 		const p = new VpPaths(cfg);
 		const vpExtensions = new VpExtensions();
 		const fs = new VpFileSystem(cfg, errors);
-		const link = new Link(cfg, fs, p, on, errors, vpExtensions);
+		const link = new Entry(cfg, fs, p, on, errors, vpExtensions);
 		const map: ProfilesDictionary = new MapDictionary();
 		const profiles = new ProfilesRepository(
 			cfg,

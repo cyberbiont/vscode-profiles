@@ -1,5 +1,5 @@
+import Entry, { EntryType } from './entry';
 import Errors, { ErrorHandlers } from './errors';
-import Link, { EntryType } from './link';
 import { commands, window } from 'vscode';
 
 import ProfilesRepository from './profilesRepository';
@@ -15,7 +15,7 @@ export default class Actions {
 	constructor(
 		public cfg: OActions,
 		public user: User,
-		private link: Link,
+		private entry: Entry,
 		public p: VpPaths,
 		public profiles: ProfilesRepository,
 		public on: ErrorHandlers,
@@ -59,7 +59,7 @@ export default class Actions {
 		const oldName = await this.user.selectProfileName();
 		const newName = await this.user.promptProfileName(oldName);
 
-		await this.link.renameProfileFolder(oldName, newName).catch(this.on.error);
+		await this.entry.renameProfileFolder(oldName, newName).catch(this.on.error);
 
 		await this.profiles.rescanProfiles();
 		return window.showInformationMessage(
@@ -70,10 +70,10 @@ export default class Actions {
 	public async deleteProfileCommand() {
 		// 🕮 <cyberbiont> 33336010-437b-4ac1-b264-9cd671cba40a.md
 		const name = await this.user.selectProfileName();
-		await this.link.deleteProfileFolder(name);
+		if (!await this.user.confirm(`Are you sure you want to delete profile "${name}"?`)) return undefined;
+		await this.entry.deleteProfileFolder(name);
 		this.profiles.deleteProfileEntry(name);
 		return window.showInformationMessage(`Profile "${name}" is deleted!`);
-
 	}
 
 	public async maintenanceCommand() {
@@ -102,7 +102,7 @@ export default class Actions {
 			(
 				await Promise.all(
 					Array.from(this.profiles.map).map(profile =>
-						this.link.getSubfoldersInfo(profile.name, {
+						this.entry.getSubfoldersInfo(profile.name, {
 							filter: EntryType.EXT_SYMLINK,
 						}),
 					),
@@ -112,13 +112,13 @@ export default class Actions {
 				.map(dirent => dirent.name)
 				.sort(),
 		);
-		const storedExtensions = await this.link.getStoredExtensions();
+		const storedExtensions = await this.entry.getStoredExtensions();
 		const extraneousExtensions = storedExtensions.filter(
 			dirent => !extensionSymlinks.has(dirent.name),
 		);
 
 		const resultsPromise = Promise.all(
-			extraneousExtensions.map(this.link.deleteStoredExtension, this.link),
+			extraneousExtensions.map(this.entry.deleteStoredExtension, this.entry),
 		);
 		window.setStatusBarMessage(
 			`$(sync~spin) Analyzing extensions...`,
@@ -140,14 +140,14 @@ export default class Actions {
 			placeholder: `it seems that symlink to your extension profile is broken.
 			Choose what profile you want to activate`,
 		});
-		return this.link.switchLinkToProfile(profile);
+		return this.entry.switchLinkToProfile(profile);
 	}
 
 	private async switchToProfile(profileName: string) {
 		await this.profiles.doProfileMaintenance(this.profiles.active.name);
 		// 🕮 <cyberbiont> 7e1a1010-7d14-43a2-89af-cf7c41ebdcc2.md
 
-		await this.link.switchLinkToProfile(profileName).catch(this.on.error);
+		await this.entry.switchLinkToProfile(profileName).catch(this.on.error);
 
 		this.profiles.activateProfile(profileName);
 
@@ -158,13 +158,13 @@ export default class Actions {
 				You won't be able to sync your profile with settings sync!`);
 			});
 
-		window.showInformationMessage(
-			`Switched to profile ${profileName}.`,
-		);
+		window.showInformationMessage(`Switched to profile ${profileName}.
+		The main window will be reloaded. Please reload all other VS Code windows, if you have them opened!`);
 
-		return setTimeout(
-			commands.executeCommand.bind(null, `workbench.action.reloadWindow`),
-			0,
+		return new Promise(res =>
+			setTimeout(() => {
+				commands.executeCommand(`workbench.action.reloadWindow`).then(res);
+			}, 1000),
 		);
 	}
 
@@ -173,7 +173,7 @@ export default class Actions {
 	}: { useExisting?: boolean } = {}) {
 		const name = await this.user.promptProfileName();
 		await this.user.checkMatchWithCurrentProfile(name);
-		await this.link.createProfileDirectory(name).catch((e: Error) => {
+		await this.entry.createProfileDirectory(name).catch((e: Error) => {
 			// TODO
 			if (e.name === `EEXIST` && !useExisting) throw e;
 		});

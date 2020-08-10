@@ -25,35 +25,17 @@ export default class VpFileSystem {
 		});
 	}
 
-	// async readDirectory(folder: Uri) {
-	// 	return this.fs.readDirectory(folder);
-	// }
 	async readDirectory(dir: Path) {
 		return this.nfs.promises.readdir(dir, { withFileTypes: true });
 	}
 
-	// async copy(src: Uri, dest: Uri) {
-	// 	return this.fs.copy(src, dest, {
-	// 		overwrite: false,
-	// 	});
-	// 	// 🕮 <cyberbiont> 33210c89-b69a-40a1-9b5e-7cea25bf1b15.md
-	// }
-
 	async copy(src: Path, dest: Path) {
+		// 🕮 <cyberbiont> 33210c89-b69a-40a1-9b5e-7cea25bf1b15.md
 		return this.nfs.promises.copyFile(src, dest);
 	}
 
-	// async delete(folder: Uri) {
-	// 	return this.fs.delete(folder, {
-	// 		recursive: true,
-	// 		useTrash: true,
-	// 	});
-	// }
-
 	async delete(location: Path) {
-		// return this.nfs.promises.unlink(location);
-		// у Ноды возникает EPERM при удалении и копировании (rename)...
-		// возможно дело в том что все находится в юзерской папке, а node не от имени администратора работает?
+		//! 🕮 <cyberbiont> 70292321-d638-40ee-99a5-1fdb80c26950.md
 
 		return this.fs.delete(Uri.parse(location.href), {
 			recursive: true,
@@ -104,7 +86,9 @@ export default class VpFileSystem {
 
 	async symlinkRead(location: Path) {
 		let value = await this.nfs.promises.readlink(location);
-		if (value.endsWith(`\\`)) value = value.slice(0, -1); // исправляем глюк с обратным слэшем в конце, см. про fs.symlink
+		if (value.endsWith(`\\`)) value = value.slice(0, -1);
+		// needed to fix the problem with reverse slash at the end of the path
+		//! 🕮 <cyberbiont> fb0bb676-d894-42c9-ab28-be6b527427fa.md
 		return value;
 	}
 

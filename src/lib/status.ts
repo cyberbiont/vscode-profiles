@@ -1,6 +1,6 @@
-import { StatusBarAlignment, StatusBarItem, window } from "vscode";
+import { StatusBarAlignment, StatusBarItem, window } from 'vscode';
 
-import Utils from "./utils";
+import Utils from './utils';
 
 export default class Status {
 	private item: StatusBarItem;
@@ -11,10 +11,10 @@ export default class Status {
 
 	update(text: string, color?: string) {
 		this.item.text = `⚙ ${this.utils.capitalize(text)}`;
-		// this.item.text = `⚙ ${text.replace(/^\w/, (c) => c.toUpperCase())}`;
+
 		if (color) this.item.color = color;
 		return this;
-		// можно еще в tooltip отображать description
+		// TODO 🕮 <cyberbiont> dd3f898a-45c9-412d-a974-9f49a7783d3f.md
 	}
 
 	show() {

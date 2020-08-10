@@ -6,7 +6,7 @@ import VpExtensions from './extensions';
 import VpFileSystem from './fileSystem';
 import { commands } from 'vscode';
 
-export enum LinkMaintenanceStatus {
+export enum EntryMaintenanceStatus {
 	WAS_OK = `no problems found`, // `no problems found`
 	WAS_REPAIRED = `broken link, reinstalled extension`,
 	WAS_SYMLINKIFIED = `symlinkified extension folder`, // `symlinkified extension folder`,
@@ -19,7 +19,7 @@ export enum EntryType {
 	ELSE = `something else`,
 }
 
-// TODO переделать как-то здесь убрать ELSE, потому что это не пойми что?
+// 🕮 <cyberbiont> fd50f83a-a49e-4266-a8a8-77375de168c9.md
 const entryTypes = {
 	[EntryType.EXT_SYMLINK]: {
 		test: function isExtensionSymlink(subfolder: Dirent) {
@@ -29,7 +29,7 @@ const entryTypes = {
 	[EntryType.EXT_DIR]: {
 		test: function isExtensionDirectory(subfolder: Dirent) {
 			return subfolder.isDirectory();
-			// учесть также, что теоретически могут быть директории, не являющиеся расширениями
+			// 🕮 <cyberbiont> 03d66ea1-2c40-46c1-9035-035c5be77b90.md
 		},
 	},
 	[EntryType.ELSE]: {
@@ -37,19 +37,17 @@ const entryTypes = {
 	},
 };
 
-// const entryTypes = new Map([[EntryType.EXT_SYMLINK]]);
-
 export interface MaintenanceResults {
 	name: string;
-	status: LinkMaintenanceStatus[];
+	status: EntryMaintenanceStatus[];
 }
 
-export type OLink = {};
-//! это на самом деле не Link, а folder внутри папки профиля может быть и ссылкой, и папкой (назвать его Entry?)
+export type OEntry = {};
+
 // 🕮 <cyberbiont> da2aa1bd-b0d0-41ac-b924-72016cb985fd.md
-export default class Link {
+export default class Entry {
 	constructor(
-		public cfg: OLink,
+		public cfg: OEntry,
 		public fs: VpFileSystem,
 		public p: VpPaths,
 		public on: ErrorHandlers,
@@ -107,12 +105,8 @@ export default class Link {
 				subfolder.name,
 			);
 
-		// if (!this.isExtensionDirectory(subfolder))
-		// 	// copy .obsolete and .wtid files
-		// 	return this.fs.copy(
-		// 		this.p.profiles.derive(srcProfileFolderName, subfolder.name),
-		// 		this.p.profiles.derive(destProfileFolderName, subfolder.name),
-		// 	);
+		// 🕮 <cyberbiont> a14faebd-73e9-443d-888a-0c6f6afd329b.md
+
 		if (!entryTypes[EntryType.EXT_DIR].test(subfolder))
 			return this.fs.copy(
 				this.p.profiles.derive(srcProfileFolderName, subfolder.name),
@@ -121,9 +115,7 @@ export default class Link {
 		return Promise.resolve();
 	}
 
-	/* если использовать maintenance только на текущем профиле, это позволит нам использовать класс VScode Extensions
-	потому что мы анализируем не текущую папку, то не получится так сделать
-	*/
+	// 🕮 <cyberbiont> c8db558d-c628-4987-a407-5c55453baf50.md
 	getExtensionId(extensionFolderName: string) {
 		return extensionFolderName.slice(0, extensionFolderName.lastIndexOf(`-`));
 	}
@@ -159,49 +151,32 @@ export default class Link {
 	) {
 		const path = this.p.profiles.derive(profileFolderName, subfolderInfo.name);
 		let entryType: EntryType = this.determineEntryType(subfolderInfo);
-		const status: LinkMaintenanceStatus[] = [];
+		const status: EntryMaintenanceStatus[] = [];
 		const isExcluded = this.isExcluded(subfolderInfo);
-		if (isExcluded) status.push(LinkMaintenanceStatus.WAS_EXCLUDED);
+
+		if (isExcluded) status.push(EntryMaintenanceStatus.WAS_EXCLUDED);
+
 		if (entryType === EntryType.EXT_SYMLINK) {
 			const isOk = await this.validateSymlink(path);
+
 			if (profileIsActive && !isOk && !isExcluded) {
 				await this.repairBrokenEntry(path, entryType);
 				entryType = EntryType.EXT_DIR;
-				// todo: внести это внутрь this.repairBrokenEntry.
-				// entryType возможно надо  сдалать глбальной переменной через св-во класса link вообще
-				status.push(LinkMaintenanceStatus.WAS_REPAIRED);
+				// 🕮 <cyberbiont> 6e490cf1-af72-4a39-9e49-7b44960f87fe.md
+				status.push(EntryMaintenanceStatus.WAS_REPAIRED);
 			}
 		}
 
-		/* если даже симлинк ОК или не симлинк, (т.е. папка присутствует на складе расширений),
-		она может быть поврежденной - надо проверить, что расширение грузится оттуда)
-		проблема в том, что если мы на предыдущем шаге все исправили / переустановили расширение,
-		оно все равно будет не ОК,пока мы не перезагрузим VScode.
-		Поэтому за один проход нет смысла сразу же проверять (исключаем с помощью WAS_REPAIRED) */
-		/* if (
-			profileIsActive &&
-			(entryType === EntryType.EXT_SYMLINK ||
-				entryType === EntryType.EXT_DIR) &&
-			!status.includes(LinkMaintenanceStatus.WAS_REPAIRED)
-		) {
-			const id = this.getExtensionId(subfolderInfo.name);
-			const isOk = this.extensions.get(id);
-
-			if (!isOk) {
-				await this.repairBrokenEntry(path, entryType, id);
-				entryType = EntryType.EXT_DIR;
-				status.push(LinkMaintenanceStatus.WAS_REPAIRED);
-			}
-		} */
+		// 🕮 <cyberbiont> 16214a5a-f996-4d8b-a969-d3cb3f204a2b.md
 
 		if (entryType === EntryType.EXT_DIR && !isExcluded) {
 			await this.symlinkifyExtension(subfolderInfo, profileFolderName);
-			status.push(LinkMaintenanceStatus.WAS_SYMLINKIFIED);
+			status.push(EntryMaintenanceStatus.WAS_SYMLINKIFIED);
 			//  = `symlinkified extension folder`;
 		}
 
 		if (!isExcluded && !status.length)
-			status.push(LinkMaintenanceStatus.WAS_OK);
+			status.push(EntryMaintenanceStatus.WAS_OK);
 
 		return {
 			name: subfolderInfo.name,
@@ -217,19 +192,10 @@ export default class Link {
 		);
 	}
 
-	// private async validateExtension(
-	// 	subfolderInfo: Dirent,
-	// 	profileFolderName: string,
-	// ) {
-	// 	return this.extensions.get(subfolderInfo.name);
-
-	// 	console.log(profileFolderName);
-	// }
-
 	private async validateSymlink(path: Path) {
 		try {
 			const target = await this.fs.symlinkRead(path);
-			// console.log(target);
+
 			return this.fs.exists(target);
 		} catch (e) {
 			if (e.code === `ENOENT`) {
@@ -263,21 +229,12 @@ export default class Link {
 	}
 
 	// 🕮 <cyberbiont> 68360ca5-87b0-4d79-99aa-ade28c328601.md
-	// private isExtensionSymlink(subfolder: Dirent) {
-	// 	return subfolder.isSymbolicLink();
-	// }
 
 	private isExcluded(subfolder: Dirent) {
-		// С Live share существует проблема - процесс vsls-agent.exe, который запускается автоматически при активации приложения,
-		// не дает нам переместить папку (получаем ошибку доступа). Поэтому прижется исключить из симлинкфикации
+		// 🕮 <cyberbiont> dd5c74f1-1e5e-4db1-af97-4f537c1a9a26.md
 		const excludedExtensionsRules = [`ms-vsliveshare.vsliveshare-`];
 		return excludedExtensionsRules.some(rule => subfolder.name.includes(rule));
 	}
-
-	// private isExtensionDirectory(subfolder: Dirent) {
-	// 	// учесть также, что теоретически могут быть директории, не являющиеся расширениями
-	// 	return subfolder.isDirectory();
-	// }
 
 	async getStoredExtensions() {
 		return this.fs.readDirectory(this.p.extensionsStorage);

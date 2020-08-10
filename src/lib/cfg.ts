@@ -1,5 +1,5 @@
 import { OActions } from './actions';
-import { OLink } from './link';
+import { OEntry } from './entry';
 import { OPaths } from './paths';
 import { OProfilesRepository } from './profilesRepository';
 import os from 'os';
@@ -9,7 +9,7 @@ import { workspace } from 'vscode';
 const homedir = os.homedir();
 const settings = workspace.getConfiguration(`sidenotes`);
 
-export type Cfg = OActions & OLink & OPaths & OProfilesRepository;
+export type Cfg = OActions & OEntry & OPaths & OProfilesRepository;
 
 export default class ConfigMaker {
 	create(): Cfg {

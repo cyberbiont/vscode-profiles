@@ -1,32 +1,27 @@
-import { FileSystemError } from "vscode";
-import VpOutputChannel from "./outputChannel";
+import { FileSystemError } from 'vscode';
+import VpOutputChannel from './outputChannel';
 
 // 🕮 <cyberbiont> f175e603-9464-4bba-b55f-9a632dce8b1e.md
 export class ErrorHandlers {
-	async error(error: Error) {
-		console.log(error);
+	async error(err: Error) {
+		console.log(err);
 		// throw new Error();
-		// return Promise.resolve();
 	}
 
-	async cancel(error: Error) {
-		console.log(error);
-		throw error;
+	async cancel(err: Error) {
+		console.log(err);
+		throw err;
 	}
 
-	async resume(error: Error) {
+	async resume(err: Error) {
 		// log and continue
-		console.log(error);
+		console.log(err);
 	}
 }
 
-// https://stackoverflow.com/questions/32494174/can-you-create-nested-classes-in-typescript
 export default class Errors {
 	constructor(public channel: VpOutputChannel) {}
-	/* оптимальный вариант, так как классы-методы у нас находятся в прототипе,
-	т.е. мы можем создать несколько экземляров Errors с разными зависимостями,
-	при этом классы у нас останутся в единичном экземпляре
-	*/
+
 	public VpError = class VpError extends Error {
 		readonly name = this.constructor.name;
 		constructor(public rootThis: Errors, public message: string = ``) {
@@ -123,11 +118,4 @@ export default class Errors {
 	}.bind(null, this);
 }
 
-// лечение
-// console.warn(
-// 	`no symlink found in themes folder; creating symlink to ${shouldPointTo}`,
-// );
-// await this.symlinkCreate(shouldPointTo, location);
-// return target;
-
-// console.log(`symlink already points to ${shouldPointTo}, doing nothing`);
+// 🕮 <cyberbiont> 90b91af8-0eb6-45bc-b665-fbff110cb2bc.md

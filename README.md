@@ -97,7 +97,7 @@ Vscode-profiles was designed with integration with 2 popular extension for setti
 This allows you to bind any VS Code settings to your profile, so that after switching profile you get fully customized environment.
 This also allows you to assign to each profile a dedicated Github gist, and save your extensions set and settings there with the help of `settings-sync` extension.
 
-Example: in your global `settings.json` create a setting in `settings cycler` format, with id that corresponds to your profile name.
+Example: in your global `settings.json` create a setting in `settings cycler` format, with id, that corresponds to your profile name.
 When you switch profiles, `settings.cycle<profileName>` command will be automatically executed and appropriate settings loaded.
 If you don't have a `settings.cycle` settings block for your profile, you'll receive a notification.
 
@@ -109,6 +109,7 @@ If you don't have a `settings.cycle` settings block for your profile, you'll rec
       "values": [
         {
           "sync.gist": "<your gist id here>"
+          // other settings...
         }
       ]
     },
@@ -119,13 +120,15 @@ and you can use `Sync:Update` command to store your settings and extensions list
 
 For more information, please refer to `settings cycler` and `settings-sync` extensions documentation.
 
-## Known Issues
+## Known Issues and Limitations
 
-### Limitations
+### Reloading
 
 Only one profile can be active at the time. This means that though you can have several VS Code projects open in parallel in different windows, you cannot make them use different profiles.
-To prevent conflicts, when you switch profile, all VS Code windows are automatically reloaded with new profile selected.
+When you switch the profile, new profile folder becomes active, and this may lead to unexpected results if VS Code window wasn't reloaded and extensions from previous profile are still in use. Main window, from where profile switching is executed, is realoded automatically, but there is no way to automatically reload _all_ VS Code instances.
+
+> IMPORTANT! If you have more than one window open, you'll have to reload them manually. The notification will remind you to do this.
 
 ### Exceptions
 
-`LiveShare` extension cannot be symlinkified since it runs `vsls-agent` service from extension folder, which makes impossible manipulations with it. That's why it is excluded from being symlinkified.
+`LiveShare` extension cannot be symlinkified because it runs `vsls-agent` service from extension folder. That's why it is excluded from te process.

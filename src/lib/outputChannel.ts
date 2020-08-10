@@ -1,6 +1,6 @@
-import { OutputChannel, window } from "vscode";
+import { OutputChannel, window } from 'vscode';
 
-import Utils from "./utils";
+import Utils from './utils';
 
 export default class VpOutputChannel {
 	public channel: OutputChannel;

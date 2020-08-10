@@ -1,7 +1,7 @@
-import Errors from "./errors";
-import ProfilesRepository from "./profilesRepository";
-import Utils from "./utils";
-import { window } from "vscode";
+import Errors from './errors';
+import ProfilesRepository from './profilesRepository';
+import Utils from './utils';
+import { window } from 'vscode';
 
 export default class User {
 	constructor(
@@ -9,6 +9,13 @@ export default class User {
 		private profiles: ProfilesRepository,
 		private errors: Errors,
 	) {}
+
+	async confirm(message: string) {
+		const confirmation = await window.showQuickPick([`No`, `Yes`], {
+			placeHolder: message,
+		});
+		return confirmation === `Yes`;
+	}
 
 	async selectProfileName({
 		filterOutActive = true,
@@ -18,18 +25,19 @@ export default class User {
 
 		if (filterOutActive && this.profiles.active)
 			profiles = profiles.filter(
-				(profileName) => !(profileName === this.profiles.active.name),
+				profileName => !(profileName === this.profiles.active.name),
 			);
 
 		const response = await window.showQuickPick(
-			profiles.map((ext) => ({
+			profiles.map(ext => ({
 				label: `⚙ ${this.utils.capitalize(ext)}`,
 			})),
 			{
-				placeHolder: placeholder || `⚙ ${this.profiles.active?.name}`, // ?. doesn't work in default parameters due to the bug
+				placeHolder: placeholder || `⚙ ${this.profiles.active?.name}`,
+				// ?. doesn't work in default parameters due to the bug
 			},
 		);
-		
+
 		if (!response) throw new this.errors.InteractionError(`selectProfileName`);
 		else return response.label.slice(2);
 	}
@@ -50,6 +58,5 @@ export default class User {
 				`selected profile name matches current profile`,
 			);
 		}
-		return Promise.resolve(); // надо возвращать всегда что-то, иначе промис вечно висит как pending
 	}
 }

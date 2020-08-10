@@ -1,7 +1,7 @@
-import Link, {
-	LinkMaintenanceStatus,
+import Entry, {
+	EntryMaintenanceStatus,
 	MaintenanceResults as MaintenanceResult,
-} from './link';
+} from './entry';
 
 import { Dirent } from 'fs';
 import Errors from './errors';
@@ -29,7 +29,7 @@ export default class ProfilesRepository {
 		private p: VpPaths,
 		private errors: Errors,
 		private status: Status,
-		private link: Link,
+		private entry: Entry,
 		private extensions: VpExtensions,
 	) {}
 
@@ -54,16 +54,13 @@ export default class ProfilesRepository {
 				dirent.name,
 				this.p.profiles.derive(dirent.name),
 			);
-			// scan for extensions?
+
 			this.map.add(profile.name, profile);
 		}
 		// 🕮 <cyberbiont> 298548eb-4aa1-42ae-9046-52b0d893fdee.md
 	}
 
-	private isProfileDirectory(dirent: Dirent) {
-		return true;
-		// TODO check if it really profile directory (read meta?)
-	}
+	// 🕮 <cyberbiont> a9aabcec-9de4-47a3-a9b6-72942c2819c7.md
 
 	private async initActiveProfile() {
 		const swapperLink = await this.getSwapperLinkValue();
@@ -74,11 +71,9 @@ export default class ProfilesRepository {
 	}
 
 	private async findCorrespondingProfile(link: string) {
-		// надо проверить не только что папка, на которую указывает swapper, существует, но и то что она именно среди папок в profiles, а не какая-то левая папка
-		// console.log(link);
 		const result = Array.from(this.map).find(
 			profile => profile.path.fsPath === link,
-		); // (profile) => false, // имитируем ошибку
+		);
 		if (result) return result;
 		throw new this.errors.BrokenSymlink(
 			`swapper symlink path value is not in the known profiles list`,
@@ -127,21 +122,18 @@ export default class ProfilesRepository {
 		// 🕮 <cyberbiont> f7ea2dc2-10d1-4915-8cb2-4b6aa3c3fff0.md
 		// 🕮 <cyberbiont> b2fcd0c9-db59-4981-ae8a-bbba8edbbedd.md
 		if (!this.cfg.extensions.symlinkifyExtensions) return;
-		const subfoldersInfo = await this.link.getSubfoldersInfo(profileFolderName);
+
+		const subfoldersInfo = await this.entry.getSubfoldersInfo(profileFolderName);
 		const profileIsActive = profileFolderName === this.active.name;
+
 		const maintenanceCallback = (subfolderInfo: Dirent) =>
-			this.link.doMaintenance(
+			this.entry.doMaintenance(
 				subfolderInfo,
 				profileFolderName,
 				profileIsActive,
 			);
-		// sequential
-		// const results: MaintenanceResult[] = [];
-		// for (const subfolderInfo of subfoldersInfo) {
-		// 	results.push(await maintenanceCallback(subfolderInfo));
-		// }
+		// 🕮 <cyberbiont> dc048b9a-fbd3-4fa9-a1d7-a788496019ec.md
 
-		// parallel
 		const resultsPromise = Promise.all(subfoldersInfo.map(maintenanceCallback));
 		window.setStatusBarMessage(
 			`$(sync~spin) Analyzing profile...`,
@@ -149,22 +141,22 @@ export default class ProfilesRepository {
 		);
 		const results = await resultsPromise;
 		this.analyzeMaintenanceResults(results);
-		// return subfoldersInfo;
 	}
 
 	analyzeMaintenanceResults(results: MaintenanceResult[]) {
-		console.log(results);
 		let okCount = 0;
 		let repairedCount = 0;
 		let symlinkifiedCount = 0;
+
 		results.forEach(result => {
-			if (result.status.includes(LinkMaintenanceStatus.WAS_OK)) okCount++;
-			if (result.status.includes(LinkMaintenanceStatus.WAS_REPAIRED))
+			if (result.status.includes(EntryMaintenanceStatus.WAS_OK)) okCount++;
+			if (result.status.includes(EntryMaintenanceStatus.WAS_REPAIRED))
 				repairedCount++;
-			if (result.status.includes(LinkMaintenanceStatus.WAS_SYMLINKIFIED))
+			if (result.status.includes(EntryMaintenanceStatus.WAS_SYMLINKIFIED))
 				symlinkifiedCount++;
 		});
 		// const symlinkified = results.filter((result) => Boolean(result));
+
 		window.showInformationMessage(
 			`total: ${results.length};
 			replaced with simlinks: ${symlinkifiedCount};
@@ -173,20 +165,18 @@ export default class ProfilesRepository {
 		);
 	}
 
-	// симлинк на vscode-profile должен создаваться автоматически в новых профилях!
-	// вести список "глобальных" расширений, которые будут удаляться / устанавливаться во всех профилях?
-	// следить за изменениями в файле obsolete (парсить его, т.к. там  JSON) и синхронизировать изменения для этих расширений
+	// 🕮 <cyberbiont> 3f4ef8d9-9102-4804-ba76-3c5a680e11fe.md
 
 	async copyProfileContents(
 		srcProfileFolderName: string,
 		destProfileFolderName: string,
 	) {
-		const subfoldersInfo = await this.link.getSubfoldersInfo(
+		const subfoldersInfo = await this.entry.getSubfoldersInfo(
 			srcProfileFolderName,
 		);
 		return Promise.all(
 			subfoldersInfo.map(subfolderInfo =>
-				this.link.copyProfileContent(
+				this.entry.copyProfileContent(
 					subfolderInfo,
 					srcProfileFolderName,
 					destProfileFolderName,
