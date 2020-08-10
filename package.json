@@ -35,11 +35,15 @@
 			{
 				"title": "Profiles",
 				"properties": {
-					"sidenotes.path": {
+					"paths.profiles": {
 						"type": "string",
 						"description": "Specifies the folder where profiles are stored"
 					},
-					"symlinkifyExtensions": {
+					"paths.extensionsStorage": {
+						"type": "string",
+						"description": "Specifies the folder where all symlinkified extensions will be stored"
+					},
+					"extensions.symlinkifyExtensions": {
 						"type": "boolean",
 						"description": "It true, all extensions are replaced with symlinks in profile folders"
 					},

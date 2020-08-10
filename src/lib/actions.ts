@@ -22,7 +22,7 @@ export default class Actions {
 		public errors: Errors,
 	) {}
 
-	// COMMAND ACTIONS
+	// COMMANDS
 	public async createProfileCommand() {
 		const newProfileName = await this.createNewProfileDirectory();
 		await window.showInformationMessage(`Created profile ${newProfileName}`);
@@ -131,7 +131,6 @@ export default class Actions {
 		);
 	}
 
-
 	// ACTIONS
 	// 🕮 <cyberbiont> 4936ede9-783b-465a-b760-56d1a0d858d3.md
 
@@ -175,10 +174,10 @@ export default class Actions {
 		const name = await this.user.promptProfileName();
 		await this.user.checkMatchWithCurrentProfile(name);
 		await this.link.createProfileDirectory(name).catch((e: Error) => {
+			// TODO
 			if (e.name === `EEXIST` && !useExisting) throw e;
 		});
-		// await this.link.installLinkToVScodeProfilesExtension(name);
 		await this.profiles.rescanProfiles();
-		return Promise.resolve(name);
+		return name;
 	}
 }
