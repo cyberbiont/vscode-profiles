@@ -12,14 +12,14 @@ As a developer, you may want to be able to switch between different development 
 
 This extension was designed to help you with this problem.
 
-It was partially inspired by nvm and uses the power of symlinks to maintain several independent extension folders, then switch between them. Moreover, to prevent duplication, each extension usually exists only in special extensions.storage folder in your USERPROFILE/.vscode directory, and is 'symlinkified' to profiles folder, this helps us save disk space.
-Each profile is represented with its folder where extensions symlinks are stored.
+It was partially inspired by nvm and uses the power of symlinks to maintain several independent extension folders, then switch between them. Moreover, to prevent duplication, each extension usually exists only in special `extensions.storage` folder in your USERPROFILE/.vscode directory, and is symlinked to profile folder, this helps us save disk space.
+Each profile therefore is represented with the separate directory, where extensions symlinks are stored.
 
 ## Features
 
 - you can create, rename and delete profiles
 - quickly switch profiles, using status bar menu button
-- create new profile, based on existing profile (`clone` profile).
+- create new profiles, based on existing profiles (`clone` profiles).
 - automatically load approproate profile for the project based on workspace settings.
 - bind any VS code settings from settings.json to your profile and automatically activate them on profile load using `settings-cycler`.
 - backup your profiles individually to cloud using `settings-sync`.
@@ -132,3 +132,7 @@ When you switch the profile, new profile folder becomes active, and this may lea
 ### Exceptions
 
 `LiveShare` extension cannot be symlinkified because it runs `vsls-agent` service from extension folder. That's why it is excluded from te process.
+
+## Credits
+
+<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>

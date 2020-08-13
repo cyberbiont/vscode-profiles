@@ -12,3 +12,5 @@ vsc-extension-quickstart.md
 .github/**
 .eslintignore
 prettier.config.js
+.gitattributes
+.editorconfig

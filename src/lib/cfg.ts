@@ -21,8 +21,7 @@ export default class ConfigMaker {
 			autoSwitchToWorkspaceProfile: settings.get(`workspaceProfile`) || true,
 			paths: {
 				profiles:
-					settings.get(`profilesPath`) ||
-					path.join(homedir, `.vscode`, `profiles`),
+					settings.get(`profilesPath`) || path.join(homedir, `.vscode`, `profiles`),
 				extensionsStandard: path.join(homedir, `.vscode`, `extensions`),
 				extensionsStorage: settings.get(`extensionsStorage`) || path.join(homedir, `.vscode`, `extensions.storage`),
 			},
