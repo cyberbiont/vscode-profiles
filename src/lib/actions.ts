@@ -25,8 +25,11 @@ export default class Actions {
 	// COMMANDS
 	public async createProfileCommand() {
 		const newProfileName = await this.createNewProfileDirectory();
+		await this.entry
+			.installThisExtensionToProfile(newProfileName)
+			.catch(this.on.error);
 		await window.showInformationMessage(`Created profile ${newProfileName}`);
-		return this.switchToProfile(newProfileName);
+		// return this.switchToProfile(newProfileName);
 	}
 
 	public async cloneProfileCommand() {
@@ -82,8 +85,10 @@ export default class Actions {
 	}
 
 	public async maintenanceCommand() {
-		return this.profiles.doProfileMaintenance();
-		// return this.entry.installVscodeProfilesExtension()
+		// console.log(`hello`);
+		// window.showInformationMessage(`FUCK`);
+		// return this.profiles.doProfileMaintenance();
+		return this.createNewProfileDirectory();
 	}
 
 	public async rescanCommand() {
@@ -179,10 +184,10 @@ export default class Actions {
 	}: { useExisting?: boolean } = {}) {
 		const name = await this.user.promptProfileName();
 		await this.user.checkMatchWithCurrentProfile(name);
-		await this.entry.createProfileDirectory(name).catch((e: Error) => {
-			// TODO
-			if (e.name === `EEXIST` && !useExisting) throw e;
+		await this.entry.createProfileDirectory(name, {
+			useExisting,
 		});
+		await this.entry.installThisExtensionToProfile(name);
 		await this.profiles.rescanProfiles();
 		return name;
 	}

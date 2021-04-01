@@ -4,7 +4,7 @@ import VpPaths, { Path } from './paths';
 import { Dirent } from 'fs';
 import VpExtensions from './extensions';
 import VpFileSystem from './fileSystem';
-import { commands } from 'vscode';
+import { commands, window } from 'vscode';
 
 export enum EntryMaintenanceStatus {
 	WAS_OK = `no problems found`, // `no problems found`
@@ -69,8 +69,19 @@ export default class Entry {
 		return this.fs.delete(this.p.profiles.derive(name));
 	}
 
-	createProfileDirectory(name: string) {
-		return this.fs.createDirectory(this.p.profiles.derive(name));
+	async createProfileDirectory(
+		name: string,
+		{ useExisting = false }: { useExisting?: boolean } = {},
+	) {
+		const location = this.p.profiles.derive(name);
+		await this.fs.createDirectory(location).catch(async (e: Error) => {
+			if (e.name === `EEXIST` && !useExisting) throw e;
+			await window.showInformationMessage(
+				`Profile with name ${name} already exists`,
+			);
+			return location;
+		});
+		return location;
 	}
 
 	// SYMLINKS
@@ -219,10 +230,14 @@ export default class Entry {
 		);
 	}
 
-	async installVscodeProfilesExtension(location: Path) {
+	async installThisExtensionToProfile(profileName: string) {
+		const target = this.p.extensionsStorage.derive(
+			this.cfg.thisExtensionFolderName,
+		);
+
 		return this.fs.symlinkCreate(
-			`${this.p.extensionsStorage.derive(this.cfg.thisExtensionFolderName)}`,
-			location,
+			this.p.extensionsStorage.derive(this.cfg.thisExtensionFolderName).fsPath,
+			this.p.profiles.derive(profileName, this.cfg.thisExtensionFolderName),
 		);
 	}
 
