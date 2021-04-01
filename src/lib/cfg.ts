@@ -7,7 +7,7 @@ import path from 'path';
 import { workspace } from 'vscode';
 
 const homedir = os.homedir();
-const settings = workspace.getConfiguration(`sidenotes`);
+const settings = workspace.getConfiguration(`profiles`);
 
 export type Cfg = OActions & OEntry & OPaths & OProfilesRepository;
 
@@ -21,10 +21,14 @@ export default class ConfigMaker {
 			autoSwitchToWorkspaceProfile: settings.get(`workspaceProfile`) || true,
 			paths: {
 				profiles:
-					settings.get(`profilesPath`) || path.join(homedir, `.vscode`, `profiles`),
-				extensionsStandard: path.join(homedir, `.vscode`, `extensions`),
-				extensionsStorage: settings.get(`extensionsStorage`) || path.join(homedir, `.vscode`, `extensions.storage`),
+					settings.get(`profilesPath`) ||
+					path.join(homedir, `.vscode`, `profiles`),
+				extensionsStandard: path.join(homedir, `.vscode`, `extensions`), // this is the folder where VSCode looks for extensions. It is dynamically re-directed via symlink to active profile folder
+				extensionsStorage:
+					settings.get(`extensionsStorage`) ||
+					path.join(homedir, `.vscode`, `extensions.storage`), // a folder to store all extensions (they are being symlinked from this folder)
 			},
+			thisExtensionFolderName: `vscode-profiles`,
 		};
 	}
 }

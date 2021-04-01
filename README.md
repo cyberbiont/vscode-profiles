@@ -6,13 +6,13 @@ Bind any vscode settings to your profiles.
 ## Motivation
 
 In VSCode, extensions are important part of functionality... and they can become numerous.
-Extensions are great, but too many of them eat up resources and slow down project load times.
+Extensions are great, but if there are too many, they eat up resources and slow down project load times.
 
 As a developer, you may want to be able to switch between different development configurations, depending on what you are working on currently. If you are working on back-end, you don't need HTML/CSS extensions, if you are working in pure JS, you probably want to be able to temporarily ditch PHP stuff etc. But VSCode doesn't provide a way to manage your extensions set, you can only disable / uninstall each of them inidividually.
 
 This extension was designed to help you with this problem.
 
-It was partially inspired by nvm and uses the power of symlinks to maintain several independent extension folders, then switch between them. Moreover, to prevent duplication, each extension usually exists only in special `extensions.storage` folder in your USERPROFILE/.vscode directory, and is symlinked to profile folder, this helps us save disk space.
+It was partially inspired by _nvm_ and uses the power of symlinks to maintain several independent extension folders, then switch between them. Moreover, to prevent duplication, each extension usually exists only in special `extensions.storage` folder in your USERPROFILE/.vscode directory, and is symlinked to profile folder, that helps us save disk space.
 Each profile therefore is represented with the separate directory, where extensions symlinks are stored.
 
 ## Features
@@ -33,11 +33,11 @@ Switches profile and reloads all VS Code windows in order to engage it.
 ### create
 
 Creates new empty profile and switches it on.
-`vscode-profiles` is automatically installed in new profile.
+`vscode-profiles` is automatically installed in the new profile.
 
 ### clone
 
-Creates new profile, based on alredy existing profile, and switches it on.
+Creates new profile, based on already existing profile, and switches it on.
 All extensions from 'base' profile are copied over to the new profile.
 
 ### delete
@@ -46,14 +46,14 @@ Deletes profile.
 
 ### clean
 
-This command is used to clean `extensions.storage` folder from old extension versions that are not in use in any profile.
-If extension is found that is not present in any of the profiles, it is deleted.
+This command is used to clean `extensions.storage` folder from old extension versions that are not longer in use in any profile.
+If extension has been found that is not present in any of the profiles, it is deleted.
 You'll want to use it from time to time. Automatic cleaning is not currently engaged.
 
 ### maintenance
 
 Vscode automatically updates extensions - once a new version is available, it downloads it into profile folder.
-That is why profile maintenance is needed, when all newly installed extensions are moved into extensions.storage folder and replaced with symlinks. This is done automatically every time when you switch profiles, but you can do it manually with
+That is why profile maintenance is needed, when all newly installed extensions are moved into `extensions.storage` folder and replaced with symlinks. This is done automatically every time when you switch profiles, but you can do it manually with
 `Maintenance` command.
 
 ### rescan
@@ -65,9 +65,8 @@ Rescans all extensions of the current profile. Supplementary command, used for d
 ### autoSwitchToWorkspaceProfile
 
 _default: true_
-If you have `profile` option in your workspace settings (.vscode/setting.json) this profile will be automatically switched on
-when you open this workspace.
-Be aware that opening a project with profile bound will engage that profile for all already open projects.
+If you have `profile` option in your workspace settings (.vscode/setting.json) this profile will be automatically activated, when you open this workspace.
+Be aware however, that opening a project with a bound profile will engage that profile for **all** already open projects (you cannot simultaneously have two open projects each with different profile)
 
 ### workspaceProfile
 
@@ -78,7 +77,7 @@ Use it only in workspace settings (in your project's .vscode/settings.json)
 
 _default: true_
 Whether extensions in profile folders will be replaced with symlinks to extensions.storage folder.
-Turning this off may result in multiplied disk space usage.
+Turning this off will result in increased disk space usage.
 
 ### paths.profiles
 
@@ -94,7 +93,7 @@ Path to the folder where all symlinkified extensions will be stored.
 
 Vscode-profiles was designed with integration with 2 popular extension for settings management: `settings-cycler` and `settings-sync` in mind.
 
-This allows you to bind any VS Code settings to your profile, so that after switching profile you get fully customized environment.
+This allows you to bind any VS Code settings to your profile, so that after switching the profile on you get fully customized environment.
 This also allows you to assign to each profile a dedicated Github gist, and save your extensions set and settings there with the help of `settings-sync` extension.
 
 Example: in your global `settings.json` create a setting in `settings cycler` format, with id, that corresponds to your profile name.
@@ -131,7 +130,7 @@ When you switch the profile, new profile folder becomes active, and this may lea
 
 ### Exceptions
 
-`LiveShare` extension cannot be symlinkified because it runs `vsls-agent` service from extension folder. That's why it is excluded from te process.
+`LiveShare` extension cannot be symlinkified because it runs `vsls-agent` service from extension folder. That's why it is excluded from the process.
 
 ## Credits
 

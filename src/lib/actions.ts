@@ -70,7 +70,12 @@ export default class Actions {
 	public async deleteProfileCommand() {
 		// 🕮 <cyberbiont> 33336010-437b-4ac1-b264-9cd671cba40a.md
 		const name = await this.user.selectProfileName();
-		if (!await this.user.confirm(`Are you sure you want to delete profile "${name}"?`)) return undefined;
+		if (
+			!(await this.user.confirm(
+				`Are you sure you want to delete profile "${name}"?`,
+			))
+		)
+			return undefined;
 		await this.entry.deleteProfileFolder(name);
 		this.profiles.deleteProfileEntry(name);
 		return window.showInformationMessage(`Profile "${name}" is deleted!`);
@@ -78,6 +83,7 @@ export default class Actions {
 
 	public async maintenanceCommand() {
 		return this.profiles.doProfileMaintenance();
+		// return this.entry.installVscodeProfilesExtension()
 	}
 
 	public async rescanCommand() {
@@ -127,7 +133,7 @@ export default class Actions {
 		const results = await resultsPromise;
 
 		window.showInformationMessage(
-			`deleted ${results.length} extraneous extensions`,
+			`Deleted ${results.length} extraneous extensions`,
 		);
 	}
 
@@ -137,7 +143,7 @@ export default class Actions {
 	private async repairExtensionsSymlink() {
 		// 🕮 <cyberbiont> f82fbca6-ca8e-4115-b1d5-3099018b5ca4.md
 		const profile = await this.user.selectProfileName({
-			placeholder: `it seems that symlink to your extension profile is broken.
+			placeholder: `It seems that symlink to your extension profile is broken.
 			Choose what profile you want to activate`,
 		});
 		return this.entry.switchLinkToProfile(profile);

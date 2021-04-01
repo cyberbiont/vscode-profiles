@@ -30,7 +30,7 @@
 	"activationEvents": [
 		"*"
 	],
-	"main": "./out/extension.js",
+	"main": "./dist/extension.js",
 	"contributes": {
 		"configuration": [
 			{
@@ -95,12 +95,16 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
 		"compile": "tsc --build src && ts-cleaner -d out",
 		"watch": "tsc --build src --watch && ts-cleaner -d out",
 		"pretest": "npm run compile && npm run lint",
 		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
+		"test": "node ./out/test/runTest.js",
+		"vscode:prepublish": "webpack --mode production",
+		"vcompile": "webpack --mode production",
+		"webpack": "webpack --mode development",
+		"webpack-dev": "webpack --mode development --watch",
+		"test-compile": "tsc -p ./"
 	},
 	"devDependencies": {
 		"@types/node": "^14.0.1",
@@ -145,7 +149,8 @@
 		"ts-node": "^8.10.1",
 		"typescript": "^3.9.2",
 		"vscode-test": "^1.3.0",
-		"webpack": "^4.44.1"
+		"webpack": "^4.44.1",
+		"webpack-cli": "^3.3.12"
 	},
 	"dependencies": {
 		"ts-essentials": "^7.0.0"

@@ -14,7 +14,7 @@
 				"--disable-extensions=1",
 				"--extensionDevelopmentPath=${workspaceFolder}"
 			],
-			"outFiles": ["${workspaceFolder}/out/**/*.js"],
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
 			"skipFiles": [
 				"<node_internals>/**/*.js",
 				"${workspaceFolder}/node_modules/**/*.js"
