@@ -71,6 +71,7 @@ export default class App {
 			profiles,
 			on,
 			errors,
+			status
 		);
 		const events = new VpEvents(profiles);
 		this.actions = actions;

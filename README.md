@@ -73,9 +73,9 @@ Be aware however, that opening a project with a bound profile will engage that p
 Profile name that will be turned on automatically on workspace load.
 Use it only in workspace settings (in your project's .vscode/settings.json)
 
-### warnAboutSyncSettings
+### warnAboutNoSettings
 _default: true_
-Show warning message when activating profile that has no associated SettingsSync settings.
+Show warning message when activating profile that has no associated SettingsCycle command / settings block.
 
 ### extensions.symlinkifyExtensions
 

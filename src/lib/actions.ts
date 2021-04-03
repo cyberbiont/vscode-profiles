@@ -5,11 +5,12 @@ import { commands, window } from 'vscode';
 import ProfilesRepository from './profilesRepository';
 import User from './user';
 import VpPaths from './paths';
+import Status from './status';
 
 export type OActions = {
 	workspaceProfile?: string;
 	autoSwitchToWorkspaceProfile: boolean;
-	warnAboutSyncSettings: boolean;
+	warnAboutNoSettings: boolean;
 };
 
 export default class Actions {
@@ -21,6 +22,7 @@ export default class Actions {
 		public profiles: ProfilesRepository,
 		public on: ErrorHandlers,
 		public errors: Errors,
+		public status: Status,
 	) {}
 
 	// COMMANDS
@@ -165,7 +167,7 @@ export default class Actions {
 			.then(undefined, (e: Error) => {
 				console.log(e);
 				if (e.message === `command 'settings.cycle.${profileName}' not found`) {
-					if (this.cfg.warnAboutSyncSettings) {
+					if (this.cfg.warnAboutNoSettings) {
 						window.showWarningMessage(`There is no configuration registered in setting.json for this profile.
 						You won't be able to sync your profile with settings sync!`);
 						return;
@@ -175,8 +177,9 @@ export default class Actions {
 				throw e;
 			});
 
-		window.showInformationMessage(`Switched to profile ${profileName}.
-		The main window will be reloaded. Please reload all other VS Code windows, if you have them opened!`);
+		this.status.update(`${this.status.get().slice(1)} -> ${profileName}`);
+		// window.showInformationMessage(`Switched to profile ${profileName}.
+		// The main window will be reloaded. Please reload all other VS Code windows, if you have them opened!`);
 
 		return new Promise(res =>
 			setTimeout(() => {

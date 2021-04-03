@@ -17,6 +17,10 @@ export default class Status {
 		// TODO 🕮 <cyberbiont> dd3f898a-45c9-412d-a974-9f49a7783d3f.md
 	}
 
+	get() {
+		return this.item.text;
+	}
+
 	show() {
 		this.item.show();
 		return this;
