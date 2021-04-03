@@ -15,17 +15,18 @@ export default class ConfigMaker {
 	create(): Cfg {
 		return {
 			extensions: {
-				symlinkifyExtensions: settings.get(`symlinkifyExtensions`) || true,
+				symlinkifyExtensions: settings.get(`symlinkifyExtensions`) ?? true,
 			},
-			workspaceProfile: settings.get(`workspaceProfile`) || undefined,
-			autoSwitchToWorkspaceProfile: settings.get(`workspaceProfile`) || true,
+			workspaceProfile: settings.get(`workspaceProfile`) ?? undefined,
+			autoSwitchToWorkspaceProfile: settings.get(`workspaceProfile`) ?? true,
+			warnAboutSyncSettings: settings.get(`warnAboutSyncSettings`) ?? true,
 			paths: {
 				profiles:
-					settings.get(`profilesPath`) ||
+					settings.get(`profilesPath`) ??
 					path.join(homedir, `.vscode`, `profiles`),
 				extensionsStandard: path.join(homedir, `.vscode`, `extensions`), // this is the folder where VSCode looks for extensions. It is dynamically re-directed via symlink to active profile folder
 				extensionsStorage:
-					settings.get(`extensionsStorage`) ||
+					settings.get(`extensionsStorage`) ??
 					path.join(homedir, `.vscode`, `extensions.storage`), // a folder to store all extensions (they are being symlinked from this folder)
 			},
 			thisExtensionFolderName: `vscode-profiles`,

@@ -20,7 +20,7 @@ Each profile therefore is represented with the separate directory, where extensi
 - you can create, rename and delete profiles
 - quickly switch profiles, using status bar menu button
 - create new profiles, based on existing profiles (`clone` profiles).
-- automatically load approproate profile for the project based on workspace settings.
+- automatically load appropriate profile for the project based on workspace settings.
 - bind any VS code settings from settings.json to your profile and automatically activate them on profile load using `settings-cycler`.
 - backup your profiles individually to cloud using `settings-sync`.
 

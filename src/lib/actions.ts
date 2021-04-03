@@ -9,6 +9,7 @@ import VpPaths from './paths';
 export type OActions = {
 	workspaceProfile?: string;
 	autoSwitchToWorkspaceProfile: boolean;
+	warnAboutSyncSettings: boolean;
 };
 
 export default class Actions {
@@ -85,10 +86,7 @@ export default class Actions {
 	}
 
 	public async maintenanceCommand() {
-		// console.log(`hello`);
-		// window.showInformationMessage(`FUCK`);
-		// return this.profiles.doProfileMaintenance();
-		return this.createNewProfileDirectory();
+		return this.profiles.doProfileMaintenance();
 	}
 
 	public async rescanCommand() {
@@ -165,8 +163,10 @@ export default class Actions {
 		await commands
 			.executeCommand(`settings.cycle.${profileName}`)
 			.then(undefined, (e: Error) => {
-				window.showWarningMessage(`There is no configuration registered in setting.json for this profile.
-				You won't be able to sync your profile with settings sync!`);
+				if (this.cfg.warnAboutSyncSettings) {
+					window.showWarningMessage(`There is no configuration registered in setting.json for this profile.
+					You won't be able to sync your profile with settings sync!`);
+				}
 			});
 
 		window.showInformationMessage(`Switched to profile ${profileName}.
