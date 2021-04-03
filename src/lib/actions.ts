@@ -163,10 +163,16 @@ export default class Actions {
 		await commands
 			.executeCommand(`settings.cycle.${profileName}`)
 			.then(undefined, (e: Error) => {
-				if (this.cfg.warnAboutSyncSettings) {
-					window.showWarningMessage(`There is no configuration registered in setting.json for this profile.
-					You won't be able to sync your profile with settings sync!`);
+				console.log(e);
+				if (e.message === `command 'settings.cycle.${profileName}' not found`) {
+					if (this.cfg.warnAboutSyncSettings) {
+						window.showWarningMessage(`There is no configuration registered in setting.json for this profile.
+						You won't be able to sync your profile with settings sync!`);
+						return;
+					}
+					return;
 				}
+				throw e;
 			});
 
 		window.showInformationMessage(`Switched to profile ${profileName}.

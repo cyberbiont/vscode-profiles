@@ -37,8 +37,8 @@ export default class Errors {
 			public message = ``,
 			public description = `User hasn't provided input.`,
 		) {
-			super(description + message);
-			this.rootThis.channel.appendLine(description + message);
+			super(`${description} ${message}`);
+			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	}.bind(null, this);
 
@@ -49,8 +49,8 @@ export default class Errors {
 			public message = ``,
 			public description = `It seems that thare's a problem with "extensions" symlink`,
 		) {
-			super(description + message);
-			this.rootThis.channel.appendLine(description + message);
+			super(`${description} ${message}`);
+			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	}.bind(null, this);
 
@@ -62,8 +62,8 @@ export default class Errors {
 			public message = ``,
 			public description = `It seems that "extensions" symlink is broken`,
 		) {
-			super(description + message);
-			this.rootThis.channel.appendLine(description + message);
+			super(`${description} ${message}`);
+			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	}.bind(null, this);
 
@@ -75,8 +75,8 @@ export default class Errors {
 			public message = ``,
 			public description = `It seems that "extensions" symlink is missing (or the folder is wrongly named).`,
 		) {
-			super(description + message);
-			this.rootThis.channel.appendLine(description + message);
+			super(`${description} ${message}`);
+			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	}.bind(null, this);
 
@@ -87,8 +87,8 @@ export default class Errors {
 			public message = ``,
 			public description = `It seems that there is a normal directory in place of "extensions" symlink.`,
 		) {
-			super(description + message);
-			this.rootThis.channel.appendLine(description + message);
+			super(`${description} ${message}`);
+			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	}.bind(null, this);
 
@@ -100,8 +100,8 @@ export default class Errors {
 			public message = ``,
 			public description = `It seems that "extensions" symlink already exists and points to this folder.`,
 		) {
-			super(description + message);
-			this.rootThis.channel.appendLine(description + message);
+			super(`${description} ${message}`);
+			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	}.bind(null, this);
 
@@ -112,8 +112,8 @@ export default class Errors {
 			public message = ``,
 			public description = `Profile folder was not found.`,
 		) {
-			super(description + message);
-			this.rootThis.channel.appendLine(description + message);
+			super(`${description} ${message}`);
+			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	}.bind(null, this);
 }

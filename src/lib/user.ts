@@ -33,19 +33,18 @@ export default class User {
 				label: `⚙ ${this.utils.capitalize(ext)}`,
 			})),
 			{
-				placeHolder: placeholder || `⚙ ${this.profiles.active?.name}`,
-				// ?. doesn't work in default parameters due to the bug
+				placeHolder: placeholder ?? `⚙ ${this.profiles.active?.name}`,
 			},
 		);
 
-		if (!response) throw new this.errors.InteractionError(`selectProfileName`);
+		if (!response) throw new this.errors.InteractionError(`(selectProfileName action)`);
 		else return response.label.slice(2);
 	}
 
 	async promptProfileName(placeholder?: string) {
 		const name = await window.showInputBox({
 			prompt: `Enter the name of the profile`,
-			value: placeholder || ``,
+			value: placeholder ?? ``,
 		});
 		if (!name) throw new this.errors.InteractionError(`promptProfileName`);
 		else return this.utils.capitalize(name);

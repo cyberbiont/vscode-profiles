@@ -19,7 +19,7 @@ export default class ConfigMaker {
 			},
 			workspaceProfile: settings.get(`workspaceProfile`) ?? undefined,
 			autoSwitchToWorkspaceProfile: settings.get(`workspaceProfile`) ?? true,
-			warnAboutSyncSettings: settings.get(`warnAboutSyncSettings`) ?? true,
+			warnAboutSyncSettings: settings.get(`warnAboutSyncSettings`) ?? false,
 			paths: {
 				profiles:
 					settings.get(`profilesPath`) ??
