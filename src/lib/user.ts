@@ -2,12 +2,18 @@ import Errors from './errors';
 import ProfilesRepository from './profilesRepository';
 import Utils from './utils';
 import { window } from 'vscode';
+import { Cfg } from './cfg';
+
+export type OUser = {
+	initialProfile?: string;
+};
 
 export default class User {
 	constructor(
 		private utils: Utils,
 		private profiles: ProfilesRepository,
 		private errors: Errors,
+		private cfg: Cfg,
 	) {}
 
 	async confirm(message: string) {
@@ -29,15 +35,22 @@ export default class User {
 			);
 
 		const response = await window.showQuickPick(
-			profiles.map(ext => ({
-				label: `⚙ ${this.utils.capitalize(ext)}`,
-			})),
+			profiles.map(name => {
+				if (this.cfg.initialProfile && name === this.cfg.initialProfile)
+					return {
+						label: `⛮ ${name.toUpperCase()}`,
+					};
+				return {
+					label: `⛭ ${this.utils.capitalize(name)}`,
+				};
+			}),
 			{
 				placeHolder: placeholder ?? `⚙ ${this.profiles.active?.name}`,
 			},
 		);
 
-		if (!response) throw new this.errors.InteractionError(`(selectProfileName action)`);
+		if (!response)
+			throw new this.errors.InteractionError(`(selectProfileName action)`);
 		else return response.label.slice(2);
 	}
 

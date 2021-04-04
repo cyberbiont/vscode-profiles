@@ -6,11 +6,12 @@ import ProfilesRepository from './profilesRepository';
 import User from './user';
 import VpPaths from './paths';
 import Status from './status';
+import SettingsCycle from './settingsCycle';
 
 export type OActions = {
-	workspaceProfile?: string;
-	autoSwitchToWorkspaceProfile: boolean;
-	warnAboutNoSettings: boolean;
+	initialProfile?: string;
+	autoSwitchToInitialProfile: boolean;
+	autoSwitchToCreatedProfile: boolean;
 };
 
 export default class Actions {
@@ -23,6 +24,7 @@ export default class Actions {
 		public on: ErrorHandlers,
 		public errors: Errors,
 		public status: Status,
+		public settingsCycle: SettingsCycle,
 	) {}
 
 	// COMMANDS
@@ -32,6 +34,9 @@ export default class Actions {
 			.installThisExtensionToProfile(newProfileName)
 			.catch(this.on.error);
 		await window.showInformationMessage(`Created profile ${newProfileName}`);
+		if (this.cfg.autoSwitchToCreatedProfile) {
+			this.switchToProfile(newProfileName);
+		}
 		// return this.switchToProfile(newProfileName);
 	}
 
@@ -103,8 +108,14 @@ export default class Actions {
 			throw e;
 		});
 
-		if (this.cfg.workspaceProfile && this.cfg.workspaceProfile !== profile.name)
-			this.switchToProfile(profile.name);
+		await this.switchInitialProfile();
+	}
+	public async switchInitialProfile() {
+		if (
+			this.cfg.initialProfile &&
+			this.cfg.initialProfile !== this.profiles.active.name
+		)
+			this.switchToProfile(this.cfg.initialProfile);
 	}
 
 	public async cleanCommand() {
@@ -149,7 +160,7 @@ export default class Actions {
 		// 🕮 <cyberbiont> f82fbca6-ca8e-4115-b1d5-3099018b5ca4.md
 		const profile = await this.user.selectProfileName({
 			placeholder: `It seems that symlink to your extension profile is broken.
-			Choose what profile you want to activate`,
+			Choose the profile you want to activate`,
 		});
 		return this.entry.switchLinkToProfile(profile);
 	}
@@ -162,20 +173,7 @@ export default class Actions {
 
 		this.profiles.activateProfile(profileName);
 
-		await commands
-			.executeCommand(`settings.cycle.${profileName}`)
-			.then(undefined, (e: Error) => {
-				console.log(e);
-				if (e.message === `command 'settings.cycle.${profileName}' not found`) {
-					if (this.cfg.warnAboutNoSettings) {
-						window.showWarningMessage(`There is no configuration registered in setting.json for this profile.
-						You won't be able to sync your profile with settings sync!`);
-						return;
-					}
-					return;
-				}
-				throw e;
-			});
+		this.settingsCycle.cycleSettings();
 
 		this.status.update(`${this.status.get().slice(1)} -> ${profileName}`);
 		// window.showInformationMessage(`Switched to profile ${profileName}.

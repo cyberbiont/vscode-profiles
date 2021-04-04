@@ -16,6 +16,8 @@ import VpFileSystem from './fileSystem';
 import VpOutputChannel from './outputChannel';
 import VpPaths from './paths';
 import pkg from '../../package.json';
+import settingsCycle from './settingsCycle';
+import SettingsCycle from './settingsCycle';
 
 export default class App {
 	public actions!: Actions;
@@ -62,7 +64,8 @@ export default class App {
 			link,
 			vpExtensions,
 		);
-		const userInteractions = new User(utils, profiles, errors);
+		const settingsCycle = new SettingsCycle(profiles, cfg);
+		const userInteractions = new User(utils, profiles, errors, cfg);
 		const actions = new Actions(
 			cfg,
 			userInteractions,
@@ -71,7 +74,8 @@ export default class App {
 			profiles,
 			on,
 			errors,
-			status
+			status,
+			settingsCycle,
 		);
 		const events = new VpEvents(profiles);
 		this.actions = actions;

@@ -5,21 +5,31 @@ import { OProfilesRepository } from './profilesRepository';
 import os from 'os';
 import path from 'path';
 import { workspace } from 'vscode';
+import { OSettingsCycle } from './settingsCycle';
+import { OUser } from './user';
 
 const homedir = os.homedir();
 const settings = workspace.getConfiguration(`profiles`);
 
-export type Cfg = OActions & OEntry & OPaths & OProfilesRepository;
+export type Cfg = OActions &
+	OEntry &
+	OPaths &
+	OProfilesRepository &
+	OSettingsCycle &
+	OUser;
 
 export default class ConfigMaker {
 	create(): Cfg {
 		return {
+			initialProfile: settings.get(`initialProfile`) ?? undefined,
+			autoSwitchToInitialProfile:
+				settings.get(`autoSwitchToInitialProfile`) ?? true,
+			autoSwitchToCreatedProfile:
+				settings.get(`autoSwitchToCreatedProfile`) ?? false,
+			warnAboutNoSettings: settings.get(`warnAboutNoSettings`) ?? true,
 			extensions: {
 				symlinkifyExtensions: settings.get(`symlinkifyExtensions`) ?? true,
 			},
-			workspaceProfile: settings.get(`workspaceProfile`) ?? undefined,
-			autoSwitchToWorkspaceProfile: settings.get(`workspaceProfile`) ?? true,
-			warnAboutNoSettings: settings.get(`warnAboutNoSettings`) ?? false,
 			paths: {
 				profiles:
 					settings.get(`profilesPath`) ??

@@ -62,18 +62,24 @@ Rescans all extensions of the current profile. Supplementary command, used for d
 
 ## Extension Settings
 
-### autoSwitchToWorkspaceProfile
+### initialProfile
+
+Profile name that will be turned on automatically on workspace load.
+Use it only in workspace settings (in your project's .vscode/settings.json).
+
+### autoSwitchToInitialProfile
 
 _default: true_
 If you have `profile` option in your workspace settings (.vscode/setting.json) this profile will be automatically activated, when you open this workspace.
-Be aware however, that opening a project with a bound profile will engage that profile for **all** already open projects (you cannot simultaneously have two open projects each with different profile)
+Be aware however, that opening a project with a bound profile will engage that profile for **all** already open projects (you cannot simultaneously have two open projects each with different profile).
 
-### workspaceProfile
+### autoSwitchToCreatedProfile
 
-Profile name that will be turned on automatically on workspace load.
-Use it only in workspace settings (in your project's .vscode/settings.json)
+_default: false_
+Automatically switch to newly created profile.
 
 ### warnAboutNoSettings
+
 _default: true_
 Show warning message when activating profile that has no associated SettingsCycle command / settings block.
 
@@ -102,7 +108,7 @@ This also allows you to assign to each profile a dedicated Github gist, and save
 
 Example: in your global `settings.json` create a setting in `settings cycler` format, with id, that corresponds to your profile name.
 When you switch profiles, `settings.cycle<profileName>` command will be automatically executed and appropriate settings loaded.
-If you don't have a `settings.cycle` settings block for your profile, you'll receive a notification.
+If you don't have a `settings.cycle` settings block for your profile, you'll receive a notification, if `warnAboutNoSettings` option is on.
 
 ```json
 "settings.cycle": [

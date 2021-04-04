@@ -36,25 +36,29 @@
 			{
 				"title": "Profiles",
 				"properties": {
-					"paths.profiles": {
+					"profiles.paths.profiles": {
 						"type": "string",
 						"description": "Specifies the folder where profiles are stored"
 					},
-					"paths.extensionsStorage": {
+					"profiles.paths.extensionsStorage": {
 						"type": "string",
 						"description": "Specifies the folder where all symlinkified extensions will be stored"
 					},
-					"extensions.symlinkifyExtensions": {
+					"profiles.extensions.symlinkifyExtensions": {
 						"type": "boolean",
 						"description": "It true, all extensions are replaced with symlinks in profile folders"
 					},
-					"workspaceProfile": {
+					"profiles.initialProfile": {
 						"type": "string",
 						"description": "Use this in your workspace settings to initialize the profile you need for your project on load"
 					},
-					"autoSwitchToWorkspaceProfile": {
+					"profiles.autoSwitchToInitialProfile": {
 						"type": "boolean",
-						"description": "Wether extension should automatically switch to profile, that is specified in workspace settings"
+						"description": "Whether extension should automatically switch to profile, that is specified in workspace settings"
+					},
+					"profiles.autoSwitchToCreatedProfile": {
+						"type": "boolean",
+						"description": "Whether extension should automatically switch to profile, that was just created"
 					}
 				}
 			}
