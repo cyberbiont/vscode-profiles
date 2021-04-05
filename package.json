@@ -1,7 +1,7 @@
 {
 	"name": "vscode-profiles",
 	"displayName": "Profiles",
-	"description": "Extension sets management and more",
+	"description": "Extensions management tool",
 	"version": "1.0.0",
 	"author": {
 		"name": "Yaroslav Larin",
