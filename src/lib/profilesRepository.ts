@@ -12,6 +12,7 @@ import VpExtensions from './extensions';
 import VpFileSystem from './fileSystem';
 import VpPaths from './paths';
 import { window } from 'vscode';
+import VpOutputChannel from './outputChannel';
 
 export type OProfilesRepository = {
 	extensions: {
@@ -30,6 +31,7 @@ export default class ProfilesRepository {
 		private errors: Errors,
 		private status: Status,
 		private entry: Entry,
+		private channel: VpOutputChannel,
 		private extensions: VpExtensions,
 	) {}
 
@@ -41,6 +43,8 @@ export default class ProfilesRepository {
 		await Promise.all(
 			profilesFolderContents.map(this.createProfileEntry.bind(this)),
 		);
+
+		// 🕮 <cyberbiont> 1d69ce98-a60e-4429-b2c6-4143f1489c3c.md
 
 		return this.initActiveProfile();
 	}
@@ -104,6 +108,7 @@ export default class ProfilesRepository {
 	activateProfile(profile: string) {
 		const listedProfile = this.searchProfileInMap(profile);
 		this.active = listedProfile;
+		return this.active;
 	}
 
 	searchProfileInMap(profile: string) {
@@ -123,11 +128,13 @@ export default class ProfilesRepository {
 		// 🕮 <cyberbiont> b2fcd0c9-db59-4981-ae8a-bbba8edbbedd.md
 		if (!this.cfg.extensions.symlinkifyExtensions) return;
 
-		const subfoldersInfo = await this.entry.getSubfoldersInfo(profileFolderName);
+		const subfoldersInfo = await this.entry.getSubfoldersInfo(
+			profileFolderName,
+		);
 		const profileIsActive = profileFolderName === this.active.name;
 
 		const maintenanceCallback = (subfolderInfo: Dirent) =>
-			this.entry.doMaintenance(
+			this.entry.doProfileFolderMaintenance(
 				subfolderInfo,
 				profileFolderName,
 				profileIsActive,
@@ -156,12 +163,12 @@ export default class ProfilesRepository {
 				symlinkifiedCount++;
 		});
 		// const symlinkified = results.filter((result) => Boolean(result));
-
-		window.showInformationMessage(
+		// window.showInformationMessage
+		this.channel.appendLine(
 			`total: ${results.length};
-			replaced with simlinks: ${symlinkifiedCount};
-			repaired: ${repairedCount};
-			ok: ${okCount}`,
+replaced with simlinks: ${symlinkifiedCount};
+repaired: ${repairedCount};
+ok: ${okCount}`,
 		);
 	}
 
