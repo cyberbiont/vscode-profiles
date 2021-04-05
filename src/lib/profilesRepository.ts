@@ -83,18 +83,20 @@ export default class ProfilesRepository {
 
 		// 🕮 <cyberbiont> 42de7d84-b31d-4f82-a17d-8a835f50ed3e.md
 
+		if (this.cfg.developmentMode) {
+			if (!installedExtensions.includes(`vscode`))
+				await this.entry.symlinkThisExtensionToProfile(this.active.name).catch;
+		}
+
 		if (this.cfg.extensions.common) {
 			for (const id of this.cfg.extensions.common) {
-				if (this.cfg.developmentMode) {
-					if (!installedExtensions.includes(`vscode`))
-						await this.entry.symlinkThisExtensionToProfile(this.active.name);
-				}
 				if (!installedExtensions.includes(id)) {
 					await this.extensions.installExtension(id);
 					installedExtensions.push(id);
 				}
 			}
 		}
+
 		return installedExtensions;
 	}
 
