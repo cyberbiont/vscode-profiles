@@ -1,4 +1,4 @@
-import { FileSystemError } from 'vscode';
+import { FileSystemError, window } from 'vscode';
 import VpOutputChannel from './outputChannel';
 
 // 🕮 <cyberbiont> f175e603-9464-4bba-b55f-9a632dce8b1e.md
@@ -10,12 +10,14 @@ export class ErrorHandlers {
 
 	async cancel(err: Error) {
 		console.log(err);
+		window.showErrorMessage(err.message);
 		throw err;
 	}
 
 	async resume(err: Error) {
 		// log and continue
 		console.log(err);
+		window.showWarningMessage(err.message);
 	}
 }
 
@@ -116,6 +118,14 @@ export default class Errors {
 			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	}.bind(null, this);
+
+	// !🕮 <cyberbiont> bbef93f9-e41c-4dea-aaf8-f3010cdbc0c6.md
+	instanceOfNodeError<T extends new (...args: any) => Error>(
+		value: Error,
+		errorType: T,
+	): value is InstanceType<T> & NodeJS.ErrnoException {
+		return value instanceof errorType;
+	}
 }
 
 // 🕮 <cyberbiont> 90b91af8-0eb6-45bc-b665-fbff110cb2bc.md

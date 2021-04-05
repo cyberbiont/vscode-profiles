@@ -31,13 +31,14 @@ export default class Actions {
 
 	// COMMANDS
 	public async createProfileCommand() {
-		const newProfileName = await this.createNewProfileDirectory();
-		// await this.entry
-		// 	.symlinkThisExtensionToProfile(newProfileName)
-		// 	.catch(this.on.error);
-		await window.showInformationMessage(`Created profile ${newProfileName}`);
-		if (this.cfg.autoSwitch.created) {
-			this.switchToProfile(newProfileName);
+		try {
+			const newProfileName = await this.createNewProfileDirectory();
+			window.showInformationMessage(`Created profile ${newProfileName}`);
+			if (this.cfg.autoSwitch.created) {
+				this.switchToProfile(newProfileName);
+			}
+		} catch (e) {
+			this.on.cancel(e);
 		}
 	}
 
@@ -66,8 +67,12 @@ export default class Actions {
 			window.showWarningMessage(`Profile is locked by 'initial' option`);
 			return;
 		}
-		const chosenProfileName = await this.user.selectProfileName();
-		return this.switchToProfile(chosenProfileName);
+		try {
+			const chosenProfileName = await this.user.selectProfileName();
+			return this.switchToProfile(chosenProfileName);
+		} catch (e) {
+			this.on.cancel(e);
+		}
 	}
 
 	public async renameProfileCommand() {
@@ -201,8 +206,15 @@ export default class Actions {
 	}: { useExisting?: boolean } = {}) {
 		const name = await this.user.promptProfileName();
 		await this.user.checkMatchWithCurrentProfile(name);
-		await this.entry.createProfileDirectory(name, {
-			useExisting,
+		await this.entry.createProfileDirectory(name).catch((e: Error) => {
+			if (
+				this.errors.instanceOfNodeError(e, Error) &&
+				e.code === `EEXIST` &&
+				!useExisting
+			) {
+				throw new Error(`Profile with name ${name} already exists`);
+			}
+			throw e;
 		});
 
 		await this.profiles.rescanProfiles();

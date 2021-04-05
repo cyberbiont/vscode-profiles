@@ -42,9 +42,7 @@ export interface MaintenanceResults {
 	status: EntryMaintenanceStatus[];
 }
 
-export type OEntry = {
-
-};
+export type OEntry = {};
 
 // 🕮 <cyberbiont> da2aa1bd-b0d0-41ac-b924-72016cb985fd.md
 export default class Entry {
@@ -69,18 +67,9 @@ export default class Entry {
 		return this.fs.delete(this.p.profiles.derive(name));
 	}
 
-	async createProfileDirectory(
-		name: string,
-		{ useExisting = false }: { useExisting?: boolean } = {},
-	) {
+	async createProfileDirectory(name: string) {
 		const location = this.p.profiles.derive(name);
-		await this.fs.createDirectory(location).catch(async (e: Error) => {
-			if (e.name === `EEXIST` && !useExisting) throw e;
-			await window.showInformationMessage(
-				`Profile with name ${name} already exists`,
-			);
-			return location;
-		});
+		await this.fs.createDirectory(location);
 		return location;
 	}
 
@@ -258,6 +247,4 @@ export default class Entry {
 	async deleteStoredExtension(dirent: Dirent) {
 		return this.fs.delete(this.p.extensionsStorage.derive(dirent.name));
 	}
-
-
 }

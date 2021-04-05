@@ -50,7 +50,7 @@ export default class User {
 		);
 
 		if (!response)
-			throw new this.errors.InteractionError(`(selectProfileName action)`);
+			throw new this.errors.InteractionError(`User canceled profile selection`);
 		else return response.label.slice(2);
 	}
 
@@ -59,7 +59,8 @@ export default class User {
 			prompt: `Enter the name of the profile`,
 			value: placeholder ?? ``,
 		});
-		if (!name) throw new this.errors.InteractionError(`promptProfileName`);
+		if (!name)
+			throw new this.errors.InteractionError(`profile name was not entered`);
 		else return this.utils.capitalize(name);
 	}
 
