@@ -38,7 +38,7 @@ export default class User {
 			profiles.map(name => {
 				if (this.cfg.initial && name === this.cfg.initial)
 					return {
-						label: `⛮ ${name.toUpperCase()}`,
+						label: `⛮ ${this.utils.capitalize(name)}`,
 					};
 				return {
 					label: `⛭ ${this.utils.capitalize(name)}`,
