@@ -1,6 +1,6 @@
 import { Path } from './paths';
 
-enum ExtensionState {
+/* enum ExtensionState {
 	Folder,
 	Symlink,
 }
@@ -10,18 +10,19 @@ interface Extension {
 	state: ExtensionState;
 	obsolete: boolean;
 	info: {};
-}
+} */
 
-interface ProfileMeta {
+/* interface ProfileMeta {
 	description: string;
-}
+} */
 
 export default class Profile {
 	constructor(
 		public name: string,
 		public path: Path,
-		public extensions?: Extension[],
-		public meta?: ProfileMeta,
+		// public extensions?: Extension[],
+		public extensions?: string[],
+		// public meta?: ProfileMeta,
 	) {}
 	// TODO 🕮 <cyberbiont> 3d686927-0a16-4e43-9595-4633c160bce1.md
 }

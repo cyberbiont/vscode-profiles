@@ -1,6 +1,7 @@
 // Place your settings in this file to overwrite default and user settings.
 {
 	"profiles.initial": "Node",
+	"profiles.developmentMode": true,
 	"files.exclude": {
 		"out": false // set this to true to hide the "out" folder with the compiled JS files
 	},
@@ -30,6 +31,5 @@
 	"peacock.color": "hsl(207, 29%, 5%)",
 	"eslint.options": {
 		"configFile": ""
-	},
-	"eslint.enable": true
+	}
 }

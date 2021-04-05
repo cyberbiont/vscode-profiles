@@ -39,7 +39,6 @@ export default class Actions {
 		if (this.cfg.autoSwitch.created) {
 			this.switchToProfile(newProfileName);
 		}
-		// return this.switchToProfile(newProfileName);
 	}
 
 	public async cloneProfileCommand() {
@@ -63,6 +62,10 @@ export default class Actions {
 	public async switchProfileCommand() {
 		// 🕮 <cyberbiont> b90fbfb4-6c4f-4750-ac8c-5c53699a2d08.md
 		// 🕮 <cyberbiont> 3189b2cc-81ad-4e34-a8aa-565f8ce5ef28.md
+		if (this.cfg.autoSwitch.initial && this.cfg.initial) {
+			window.showWarningMessage(`Profile is locked by 'initial' option`);
+			return;
+		}
 		const chosenProfileName = await this.user.selectProfileName();
 		return this.switchToProfile(chosenProfileName);
 	}
@@ -114,11 +117,9 @@ export default class Actions {
 			await this.switchToInitialProfile();
 		}
 	}
+
 	public async switchToInitialProfile() {
-		if (
-			this.cfg.initial &&
-			this.cfg.initial !== this.profiles.active.name
-		)
+		if (this.cfg.initial && this.cfg.initial !== this.profiles.active.name)
 			this.switchToProfile(this.cfg.initial);
 	}
 
@@ -170,18 +171,23 @@ export default class Actions {
 	}
 
 	private async switchToProfile(profileName: string) {
+		this.status.update(`${this.status.get().slice(1)} -> ${profileName}`);
+
 		await this.profiles.doProfileMaintenance(this.profiles.active.name);
 		// 🕮 <cyberbiont> 7e1a1010-7d14-43a2-89af-cf7c41ebdcc2.md
 
 		await this.entry.switchLinkToProfile(profileName).catch(this.on.error);
 
+		// PREPARE NEW PROFILE
 		this.profiles.activateProfile(profileName);
-
-		this.settingsCycle.cycleSettings();
-
-		this.status.update(`${this.status.get().slice(1)} -> ${profileName}`);
-		// window.showInformationMessage(`Switched to profile ${profileName}.
-		// The main window will be reloaded. Please reload all other VS Code windows, if you have them opened!`);
+		try {
+			const installedExtensions = await this.profiles.checkCommonExtensions();
+			// TODO 🕮 <cyberbiont> 952b295a-1094-4574-92da-af4fa95d25c9.md
+			if (installedExtensions.includes(`hoovercj.vscode-settings-cycler`))
+				this.settingsCycle.cycleSettings();
+		} catch (e) {
+			this.on.error(e);
+		}
 
 		return new Promise(res =>
 			setTimeout(() => {
@@ -198,10 +204,6 @@ export default class Actions {
 		await this.entry.createProfileDirectory(name, {
 			useExisting,
 		});
-
-		// 🕮 <cyberbiont> 42de7d84-b31d-4f82-a17d-8a835f50ed3e.md
-		await this.entry.symlinkThisExtensionToProfile(name).catch(this.on.error);
-		await this.entry.installCommonExtensions().catch(this.on.error);
 
 		await this.profiles.rescanProfiles();
 		return name;

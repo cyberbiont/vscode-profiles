@@ -17,7 +17,9 @@ import VpOutputChannel from './outputChannel';
 export type OProfilesRepository = {
 	extensions: {
 		symlinkify: boolean;
+		common?: string[];
 	};
+	developmentMode: boolean;
 };
 
 export default class ProfilesRepository {
@@ -74,6 +76,28 @@ export default class ProfilesRepository {
 		return profile;
 	}
 
+	async checkCommonExtensions() {
+		const installedExtensions = await this.gatherProfileExtensions(
+			this.active.name,
+		);
+
+		// 🕮 <cyberbiont> 42de7d84-b31d-4f82-a17d-8a835f50ed3e.md
+
+		if (this.cfg.extensions.common) {
+			for (const id of this.cfg.extensions.common) {
+				if (this.cfg.developmentMode) {
+					if (!installedExtensions.includes(`vscode`))
+						await this.entry.symlinkThisExtensionToProfile(this.active.name);
+				}
+				if (!installedExtensions.includes(id)) {
+					await this.extensions.installExtension(id);
+					installedExtensions.push(id);
+				}
+			}
+		}
+		return installedExtensions;
+	}
+
 	private async findCorrespondingProfile(link: string) {
 		const result = Array.from(this.map).find(
 			profile => profile.path.fsPath === link,
@@ -84,7 +108,7 @@ export default class ProfilesRepository {
 		);
 	}
 
-	private async getSwapperLinkValue() {
+	private getSwapperLinkValue() {
 		return this.fs.symlinkRead(this.p.extensionsStandard).catch(e => {
 			if (e.code === `UNKNOWN`) throw new this.errors.IsDirectory();
 			if (e.code === `ENOENT`) throw new this.errors.MissingSymlink();
@@ -123,19 +147,18 @@ export default class ProfilesRepository {
 		return [...this.map.list.keys()];
 	}
 
-	async gatherProfileInformation(profileFolderName: string = this.active.name) {
-		// 🕮 <cyberbiont> 97b7cd5b-893c-423d-9d5d-44ff5758fcb8.md
+	async gatherProfileExtensions(profileFolderName: string = this.active.name) {
+		// TODO 🕮 <cyberbiont> 97b7cd5b-893c-423d-9d5d-44ff5758fcb8.md
 		const subfoldersInfo = await this.entry.getSubfoldersInfo(
 			profileFolderName,
 		);
-		const settingCyclerInstalled = subfoldersInfo.find(dirent => {
-			return this.extensions.isSettingsCyclerExtension(dirent.name);
-		});
+		// const settingCyclerInstalled = subfoldersInfo.find(dirent => {
+		// 	return this.extensions.isSettingsCyclerExtension(dirent.name);
+		// });
 
-		return {
-			dirents: subfoldersInfo,
-			settingCyclerInstalled: true,
-		};
+		return subfoldersInfo.map(dirent =>
+			this.extensions.getExtensionId(dirent.name),
+		);
 	}
 
 	async doProfileMaintenance(profileFolderName: string = this.active.name) {

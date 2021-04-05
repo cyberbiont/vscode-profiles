@@ -48,6 +48,13 @@
 						"type": "boolean",
 						"description": "It true, all extensions are replaced with symlinks in profile folders"
 					},
+					"profiles.extensions.common": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"description": "Ids of extensions to be automatically installed to all profiles."
+					},
 					"profiles.initial": {
 						"type": "string",
 						"description": "Use this in your workspace settings to initialize the profile you need for your project on load"
@@ -63,6 +70,10 @@
 					"profiles.settingsCyclerWarning": {
 						"type": "boolean",
 						"description": "Show warning message that loaded profile has no associated SettingsCycler command / settings block"
+					},
+					"profiles.developmentMode": {
+						"type": "boolean",
+						"description": ""
 					}
 				}
 			}

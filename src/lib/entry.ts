@@ -4,7 +4,7 @@ import VpPaths, { Path } from './paths';
 import { Dirent } from 'fs';
 import VpExtensions from './extensions';
 import VpFileSystem from './fileSystem';
-import { commands, window } from 'vscode';
+import { window } from 'vscode';
 
 export enum EntryMaintenanceStatus {
 	WAS_OK = `no problems found`, // `no problems found`
@@ -43,9 +43,7 @@ export interface MaintenanceResults {
 }
 
 export type OEntry = {
-	extensions: {
-		common: string[]
-	}
+
 };
 
 // 🕮 <cyberbiont> da2aa1bd-b0d0-41ac-b924-72016cb985fd.md
@@ -141,8 +139,7 @@ export default class Entry {
 		else await this.fs.delete(path);
 		// re-install extension
 		console.debug(`re-installing extension ${id}...`);
-		return commands.executeCommand(`workbench.extensions.installExtension`, id);
-		// return;
+		return this.extensions.installExtension(id);
 	}
 
 	private determineEntryType(subfolderInfo: Dirent) {
@@ -228,10 +225,7 @@ export default class Entry {
 	}
 
 	async symlinkThisExtensionToProfile(profileName: string) {
-		const target = this.p.extensionsStorage.derive(
-			`vscode-profiles`,
-		);
-
+		// используется только в developmentMode чтобы линковать локальную версию vscode-profiles во все профили
 		return this.fs.symlinkCreate(
 			this.p.extensionsStorage.derive(`vscode-profiles`).fsPath,
 			this.p.profiles.derive(profileName, `vscode-profiles`),
@@ -265,10 +259,5 @@ export default class Entry {
 		return this.fs.delete(this.p.extensionsStorage.derive(dirent.name));
 	}
 
-	async installCommonExtensions() {
-		// 🕮 <cyberbiont> 420a320a-ffaf-4bb6-a6b5-754a3bd516ad.md
-		for (const id in this.cfg.extensions.common) {
-			await commands.executeCommand('workbench.extensions.installExtension', id);
-		}
-	}
+
 }

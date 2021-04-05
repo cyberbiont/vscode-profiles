@@ -70,8 +70,13 @@ Use it only in workspace settings (in your project's .vscode/settings.json).
 ### autoSwitch.initial
 
 _default: true_
-If you have `profile` option in your workspace settings (.vscode/setting.json) this profile will be automatically activated, when you open this workspace.
-Be aware however, that opening a project with a bound profile will engage that profile for **all** already open projects (you cannot simultaneously have two open projects each with different profile).
+If you have `profile` option in your workspace settings (`.vscode/setting.json`) this profile will be automatically activated, when you open this workspace.
+
+At this time, this means that you cannot switch profiles, if you have 'bounded' (initial) profile set (if 'autoSwitch.initial' option is set to 'true' and you have 'initial' option set). To change the profile, you should change 'initial' setting and re-load your workspaces. So, I currently recommend to use this option in workspace settings when you are settled on what profile you want to use with your project. Do not use it in global settings!
+
+In the future, changing profile may become possible, but this will require some architectural changes.
+
+Also be aware, that opening a project with a bound profile will engage that profile for **all** already open projects (you cannot simultaneously have two open projects each with different profile).
 
 ### autoSwitch.created
 

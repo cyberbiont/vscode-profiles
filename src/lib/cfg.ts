@@ -21,20 +21,17 @@ export type Cfg = OActions &
 // 🕮 <cyberbiont> 883f8be0-44ff-4555-a5af-b59e3216284f.md
 export default class ConfigMaker {
 	create(): Cfg {
-		return {
+		const cfg: Cfg = {
 			initial: settings.get(`initial`) || undefined,
 			autoSwitch: {
-				initial: settings.get(`autoSwitch.initial`) || true,
+				initial: settings.get(`autoSwitch.initial`) || false,
 				created: settings.get(`autoSwitch.created`) || false,
 			},
 			settingsCyclerWarning: settings.get(`settingsCyclerWarning`) || true,
 			extensions: {
 				symlinkify: settings.get(`extensions.symlinkify`) || true,
 				// common: [...settings.get(`extensions.common`) as string[], `cyberbiont.vscode-profiles`] ?? undefined
-				common: settings.get(`extensions.common`) || [
-					'hoovercj.vscode-settings-cycler',
-					'shan.code-settings-sync',
-				],
+				common: settings.get(`extensions.common`),
 			},
 			paths: {
 				profiles:
@@ -45,6 +42,12 @@ export default class ConfigMaker {
 					settings.get(`paths.extensionsStorage`) ||
 					path.join(homedir, `.vscode`, `extensions.storage`), // a folder to store all extensions (they are being symlinked from this folder)
 			},
+			developmentMode: settings.get(`developmentMode`) || false,
 		};
+
+		if (!cfg.developmentMode && cfg.extensions.common)
+			cfg.extensions.common.push(`cyberbiont.vscode-profiles`);
+
+		return cfg;
 	}
 }
