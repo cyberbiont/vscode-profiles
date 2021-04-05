@@ -62,9 +62,10 @@ export default class App {
 			errors,
 			status,
 			link,
+			outputChannel,
 			vpExtensions,
 		);
-		const settingsCycle = new SettingsCycle(profiles, cfg);
+		const settingsCycle = new SettingsCycle(profiles, fs, p, cfg);
 		const userInteractions = new User(utils, profiles, errors, cfg);
 		const actions = new Actions(
 			cfg,

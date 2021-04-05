@@ -43,7 +43,9 @@ export interface MaintenanceResults {
 }
 
 export type OEntry = {
-	thisExtensionFolderName: string;
+	extensions: {
+		common: string[]
+	}
 };
 
 // 🕮 <cyberbiont> da2aa1bd-b0d0-41ac-b924-72016cb985fd.md
@@ -128,15 +130,10 @@ export default class Entry {
 		return Promise.resolve();
 	}
 
-	// 🕮 <cyberbiont> c8db558d-c628-4987-a407-5c55453baf50.md
-	getExtensionId(extensionFolderName: string) {
-		return extensionFolderName.slice(0, extensionFolderName.lastIndexOf(`-`));
-	}
-
 	private async repairBrokenEntry(
 		path: Path,
 		entryType: EntryType,
-		id = this.getExtensionId(path.pathname),
+		id = this.extensions.getExtensionId(path.pathname),
 	) {
 		console.debug(`repairing broken extension directory...`);
 		// delete broken entry
@@ -157,7 +154,7 @@ export default class Entry {
 		return EntryType.ELSE;
 	}
 
-	async doMaintenance(
+	async doProfileFolderMaintenance(
 		subfolderInfo: Dirent,
 		profileFolderName: string,
 		profileIsActive: boolean,
@@ -230,14 +227,14 @@ export default class Entry {
 		);
 	}
 
-	async installThisExtensionToProfile(profileName: string) {
+	async symlinkThisExtensionToProfile(profileName: string) {
 		const target = this.p.extensionsStorage.derive(
-			this.cfg.thisExtensionFolderName,
+			`vscode-profiles`,
 		);
 
 		return this.fs.symlinkCreate(
-			this.p.extensionsStorage.derive(this.cfg.thisExtensionFolderName).fsPath,
-			this.p.profiles.derive(profileName, this.cfg.thisExtensionFolderName),
+			this.p.extensionsStorage.derive(`vscode-profiles`).fsPath,
+			this.p.profiles.derive(profileName, `vscode-profiles`),
 		);
 	}
 
@@ -266,5 +263,12 @@ export default class Entry {
 
 	async deleteStoredExtension(dirent: Dirent) {
 		return this.fs.delete(this.p.extensionsStorage.derive(dirent.name));
+	}
+
+	async installCommonExtensions() {
+		// 🕮 <cyberbiont> 420a320a-ffaf-4bb6-a6b5-754a3bd516ad.md
+		for (const id in this.cfg.extensions.common) {
+			await commands.executeCommand('workbench.extensions.installExtension', id);
+		}
 	}
 }

@@ -5,7 +5,7 @@ import { window } from 'vscode';
 import { Cfg } from './cfg';
 
 export type OUser = {
-	initialProfile?: string;
+	initial?: string;
 };
 
 export default class User {
@@ -36,7 +36,7 @@ export default class User {
 
 		const response = await window.showQuickPick(
 			profiles.map(name => {
-				if (this.cfg.initialProfile && name === this.cfg.initialProfile)
+				if (this.cfg.initial && name === this.cfg.initial)
 					return {
 						label: `⛮ ${name.toUpperCase()}`,
 					};

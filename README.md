@@ -62,32 +62,37 @@ Rescans all extensions of the current profile. Supplementary command, used for d
 
 ## Extension Settings
 
-### initialProfile
+### initial
 
 Profile name that will be turned on automatically on workspace load.
 Use it only in workspace settings (in your project's .vscode/settings.json).
 
-### autoSwitchToInitialProfile
+### autoSwitch.initial
 
 _default: true_
 If you have `profile` option in your workspace settings (.vscode/setting.json) this profile will be automatically activated, when you open this workspace.
 Be aware however, that opening a project with a bound profile will engage that profile for **all** already open projects (you cannot simultaneously have two open projects each with different profile).
 
-### autoSwitchToCreatedProfile
+### autoSwitch.created
 
 _default: false_
 Automatically switch to newly created profile.
 
-### warnAboutNoSettings
+### settingsCyclerWarning
 
 _default: true_
-Show warning message when activating profile that has no associated SettingsCycle command / settings block.
+Show warning message that loaded profile has no associated SettingsCycler command / settings block.
 
-### extensions.symlinkifyExtensions
+### extensions.symlinkify
 
 _default: true_
 Whether extensions in profile folders will be replaced with symlinks to extensions.storage folder.
 Turning this off will result in increased disk space usage.
+
+### extensions.common
+
+An list of extensions that will be automatically installed to every profile (this is done on profile creation).
+`Vscode-profiles` is always installed automatically, no need to include it in the list. Recommendation: don't make this list too big, as it will slow down profile creation
 
 ### paths.profiles
 

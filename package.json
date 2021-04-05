@@ -1,7 +1,7 @@
 {
 	"name": "vscode-profiles",
 	"displayName": "Profiles",
-	"description": "Quickly change your settings and extensions configuration",
+	"description": "Extension sets management and more",
 	"version": "1.0.0",
 	"author": {
 		"name": "Yaroslav Larin",
@@ -44,21 +44,25 @@
 						"type": "string",
 						"description": "Specifies the folder where all symlinkified extensions will be stored"
 					},
-					"profiles.extensions.symlinkifyExtensions": {
+					"profiles.extensions.symlinkify": {
 						"type": "boolean",
 						"description": "It true, all extensions are replaced with symlinks in profile folders"
 					},
-					"profiles.initialProfile": {
+					"profiles.initial": {
 						"type": "string",
 						"description": "Use this in your workspace settings to initialize the profile you need for your project on load"
 					},
-					"profiles.autoSwitchToInitialProfile": {
+					"profiles.autoSwitch.initial": {
 						"type": "boolean",
 						"description": "Whether extension should automatically switch to profile, that is specified in workspace settings"
 					},
-					"profiles.autoSwitchToCreatedProfile": {
+					"profiles.autoSwitch.created": {
 						"type": "boolean",
 						"description": "Whether extension should automatically switch to profile, that was just created"
+					},
+					"profiles.settingsCyclerWarning": {
+						"type": "boolean",
+						"description": "Show warning message that loaded profile has no associated SettingsCycler command / settings block"
 					}
 				}
 			}

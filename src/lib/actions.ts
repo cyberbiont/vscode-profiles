@@ -9,9 +9,11 @@ import Status from './status';
 import SettingsCycle from './settingsCycle';
 
 export type OActions = {
-	initialProfile?: string;
-	autoSwitchToInitialProfile: boolean;
-	autoSwitchToCreatedProfile: boolean;
+	initial?: string;
+	autoSwitch: {
+		initial: boolean;
+		created: boolean;
+	};
 };
 
 export default class Actions {
@@ -30,11 +32,11 @@ export default class Actions {
 	// COMMANDS
 	public async createProfileCommand() {
 		const newProfileName = await this.createNewProfileDirectory();
-		await this.entry
-			.installThisExtensionToProfile(newProfileName)
-			.catch(this.on.error);
+		// await this.entry
+		// 	.symlinkThisExtensionToProfile(newProfileName)
+		// 	.catch(this.on.error);
 		await window.showInformationMessage(`Created profile ${newProfileName}`);
-		if (this.cfg.autoSwitchToCreatedProfile) {
+		if (this.cfg.autoSwitch.created) {
 			this.switchToProfile(newProfileName);
 		}
 		// return this.switchToProfile(newProfileName);
@@ -108,14 +110,16 @@ export default class Actions {
 			throw e;
 		});
 
-		await this.switchInitialProfile();
+		if (this.cfg.autoSwitch.initial) {
+			await this.switchToInitialProfile();
+		}
 	}
-	public async switchInitialProfile() {
+	public async switchToInitialProfile() {
 		if (
-			this.cfg.initialProfile &&
-			this.cfg.initialProfile !== this.profiles.active.name
+			this.cfg.initial &&
+			this.cfg.initial !== this.profiles.active.name
 		)
-			this.switchToProfile(this.cfg.initialProfile);
+			this.switchToProfile(this.cfg.initial);
 	}
 
 	public async cleanCommand() {
@@ -194,7 +198,11 @@ export default class Actions {
 		await this.entry.createProfileDirectory(name, {
 			useExisting,
 		});
-		await this.entry.installThisExtensionToProfile(name);
+
+		// 🕮 <cyberbiont> 42de7d84-b31d-4f82-a17d-8a835f50ed3e.md
+		await this.entry.symlinkThisExtensionToProfile(name).catch(this.on.error);
+		await this.entry.installCommonExtensions().catch(this.on.error);
+
 		await this.profiles.rescanProfiles();
 		return name;
 	}

@@ -16,7 +16,7 @@ import VpOutputChannel from './outputChannel';
 
 export type OProfilesRepository = {
 	extensions: {
-		symlinkifyExtensions: boolean;
+		symlinkify: boolean;
 	};
 };
 
@@ -123,10 +123,25 @@ export default class ProfilesRepository {
 		return [...this.map.list.keys()];
 	}
 
+	async gatherProfileInformation(profileFolderName: string = this.active.name) {
+		// 🕮 <cyberbiont> 97b7cd5b-893c-423d-9d5d-44ff5758fcb8.md
+		const subfoldersInfo = await this.entry.getSubfoldersInfo(
+			profileFolderName,
+		);
+		const settingCyclerInstalled = subfoldersInfo.find(dirent => {
+			return this.extensions.isSettingsCyclerExtension(dirent.name);
+		});
+
+		return {
+			dirents: subfoldersInfo,
+			settingCyclerInstalled: true,
+		};
+	}
+
 	async doProfileMaintenance(profileFolderName: string = this.active.name) {
 		// 🕮 <cyberbiont> f7ea2dc2-10d1-4915-8cb2-4b6aa3c3fff0.md
 		// 🕮 <cyberbiont> b2fcd0c9-db59-4981-ae8a-bbba8edbbedd.md
-		if (!this.cfg.extensions.symlinkifyExtensions) return;
+		if (!this.cfg.extensions.symlinkify) return;
 
 		const subfoldersInfo = await this.entry.getSubfoldersInfo(
 			profileFolderName,
@@ -148,6 +163,8 @@ export default class ProfilesRepository {
 		);
 		const results = await resultsPromise;
 		this.analyzeMaintenanceResults(results);
+
+		// .then(commands => commands.forEach(command => this.channel.appendLine(command)));
 	}
 
 	analyzeMaintenanceResults(results: MaintenanceResult[]) {
