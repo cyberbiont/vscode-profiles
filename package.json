@@ -73,7 +73,7 @@
 					},
 					"profiles.developmentMode": {
 						"type": "boolean",
-						"description": ""
+						"description": "Used during development"
 					}
 				}
 			}
