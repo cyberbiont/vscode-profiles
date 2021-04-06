@@ -3,6 +3,10 @@
 Define different extensions configurations and switch between them in a second.
 Bind any vscode settings to your profiles.
 
+![vscode-profiles-switching](images/profiles1r10.gif 'creating and switching profiles')
+
+![vscode-profiles-settings](images/profiles2r10.gif 'binding different themes to profiles')
+
 ## Motivation
 
 In VSCode, extensions are important part of functionality... and they can become numerous.
@@ -72,7 +76,7 @@ Use it only in workspace settings (in your project's .vscode/settings.json).
 _default: true_
 If you have `profile` option in your workspace settings (`.vscode/setting.json`) this profile will be automatically activated, when you open this workspace.
 
-At this time, this means that you cannot switch profiles, if you have 'bounded' (initial) profile set (if 'autoSwitch.initial' option is set to 'true' and you have 'initial' option set). To change the profile, you should change 'initial' setting and re-load your workspaces. So, I currently recommend to use this option in workspace settings when you are settled on what profile you want to use with your project. Do not use it in global settings!
+At this time, this means that you cannot switch profiles, if you have 'bounded' (initial) profile set (if 'autoSwitch.initial' option is set to 'true' and you have 'initial' option set). To change the profile, you should change 'initial' setting and re-load your workspaces. So, I currently recommend to use this option in workspace settings when you are settled on what profile you want to use with your project. Do not use it in user settings!
 
 In the future, changing profile may become possible, but this will require some architectural changes.
 
@@ -109,7 +113,7 @@ Path to the folder where profiles will be stored.
 _default: `<HOMEDIR>/.vscode/extensions.storage`_
 Path to the folder where all symlinkified extensions will be stored.
 
-## Integration with another extensions
+## Integration with other extensions
 
 Vscode-profiles was designed with integration with 2 popular extension for settings management: `settings-cycler` and `settings-sync` in mind.
 

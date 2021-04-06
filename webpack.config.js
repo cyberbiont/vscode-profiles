@@ -1,6 +1,6 @@
 // @ts-check
 
-const path = require(`path`);
+const path = require('path');
 
 /** @type {import('webpack').Configuration} */
 const config = {

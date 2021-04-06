@@ -80,7 +80,9 @@ export default class Actions {
 		const oldName = await this.user.selectProfileName();
 		const newName = await this.user.promptProfileName(oldName);
 
-		await this.entry.renameProfileFolder(oldName, newName).catch(this.on.error);
+		await this.entry
+			.renameProfileFolder(oldName, newName)
+			.catch(this.on.cancel);
 
 		await this.profiles.rescanProfiles();
 		return window.showInformationMessage(
