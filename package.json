@@ -13,11 +13,11 @@
 		"url": "https://github.com/cyberbiont/vscode-profiles.git"
 	},
 	"license": "ISC",
+	"icon": "images/profiles.png",
 	"engines": {
 		"vscode": "^1.44.0",
 		"node": "^10.16.0"
 	},
-	"icon": "images/gear.png",
 	"categories": [
 		"Other"
 	],
@@ -117,12 +117,12 @@
 		"compile": "tsc --build src && ts-cleaner -d out",
 		"watch": "tsc --build src --watch && ts-cleaner -d out",
 		"pretest": "npm run compile && npm run lint",
+		"test-compile": "tsc -p ./",
 		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js",
 		"vscode:prepublish": "webpack --mode production",
 		"webpack": "webpack --mode development",
-		"webpack-dev": "webpack --mode development --watch",
-		"test-compile": "tsc -p ./"
+		"webpack-dev": "webpack --mode development --watch"
 	},
 	"devDependencies": {
 		"@types/node": "^14.14.37",
