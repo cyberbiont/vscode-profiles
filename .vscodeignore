@@ -1,7 +1,11 @@
+src
+out
+out/test
+dist/test
+prettier.config.js
+webpack.config.js
 .vscode
 .vscode-test
-out/test
-src
 .gitignore
 vsc-extension-quickstart.md
 **/tsconfig.json
@@ -11,8 +15,5 @@ vsc-extension-quickstart.md
 .sidenotes/**
 .github/**
 .eslintignore
-prettier.config.js
 .gitattributes
 .editorconfig
-out
-webpack.config.js
