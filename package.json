@@ -15,8 +15,9 @@
 	"license": "ISC",
 	"icon": "images/profiles.png",
 	"engines": {
-		"vscode": "^1.44.0",
-		"node": "^10.16.0"
+		"vscode": "^1.55.0",
+		"node": "^15.12.0",
+		"npm": "7.8.0"
 	},
 	"categories": [
 		"Other"
