@@ -143,5 +143,11 @@
 	"prettier": "eslint-config-cyberbiont/prettier.config.js",
 	"eslintConfig": {
 		"extends": "cyberbiont"
+	},
+	"__metadata": {
+		"id": "69640ebb-50ef-4117-8ffa-788ae5008d01",
+		"publisherId": "9d8e8d20-25e3-4573-af62-19a5b2bcfb27",
+		"publisherDisplayName": "Yaroslav Larin",
+		"installedTimestamp": 1617773789772
 	}
 }

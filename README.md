@@ -3,7 +3,7 @@
 Define different extensions configurations and switch between them in a second.
 Bind any vscode settings to your profiles.
 
-![vscode-profiles-switching](images/profiles1r10.gif 'creating and switching profiles')
+![vscode-profiles-basic-operation-gif](images/gif/basic_operation.gif 'creating and switching profiles')
 
 ## Motivation
 
@@ -64,6 +64,8 @@ Rescans all extensions of the current profile. Supplementary command, used for d
 
 ## Extension Settings
 
+(don't forget to prepend those with `profiles.` in settings.json)
+
 ### initial
 
 Profile name that will be turned on automatically on workspace load.
@@ -118,7 +120,7 @@ Vscode-profiles was designed with integration with 2 popular extension for setti
 This allows you to bind any VS Code settings to your profile, so that after switching the profile on you get fully customized environment.
 This also allows you to assign to each profile a dedicated Github gist, and save your extensions set and settings there with the help of `settings-sync` extension.
 
-![vscode-profiles-settings](images/profiles2r10.gif 'binding different themes to profiles')
+![vscode-profiles-settings-cycler-gif](images/gif/settings_cycler.gif 'binding different themes to profiles')
 
 Example: in your global `settings.json` create a setting in `settings cycler` format, with id, that corresponds to your profile name.
 When you switch profiles, `settings.cycle<profileName>` command will be automatically executed and appropriate settings loaded.
@@ -157,8 +159,14 @@ When you switch the profile, new profile folder becomes active, and this may lea
 `LiveShare` extension cannot be symlinkified because it runs `vsls-agent` service from extension folder. That's why it is excluded from the process.
 
 ### Deinstallation
+
 This extension replaces `$HOME/.vscode/extensions` folder with symlink and creates additional folders `profiles` and `extensions.storage`. If you uninstall this extension, you will be left with the last profile that was active. Other profiles won't be deleted, you just won't be able to manage them. It has sense if you plan to re-install later.
 However, if you want to reset everything to the initial state, you can manually delete `profiles` folder and 'extensions' symlink and then rename `extensions.storage` to just `extensions`. Then you'll have all extensions gathered from all of your profiles.
+
+### Check out my other extensions!
+
+They are for everyone and you can find them useful
+https://marketplace.visualstudio.com/publishers/cyberbiont
 
 ## Credits
 
