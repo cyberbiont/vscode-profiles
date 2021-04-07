@@ -128,7 +128,6 @@
 		"@types/node": "^14.14.37",
 		"@types/vscode": "^1.55.0",
 		"eslint-config-cyberbiont": "^1.0.0",
-		"jest-config-cyberbiont": "^1.0.0",
 		"ts-cleaner": "^1.0.5",
 		"ts-loader": "^8.1.0",
 		"ts-node": "^9.1.1",
