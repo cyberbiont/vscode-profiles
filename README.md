@@ -156,6 +156,10 @@ When you switch the profile, new profile folder becomes active, and this may lea
 
 `LiveShare` extension cannot be symlinkified because it runs `vsls-agent` service from extension folder. That's why it is excluded from the process.
 
+### Deinstallation
+This extension replaces `$HOME/.vscode/extensions` folder with symlink and creates additional folders `profiles` and `extensions.storage`. If you uninstall this extension, you will be left with the last profile that was active. Other profiles won't be deleted, you just won't be able to manage them. It has sense if you plan to re-install later.
+However, if you want to reset everything to the initial state, you can manually delete `profiles` folder and 'extensions' symlink and then rename `extensions.storage` to just `extensions`. Then you'll have all extensions gathered from all of your profiles.
+
 ## Credits
 
 <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
