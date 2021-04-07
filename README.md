@@ -5,8 +5,6 @@ Bind any vscode settings to your profiles.
 
 ![vscode-profiles-switching](images/profiles1r10.gif 'creating and switching profiles')
 
-![vscode-profiles-settings](images/profiles2r10.gif 'binding different themes to profiles')
-
 ## Motivation
 
 In VSCode, extensions are important part of functionality... and they can become numerous.
@@ -119,6 +117,8 @@ Vscode-profiles was designed with integration with 2 popular extension for setti
 
 This allows you to bind any VS Code settings to your profile, so that after switching the profile on you get fully customized environment.
 This also allows you to assign to each profile a dedicated Github gist, and save your extensions set and settings there with the help of `settings-sync` extension.
+
+![vscode-profiles-settings](images/profiles2r10.gif 'binding different themes to profiles')
 
 Example: in your global `settings.json` create a setting in `settings cycler` format, with id, that corresponds to your profile name.
 When you switch profiles, `settings.cycle<profileName>` command will be automatically executed and appropriate settings loaded.
