@@ -3,10 +3,10 @@ import Errors, { ErrorHandlers } from './errors';
 import { commands, window } from 'vscode';
 
 import ProfilesRepository from './profilesRepository';
+import SettingsCycle from './settingsCycle';
+import Status from './status';
 import User from './user';
 import VpPaths from './paths';
-import Status from './status';
-import SettingsCycle from './settingsCycle';
 
 export type OActions = {
 	initial?: string;
@@ -109,13 +109,13 @@ export default class Actions {
 	}
 
 	public async rescanCommand() {
-		const profile = await this.profiles.rescanProfiles().catch((e: Error) => {
+		await this.profiles.rescanProfiles().catch((e: Error) => {
 			if (
 				e instanceof this.errors.MissingSymlink ||
 				e instanceof this.errors.BrokenSymlink
 			) {
 				this.repairExtensionsSymlink();
-				return this.profiles.rescanProfiles();
+				this.profiles.rescanProfiles();
 			}
 			throw e;
 		});

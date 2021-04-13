@@ -2,6 +2,7 @@ import Entry, {
 	EntryMaintenanceStatus,
 	MaintenanceResults as MaintenanceResult,
 } from './entry';
+import { FileSystemError, window } from 'vscode';
 
 import { Dirent } from 'fs';
 import Errors from './errors';
@@ -10,9 +11,8 @@ import { ProfilesDictionary } from './types';
 import Status from './status';
 import VpExtensions from './extensions';
 import VpFileSystem from './fileSystem';
-import VpPaths from './paths';
-import { window } from 'vscode';
 import VpOutputChannel from './outputChannel';
+import VpPaths from './paths';
 
 export type OProfilesRepository = {
 	extensions: {
@@ -37,18 +37,33 @@ export default class ProfilesRepository {
 		private extensions: VpExtensions,
 	) {}
 
+	async createInitialFoldersStructure() {
+		await this.fs.createDirectory(this.p.profiles);
+		await this.fs.rename(
+			this.p.extensionsStandard,
+			this.p.profiles.derive(`Default`),
+		);
+		await this.entry.switchLinkToProfile(`Default`);
+	}
+
 	async rescanProfiles() {
 		this.map.clear();
 
-		const profilesFolderContents = await this.fs.readDirectory(this.p.profiles);
+		let profilesFolderContents: Dirent[] | void;
+		profilesFolderContents = await this.getProfilesDirectoryValue().catch(e => {
+			if (e instanceof this.errors.MissingProfilesFolder) {
+				this.createInitialFoldersStructure();
+			} else throw e;
+		});
+		if (profilesFolderContents) {
+			await Promise.all(
+				profilesFolderContents.map(this.createProfileEntry.bind(this)),
+			);
 
-		await Promise.all(
-			profilesFolderContents.map(this.createProfileEntry.bind(this)),
-		);
+			// 🕮 <cyberbiont> 1d69ce98-a60e-4429-b2c6-4143f1489c3c.md
 
-		// 🕮 <cyberbiont> 1d69ce98-a60e-4429-b2c6-4143f1489c3c.md
-
-		return this.initActiveProfile();
+			return this.initActiveProfile();
+		}
 	}
 
 	private async createProfileEntry(dirent: Dirent) {
@@ -118,6 +133,13 @@ export default class ProfilesRepository {
 		});
 	}
 
+	private getProfilesDirectoryValue() {
+		return this.fs.readDirectory(this.p.profiles).catch(e => {
+			if (e.code === `ENOENT`) throw new this.errors.MissingProfilesFolder();
+			throw e;
+		});
+	}
+
 	private setActiveProfile(profile: Profile) {
 		this.active = profile;
 		this.status.update(profile.name);
@@ -140,7 +162,7 @@ export default class ProfilesRepository {
 	searchProfileInMap(profile: string) {
 		const result = this.map.get(profile);
 		if (result) return result;
-		throw new this.errors.MissingProfileFolder(
+		throw new this.errors.MissingProfilesFolder(
 			`profile name was not found in profiles list`,
 		);
 	}

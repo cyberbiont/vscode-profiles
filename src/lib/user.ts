@@ -1,8 +1,8 @@
+import { Cfg } from './cfg';
 import Errors from './errors';
 import ProfilesRepository from './profilesRepository';
 import Utils from './utils';
 import { window } from 'vscode';
-import { Cfg } from './cfg';
 
 export type OUser = {
 	initial?: string;
@@ -28,6 +28,8 @@ export default class User {
 		placeholder = ``,
 	}: { filterOutActive?: boolean; placeholder?: string } = {}) {
 		let profiles = this.profiles.getProfileNames();
+
+		if(!profiles.length) throw this.errors.NoProfiles;
 
 		if (filterOutActive && this.profiles.active)
 			profiles = profiles.filter(

@@ -19,7 +19,7 @@
 				"<node_internals>/**/*.js",
 				"${workspaceFolder}/node_modules/**/*.js"
 			],
-			"preLaunchTask": "npm: webpack-dev",
+			"preLaunchTask": "npm: webpack",
 			"smartStep": true
 		},
 		{
@@ -33,7 +33,7 @@
 				"<node_internals>/**/*.js",
 				"${workspaceFolder}/node_modules/**/*.js"
 			],
-			"preLaunchTask": "npm: webpack-dev",
+			"preLaunchTask": "npm: webpack",
 			"smartStep": true
 		},
 		{

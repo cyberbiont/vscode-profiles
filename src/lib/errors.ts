@@ -1,4 +1,5 @@
 import { FileSystemError, window } from 'vscode';
+
 import VpOutputChannel from './outputChannel';
 
 // 🕮 <cyberbiont> f175e603-9464-4bba-b55f-9a632dce8b1e.md
@@ -107,12 +108,25 @@ export default class Errors {
 		}
 	}.bind(null, this);
 
-	public MissingProfileFolder = class MissingProfileFolderError extends FileSystemError {
+	public MissingProfilesFolder = class MissingProfilesFolderError extends this
+		.VpError {
 		readonly name = this.constructor.name;
 		constructor(
 			public rootThis: Errors,
 			public message = ``,
 			public description = `Profile folder was not found.`,
+		) {
+			super(`${description} ${message}`);
+			this.rootThis.channel.appendLine(`${description} ${message}`);
+		}
+	}.bind(null, this);
+
+	public NoProfiles = class NoProfilesError extends this.VpError {
+		readonly name = this.constructor.name;
+		constructor(
+			public rootThis: Errors,
+			public message = ``,
+			public description = `No profiles found.`,
 		) {
 			super(`${description} ${message}`);
 			this.rootThis.channel.appendLine(`${description} ${message}`);

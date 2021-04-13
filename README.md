@@ -26,6 +26,12 @@ Each profile therefore is represented with the separate directory, where extensi
 - bind any VS code settings from settings.json to your profile and automatically activate them on profile load using `settings-cycler`.
 - backup your profiles individually to cloud using `settings-sync`.
 
+## Installation
+
+After installation the 'default' profile will be automatically created and switched on.
+It will contain all extensions that you had installed up to this moment.
+You may rename this profile or delete it later.
+
 ## Commands
 
 ### switch
