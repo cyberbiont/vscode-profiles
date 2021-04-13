@@ -2,7 +2,7 @@
 	"name": "vscode-profiles",
 	"displayName": "Profiles",
 	"description": "Extensions management tool",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"author": {
 		"name": "Yaroslav Larin",
 		"email": "cyberbiont@gmail.com"
