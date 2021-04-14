@@ -29,7 +29,12 @@ export default class User {
 	}: { filterOutActive?: boolean; placeholder?: string } = {}) {
 		let profiles = this.profiles.getProfileNames();
 
-		if(!profiles.length) throw this.errors.NoProfiles;
+		if (!profiles.length) throw this.errors.NoProfiles;
+		if (profiles.length === 1) {
+			window.showInformationMessage(`you have only one profile ${this.profiles.active.name},
+			so you cannot switch, delete or rename it. Create more profiles to be able to switch them`);
+			return undefined;
+		}
 
 		if (filterOutActive && this.profiles.active)
 			profiles = profiles.filter(
