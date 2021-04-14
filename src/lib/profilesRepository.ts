@@ -38,7 +38,16 @@ export default class ProfilesRepository {
 	) {}
 
 	async createInitialFoldersStructure() {
-		await this.fs.createDirectory(this.p.profiles);
+		try {
+			await this.fs.createDirectory(this.p.profiles);
+			await this.createDefaultProfileFromExtensionsFolder();
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
+	private async createDefaultProfileFromExtensionsFolder() {
+		// может не сработать, будет ошибка EPERM т.к.node не может переименовать папку, пока она занята VS Code
 		await this.fs.rename(
 			this.p.extensionsStandard,
 			this.p.profiles.derive(`Default`),
@@ -46,24 +55,44 @@ export default class ProfilesRepository {
 		await this.entry.switchLinkToProfile(`Default`);
 	}
 
+	private async getProfileFolderContents() {
+		let profilesFolderContents: Dirent[] | void;
+		profilesFolderContents = await this.getProfilesDirectoryValue().catch(
+			async e => {
+				if (e instanceof this.errors.MissingProfilesFolder) {
+					await this.createInitialFoldersStructure();
+					profilesFolderContents = await this.getProfilesDirectoryValue();
+				} else throw e;
+			},
+		);
+
+		if (profilesFolderContents && !profilesFolderContents.length) {
+			await this.getSwapperLinkValue().catch(async (e: Error) => {
+				if (e instanceof this.errors.IsDirectory)
+					await this.createDefaultProfileFromExtensionsFolder();
+				profilesFolderContents = await this.getProfilesDirectoryValue();
+				throw e;
+			});
+		}
+
+		return profilesFolderContents;
+	}
 	async rescanProfiles() {
 		this.map.clear();
 
-		let profilesFolderContents: Dirent[] | void;
-		profilesFolderContents = await this.getProfilesDirectoryValue().catch(e => {
-			if (e instanceof this.errors.MissingProfilesFolder) {
-				this.createInitialFoldersStructure();
-			} else throw e;
-		});
-		if (profilesFolderContents) {
-			await Promise.all(
-				profilesFolderContents.map(this.createProfileEntry.bind(this)),
+		const profilesFolderContents = await this.getProfileFolderContents();
+		if (!profilesFolderContents)
+			throw new FileSystemError(
+				'seems like there is a trouble with folder structure',
 			);
 
-			// 🕮 <cyberbiont> 1d69ce98-a60e-4429-b2c6-4143f1489c3c.md
+		await Promise.all(
+			profilesFolderContents.map(this.createProfileEntry.bind(this)),
+		);
 
-			return this.initActiveProfile();
-		}
+		// 🕮 <cyberbiont> 1d69ce98-a60e-4429-b2c6-4143f1489c3c.md
+
+		return this.initActiveProfile();
 	}
 
 	private async createProfileEntry(dirent: Dirent) {
@@ -133,7 +162,7 @@ export default class ProfilesRepository {
 		});
 	}
 
-	private getProfilesDirectoryValue() {
+	private async getProfilesDirectoryValue() {
 		return this.fs.readDirectory(this.p.profiles).catch(e => {
 			if (e.code === `ENOENT`) throw new this.errors.MissingProfilesFolder();
 			throw e;

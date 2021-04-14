@@ -28,9 +28,24 @@ Each profile therefore is represented with the separate directory, where extensi
 
 ## Installation
 
-After installation the 'default' profile will be automatically created and switched on.
+Extension automatically creates folders structure, required for it to function, but there may be permission problems,
+because `extensions` folder is used (locked) by VS Code and Node.js cannot access is to turn it into symlink.
+This happens on Windows, I haven't tested it yet on Linux and Mac (feel free to share your experience with me).
+On Windows, the easiest solution will be to use an unblocking tool (I recommend [lock-hunter](https://lockhunter.com/)) to unlock 'extensions' folder in your `<user profile>/.vscode` directory.
+Reload VS Code and extension will be able to properly set up folders for you (if it didn't happen, try `rescan` command). Reload again.
+
+The other way around is to create the necessary folder structure by yourself:
+- shut down VS Code;
+- in your `<user profile>/.vscode` directory create empty folder `profiles`;
+- move `extensions` folder inside `profiles`. this will be your starting profile; you can rename it to `Default`, for example. - Then you'll need to create the symlink to this folder, so that it would replace the `extensions` folder in its former location. Make sure that symlink has name `extensions`.
+  On Windows, you can do it with `cmd`:
+  - Open cmd with Administrator rights
+  - execute command `mklink /D %USERPROFILE%\.vscode\extensions %USERPROFILE%\.vscode\profiles\extensions` (if you haven't rename your folder, otherwise pass the right name to the command).
+- Start VS Code now, the extension should be functional.
+
+After this, the default profile will be automatically recognized and switched on.
 It will contain all extensions that you had installed up to this moment.
-You may rename this profile or delete it later.
+You may rename this profile or delete it later when you create new ones.
 
 ## Commands
 

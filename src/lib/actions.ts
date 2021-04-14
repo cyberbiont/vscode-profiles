@@ -47,6 +47,7 @@ export default class Actions {
 			filterOutActive: false,
 			placeholder: `select the profile you want to clone`,
 		});
+		if (!srcProfileName) return;
 		const destProfileName = await this.createNewProfileDirectory({
 			useExisting: true,
 		});
@@ -69,7 +70,8 @@ export default class Actions {
 		}
 		try {
 			const chosenProfileName = await this.user.selectProfileName();
-			return this.switchToProfile(chosenProfileName);
+			if (!chosenProfileName) return;
+			this.switchToProfile(chosenProfileName);
 		} catch (e) {
 			this.on.cancel(e);
 		}
@@ -77,7 +79,9 @@ export default class Actions {
 
 	public async renameProfileCommand() {
 		// 🕮 <cyberbiont> a56eac98-df44-4194-94ab-a0e952ad8fc4.md
+		// todo: allow to change profile name when there is only one profile;
 		const oldName = await this.user.selectProfileName();
+		if (!oldName) return;
 		const newName = await this.user.promptProfileName(oldName);
 
 		await this.entry
@@ -93,6 +97,7 @@ export default class Actions {
 	public async deleteProfileCommand() {
 		// 🕮 <cyberbiont> 33336010-437b-4ac1-b264-9cd671cba40a.md
 		const name = await this.user.selectProfileName();
+		if (!name) return;
 		if (
 			!(await this.user.confirm(
 				`Are you sure you want to delete profile "${name}"?`,
@@ -170,10 +175,11 @@ export default class Actions {
 
 	private async repairExtensionsSymlink() {
 		// 🕮 <cyberbiont> f82fbca6-ca8e-4115-b1d5-3099018b5ca4.md
-		const profile = await this.user.selectProfileName({
+		let profile = await this.user.selectProfileName({
 			placeholder: `It seems that symlink to your extension profile is broken.
 			Choose the profile you want to activate`,
 		});
+		if (!profile) profile = this.profiles.active.name;
 		return this.entry.switchLinkToProfile(profile);
 	}
 

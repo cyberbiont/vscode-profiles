@@ -3,6 +3,7 @@ import { FileSystemError, window } from 'vscode';
 import VpOutputChannel from './outputChannel';
 
 // 🕮 <cyberbiont> f175e603-9464-4bba-b55f-9a632dce8b1e.md
+//! 🕮 <cyberbiont> 34741669-bb92-42b3-a9d4-3d9ef3e9f04d.md
 export class ErrorHandlers {
 	async error(err: Error) {
 		console.log(err);
