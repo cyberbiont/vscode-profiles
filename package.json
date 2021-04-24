@@ -56,6 +56,13 @@
 						},
 						"description": "Ids of extensions to be automatically installed to all profiles."
 					},
+					"profiles.extensions.blacklisted": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"description": "Ids of extensions to be automatically uninstalled from all profiles."
+					},
 					"profiles.initial": {
 						"type": "string",
 						"description": "Use this in your workspace settings to initialize the profile you need for your project on load"

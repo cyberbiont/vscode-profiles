@@ -32,6 +32,7 @@ export default class ConfigMaker {
 				symlinkify: settings.get(`extensions.symlinkify`) || true,
 				// common: [...settings.get(`extensions.common`) as string[], `cyberbiont.vscode-profiles`] ?? undefined
 				common: settings.get(`extensions.common`),
+				blacklisted: settings.get(`extensions.blacklisted`)
 			},
 			paths: {
 				profiles:

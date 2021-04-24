@@ -28,13 +28,15 @@ Each profile therefore is represented with the separate directory, where extensi
 
 ## Installation
 
-Extension automatically creates folders structure, required for it to function, but there may be permission problems,
-because `extensions` folder is used (locked) by VS Code and Node.js cannot access is to turn it into symlink.
-This happens on Windows, I haven't tested it yet on Linux and Mac (feel free to share your experience with me).
-On Windows, the easiest solution will be to use an unblocking tool (I recommend [lock-hunter](https://lockhunter.com/)) to unlock 'extensions' folder in your `<user profile>/.vscode` directory.
-Reload VS Code and extension will be able to properly set up folders for you (if it didn't happen, try `rescan` command). Reload again.
+Extension automatically creates folders structure, required for it to function, but there may be permission problems.
+
+1. because `extensions` folder is used (locked) by VS Code and Node.js cannot access is to turn it into symlink.
+   This happens on Windows, I haven't tested it yet on Linux and Mac (feel free to share your experience with me).
+   On Windows, the easiest solution will be to use an unblocking tool (I recommend [lock-hunter](https://lockhunter.com/)) to unlock 'extensions' folder in your `<user profile>/.vscode` directory.
+   Reload VS Code and extension will be able to properly set up folders for you (if it didn't happen, try `rescan` command). Reload again.
 
 The other way around is to create the necessary folder structure by yourself:
+
 - shut down VS Code;
 - in your `<user profile>/.vscode` directory create empty folder `profiles`;
 - move `extensions` folder inside `profiles`. this will be your starting profile; you can rename it to `Default`, for example. - Then you'll need to create the symlink to this folder, so that it would replace the `extensions` folder in its former location. Make sure that symlink has name `extensions`.
@@ -46,6 +48,8 @@ The other way around is to create the necessary folder structure by yourself:
 After this, the default profile will be automatically recognized and switched on.
 It will contain all extensions that you had installed up to this moment.
 You may rename this profile or delete it later when you create new ones.
+
+2. If you still have permission errors, consider running VS Code as **administrator**m, this will probably fix the problems.
 
 ## Commands
 
@@ -121,8 +125,16 @@ Turning this off will result in increased disk space usage.
 
 ### extensions.common
 
-An list of extensions that will be automatically installed to every profile (this is done on profile creation).
-`Vscode-profiles` is always installed automatically, no need to include it in the list. Recommendation: don't make this list too big, as it will slow down profile creation
+_default: []_
+A list of extensions that will be automatically installed to every profile (their presence is checked every time you are switching to the profile).
+`Vscode-profiles` is always installed automatically, no need to include it in the list.
+Note that while extension is present in this list, it will be installed again even if you delete it manually.
+
+### extensions.blacklisted
+
+_default: []_
+A list of extensions that will be automatically uninstalled from every profile (their presence is checked every time you are switching to the profile).
+Useful, if you decided to switch to another extension for some purpose, or a new version became available as separate package and you need to uninstall the old extension from all the profiles - add it to this list.
 
 ### paths.profiles
 
@@ -179,7 +191,12 @@ When you switch the profile, new profile folder becomes active, and this may lea
 
 `LiveShare` extension cannot be symlinkified because it runs `vsls-agent` service from extension folder. That's why it is excluded from the process.
 
-### Deinstallation
+### Usage with Remote SSH / WSL / Containers
+
+When using any variant of remote connection, VS Code installs certain extensions directly on the remote (to improve productivity).
+Currently vscode-profiles operates only on local extensions folder and has no way to track which extension are installed where.
+
+## Deinstallation
 
 This extension replaces `$HOME/.vscode/extensions` folder with symlink and creates additional folders `profiles` and `extensions.storage`. If you uninstall this extension, you will be left with the last profile that was active. Other profiles won't be deleted, you just won't be able to manage them. It has sense if you plan to re-install later.
 However, if you want to reset everything to the initial state, you can manually delete `profiles` folder and 'extensions' symlink and then rename `extensions.storage` to just `extensions`. Then you'll have all extensions gathered from all of your profiles.

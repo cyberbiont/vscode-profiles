@@ -18,6 +18,7 @@ export type OProfilesRepository = {
 	extensions: {
 		symlinkify: boolean;
 		common?: string[];
+		blacklisted?: string[];
 	};
 	developmentMode: boolean;
 };
@@ -137,6 +138,14 @@ export default class ProfilesRepository {
 				if (!installedExtensions.includes(id)) {
 					await this.extensions.installExtension(id);
 					installedExtensions.push(id);
+				}
+			}
+		}
+		if (this.cfg.extensions.blacklisted) {
+			for (const id of this.cfg.extensions.blacklisted) {
+				if (installedExtensions.includes(id)) {
+					await this.extensions.uninstallExtension(id);
+					installedExtensions.splice(installedExtensions.indexOf(id), 1);
 				}
 			}
 		}
