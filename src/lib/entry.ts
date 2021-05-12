@@ -236,7 +236,12 @@ export default class Entry {
 
 	private isExcluded(subfolder: Dirent) {
 		// 🕮 <cyberbiont> dd5c74f1-1e5e-4db1-af97-4f537c1a9a26.md
-		const excludedExtensionsRules = [`ms-vsliveshare.vsliveshare-`];
+		const excludedExtensionsRules = [
+			`ms-vsliveshare.vsliveshare-`,
+			`ms-vscode-remote.remote-wsl-`,
+			`ms-vscode-remote.remote-ssh-`,
+			`ms-vscode-remote.remote-containers`,
+		];
 		return excludedExtensionsRules.some(rule => subfolder.name.includes(rule));
 	}
 
