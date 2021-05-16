@@ -1,6 +1,6 @@
 {
 	"name": "vscode-profiles",
-	"displayName": "Profiles",
+	"displayName": "Extensions profiles",
 	"description": "Extensions management tool",
 	"version": "1.1.0",
 	"author": {
@@ -135,7 +135,7 @@
 	"devDependencies": {
 		"@types/node": "^14.14.37",
 		"@types/vscode": "^1.55.0",
-		"eslint-config-cyberbiont": "^1.0.0",
+		"eslint-config-cyberbiont": "github:cyberbiont/eslint-config-cyberbiont",
 		"ts-cleaner": "^1.0.5",
 		"ts-loader": "^8.1.0",
 		"ts-node": "^9.1.1",
@@ -155,6 +155,6 @@
 		"id": "69640ebb-50ef-4117-8ffa-788ae5008d01",
 		"publisherId": "9d8e8d20-25e3-4573-af62-19a5b2bcfb27",
 		"publisherDisplayName": "Yaroslav Larin",
-		"installedTimestamp": 1617773789772
+		"installedTimestamp": 1621091662500
 	}
 }

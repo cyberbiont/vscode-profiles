@@ -27,8 +27,5 @@
 		"titleBar.inactiveForeground": "#e7e7e799"
 	},
 	"peacock.color": "hsl(207, 29%, 5%)",
-	"eslint.options": {
-		"configFile": ""
-	},
 	"DockerRun.DisableAutoGenerateConfig": true
 }
