@@ -78,13 +78,14 @@ export default class ProfilesRepository {
 
 		return profilesFolderContents;
 	}
+
 	async rescanProfiles() {
 		this.map.clear();
 
 		const profilesFolderContents = await this.getProfileFolderContents();
 		if (!profilesFolderContents)
 			throw new FileSystemError(
-				'seems like there is a trouble with folder structure',
+				`seems like there is a trouble with folder structure`,
 			);
 
 		await Promise.all(
@@ -134,20 +135,38 @@ export default class ProfilesRepository {
 		}
 
 		if (this.cfg.extensions.common) {
+			const idsBeingInstalled: Promise<string>[] = [];
 			for (const id of this.cfg.extensions.common) {
 				if (!installedExtensions.includes(id)) {
-					await this.extensions.installExtension(id);
-					installedExtensions.push(id);
+					idsBeingInstalled.push(
+						new Promise((res, rej) => {
+							this.extensions.installExtension(id).then(() => res(id));
+						}),
+					);
 				}
 			}
+			await Promise.all(idsBeingInstalled).then(ids =>
+				installedExtensions.push(...ids),
+			);
 		}
+
 		if (this.cfg.extensions.blacklisted) {
+			const idsBeingUninstalled: Promise<string>[] = [];
 			for (const id of this.cfg.extensions.blacklisted) {
 				if (installedExtensions.includes(id)) {
-					await this.extensions.uninstallExtension(id);
-					installedExtensions.splice(installedExtensions.indexOf(id), 1);
+					idsBeingUninstalled.push(
+						new Promise((res, rej) => {
+							this.extensions.uninstallExtension(id).then(() => res(id));
+						}),
+					);
+					// installedExtensions.splice(installedExtensions.indexOf(id), 1);
 				}
 			}
+			await Promise.all(idsBeingUninstalled).then(ids => {
+				for (const id of ids) {
+					installedExtensions.splice(installedExtensions.indexOf(id), 1);
+				}
+			});
 		}
 
 		return installedExtensions;
