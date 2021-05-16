@@ -5,21 +5,26 @@ import VpOutputChannel from './outputChannel';
 // 🕮 <cyberbiont> f175e603-9464-4bba-b55f-9a632dce8b1e.md
 //! 🕮 <cyberbiont> 34741669-bb92-42b3-a9d4-3d9ef3e9f04d.md
 export class ErrorHandlers {
+	constructor(public channel: VpOutputChannel) {}
+
 	async error(err: Error) {
 		console.log(err);
+		this.channel.appendLine(err.message);
 		// throw new Error();
 	}
 
 	async cancel(err: Error) {
 		console.log(err);
 		window.showErrorMessage(err.message);
+		this.channel.appendLine(err.message);
 		throw err;
 	}
 
 	async resume(err: Error) {
 		// log and continue
 		console.log(err);
-		window.showWarningMessage(err.message);
+		// window.showWarningMessage(err.message);
+		this.channel.appendLine(err.message);
 	}
 }
 
@@ -30,7 +35,7 @@ export default class Errors {
 		readonly name = this.constructor.name;
 		constructor(public rootThis: Errors, message = ``) {
 			super(message);
-			this.rootThis.channel.appendLine(message);
+			// this.rootThis.channel.appendLine(message);
 		}
 	}.bind(null, this);
 
@@ -40,7 +45,16 @@ export default class Errors {
 			public description = `User hasn't provided input.`,
 		) {
 			super(`${description} ${message}`);
-			this.rootThis.channel.appendLine(`${description} ${message}`);
+		}
+	};
+
+	public SymlinkifyingError = class SymlinkifyingError extends this.VpError {
+		constructor(
+			message = ``,
+			public extension: string,
+			public description = `error when trying to symlinkify extension folder ${extension}.`,
+		) {
+			super(`${description} ${message}`);
 		}
 	};
 
@@ -50,7 +64,6 @@ export default class Errors {
 			public description = `It seems that thare's a problem with "extensions" symlink`,
 		) {
 			super(`${description} ${message}`);
-			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	};
 
@@ -61,7 +74,6 @@ export default class Errors {
 			public description = `It seems that "extensions" symlink is broken`,
 		) {
 			super(`${description} ${message}`);
-			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	};
 
@@ -72,7 +84,6 @@ export default class Errors {
 			public description = `It seems that "extensions" symlink is missing (or the folder is wrongly named).`,
 		) {
 			super(`${description} ${message}`);
-			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	};
 
@@ -82,7 +93,6 @@ export default class Errors {
 			public description = `It seems that there is a normal directory in place of "extensions" symlink.`,
 		) {
 			super(`${description} ${message}`);
-			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	};
 
@@ -93,7 +103,6 @@ export default class Errors {
 			public description = `It seems that "extensions" symlink already exists and points to this folder.`,
 		) {
 			super(`${description} ${message}`);
-			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	};
 
@@ -104,14 +113,12 @@ export default class Errors {
 			public description = `Profile folder was not found.`,
 		) {
 			super(`${description} ${message}`);
-			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	};
 
 	public NoProfiles = class NoProfilesError extends this.VpError {
 		constructor(message = ``, public description = `No profiles found.`) {
 			super(`${description} ${message}`);
-			this.rootThis.channel.appendLine(`${description} ${message}`);
 		}
 	};
 

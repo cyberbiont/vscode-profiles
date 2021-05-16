@@ -170,7 +170,12 @@ export default class Entry {
 		// 🕮 <cyberbiont> 16214a5a-f996-4d8b-a969-d3cb3f204a2b.md
 
 		if (entryType === EntryType.EXT_DIR && !isExcluded) {
-			await this.symlinkifyExtension(subfolderInfo, profileFolderName);
+			await this.symlinkifyExtension(subfolderInfo, profileFolderName).catch(
+				e => {
+					if (e instanceof this.errors.SymlinkifyingError) this.on.resume(e);
+					else throw e;
+				},
+			);
 			status.push(EntryMaintenanceStatus.WAS_SYMLINKIFIED);
 			//  = `symlinkified extension folder`;
 		}
@@ -185,11 +190,22 @@ export default class Entry {
 	}
 
 	async symlinkifyExtension(subfolderInfo: Dirent, profileFolderName: string) {
-		await this.transportExtension(profileFolderName, subfolderInfo.name);
-		return this.fs.symlinkCreate(
-			this.p.extensionsStorage.derive(subfolderInfo.name).fsPath,
-			this.p.profiles.derive(profileFolderName, subfolderInfo.name),
-		);
+		try {
+			await this.transportExtension(profileFolderName, subfolderInfo.name);
+			await this.fs.symlinkCreate(
+				this.p.extensionsStorage.derive(subfolderInfo.name).fsPath,
+				this.p.profiles.derive(profileFolderName, subfolderInfo.name),
+			);
+		} catch (e) {
+			if (e.name.includes('NoPermissions')) {
+				throw new this.errors.SymlinkifyingError(
+					`No Permissions error`,
+					subfolderInfo.name,
+				);
+			}
+			throw e;
+		}
+		return Promise.resolve();
 	}
 
 	private async validateSymlink(path: Path) {
@@ -198,7 +214,8 @@ export default class Entry {
 
 			return this.fs.exists(target);
 		} catch (e) {
-			if (e.code === `ENOENT`) {
+			// if (e.code === `ENOENT`) {
+			if (e.message === `testError`) {
 				throw new this.errors.MissingSymlink(
 					`no symlink found in profiles folder`,
 				);
@@ -242,7 +259,9 @@ export default class Entry {
 	private isExcluded(subfolder: Dirent) {
 		// 🕮 <cyberbiont> dd5c74f1-1e5e-4db1-af97-4f537c1a9a26.md
 
-		return this.cfg.extensions.excluded.some(rule => subfolder.name.includes(rule));
+		return this.cfg.extensions.excluded.some(rule =>
+			subfolder.name.includes(rule),
+		);
 	}
 
 	async getStoredExtensions() {

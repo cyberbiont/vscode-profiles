@@ -44,7 +44,7 @@ export default class App {
 	async compose() {
 		const utils = new Utils();
 		const outputChannel = new VpOutputChannel(utils, `profiles`);
-		const on = new ErrorHandlers();
+		const on = new ErrorHandlers(outputChannel);
 		const errors = new Errors(outputChannel);
 		const cfg = new ConfigMaker().create();
 		const status = new Status(utils, `${pkg.name}.switch`);
