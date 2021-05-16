@@ -7,6 +7,7 @@ import Entry from './entry';
 import MapDictionary from './mapDictionary';
 import { ProfilesDictionary } from './types';
 import ProfilesRepository from './profilesRepository';
+import SettingsCycle from './settingsCycle';
 import Status from './status';
 import User from './user';
 import Utils from './utils';
@@ -16,8 +17,6 @@ import VpFileSystem from './fileSystem';
 import VpOutputChannel from './outputChannel';
 import VpPaths from './paths';
 import pkg from '../../package.json';
-import settingsCycle from './settingsCycle';
-import SettingsCycle from './settingsCycle';
 
 export default class App {
 	public actions!: Actions;
@@ -25,7 +24,7 @@ export default class App {
 
 	constructor(
 		private context: ExtensionContext,
-		private resolveAppInit: Function,
+		private resolveAppInit: AnyFunction,
 	) {
 		this.init();
 	}

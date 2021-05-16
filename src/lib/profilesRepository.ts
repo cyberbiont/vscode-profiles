@@ -159,7 +159,6 @@ export default class ProfilesRepository {
 							this.extensions.uninstallExtension(id).then(() => res(id));
 						}),
 					);
-					// installedExtensions.splice(installedExtensions.indexOf(id), 1);
 				}
 			}
 			await Promise.all(idsBeingUninstalled).then(ids => {

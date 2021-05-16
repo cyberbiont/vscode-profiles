@@ -28,7 +28,7 @@ export default class Errors {
 
 	public VpError = class VpError extends Error {
 		readonly name = this.constructor.name;
-		constructor(public rootThis: Errors, message: string = ``) {
+		constructor(public rootThis: Errors, message = ``) {
 			super(message);
 			this.rootThis.channel.appendLine(message);
 		}
@@ -116,7 +116,7 @@ export default class Errors {
 	};
 
 	// !🕮 <cyberbiont> bbef93f9-e41c-4dea-aaf8-f3010cdbc0c6.md
-	instanceOfNodeError<T extends new (...args: any) => Error>(
+	instanceOfNodeError<T extends Constructor<Error>>(
 		value: Error,
 		errorType: T,
 	): value is InstanceType<T> & NodeJS.ErrnoException {

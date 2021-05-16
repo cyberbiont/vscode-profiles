@@ -4,7 +4,6 @@ import VpPaths, { Path } from './paths';
 import { Dirent } from 'fs';
 import VpExtensions from './extensions';
 import VpFileSystem from './fileSystem';
-import { window } from 'vscode';
 
 export enum EntryMaintenanceStatus {
 	WAS_OK = `no problems found`, // `no problems found`
@@ -42,7 +41,7 @@ export interface MaintenanceResults {
 	status: EntryMaintenanceStatus[];
 }
 
-export type OEntry = {};
+export type OEntry = AnyObject;
 
 // 🕮 <cyberbiont> da2aa1bd-b0d0-41ac-b924-72016cb985fd.md
 export default class Entry {

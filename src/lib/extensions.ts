@@ -19,10 +19,13 @@ export default class VpExtensions {
 	}
 
 	public async installExtension(id: string) {
-		return commands.executeCommand('workbench.extensions.installExtension', id);
+		return commands.executeCommand(`workbench.extensions.installExtension`, id);
 	}
 
 	public async uninstallExtension(id: string) {
-		return commands.executeCommand('workbench.extensions.uninstallExtension', id);
+		return commands.executeCommand(
+			`workbench.extensions.uninstallExtension`,
+			id,
+		);
 	}
 }

@@ -47,7 +47,7 @@ export default class Actions {
 			filterOutActive: false,
 			placeholder: `select the profile you want to clone`,
 		});
-		if (!srcProfileName) return;
+		if (!srcProfileName) return Promise.reject();
 		const destProfileName = await this.createNewProfileDirectory({
 			useExisting: true,
 		});
@@ -81,7 +81,7 @@ export default class Actions {
 		// 🕮 <cyberbiont> a56eac98-df44-4194-94ab-a0e952ad8fc4.md
 		// todo: allow to change profile name when there is only one profile;
 		const oldName = await this.user.selectProfileName();
-		if (!oldName) return;
+		if (!oldName) return Promise.reject();
 		const newName = await this.user.promptProfileName(oldName);
 
 		await this.entry
@@ -97,13 +97,13 @@ export default class Actions {
 	public async deleteProfileCommand() {
 		// 🕮 <cyberbiont> 33336010-437b-4ac1-b264-9cd671cba40a.md
 		const name = await this.user.selectProfileName();
-		if (!name) return;
+		if (!name) return Promise.reject();
 		if (
 			!(await this.user.confirm(
 				`Are you sure you want to delete profile "${name}"?`,
 			))
 		)
-			return undefined;
+			return Promise.reject();
 		await this.entry.deleteProfileFolder(name);
 		this.profiles.deleteProfileEntry(name);
 		return window.showInformationMessage(`Profile "${name}" is deleted!`);
