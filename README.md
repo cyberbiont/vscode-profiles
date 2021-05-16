@@ -66,6 +66,7 @@ Creates new empty profile and switches it on.
 
 Creates new profile, based on already existing profile, and switches it on.
 All extensions from 'base' profile are copied over to the new profile.
+May be useful also for debugging your extensions - you can clone your current profile and then uninstall extensions one after another until you find the offending extension.
 
 ### delete
 
@@ -136,6 +137,18 @@ _default: []_
 A list of extensions that will be automatically uninstalled from every profile (their presence is checked every time you are switching to the profile).
 Useful, if you decided to switch to another extension for some purpose, or a new version became available as separate package and you need to uninstall the old extension from all the profiles - add it to this list.
 
+### extensions.excluded
+
+\_default: [
+"ms-vsliveshare.vsliveshare",
+"ms-vscode-remote.remote-wsl",
+"ms-vscode-remote.remote-ssh",
+"ms-vscode-remote.remote-containers"
+]
+A list of extensions id's that are excluded from symlinkification.
+Add here any extensions that give you troubles with write permissions.
+Matching is made by `includes` method based on extension folder's name.
+
 ### paths.profiles
 
 _default: `<HOMEDIR>/.vscode/profiles`_
@@ -187,9 +200,11 @@ When you switch the profile, new profile folder becomes active, and this may lea
 
 > IMPORTANT! If you have more than one window open, you'll have to reload them manually. The notification will remind you to do this.
 
-### Exceptions
+### Write permissions problem
 
-`LiveShare` extension cannot be symlinkified because it runs `vsls-agent` service from extension folder. That's why it is excluded from the process.
+If you try to rename / delete extension folder, that is in use by file system, you may receive an error about write permissions. This can happen when you are switching profiles / running extension maintanance (profile maintanance is actually done each time you do the switching).
+For example, `LiveShare` extension cannot be symlinkified because it runs `vsls-agent` service from extension folder. Similar troubles may arise with 'Remote' extensions (SSH, WSL, Containers) That's why they are excluded from the process by default.
+The same may apply to other extensions; if you are having troubles, read the error log and remove the offnding extension or add it to the [excluded extensions list](#extensions.excluded)
 
 ### Usage with Remote SSH / WSL / Containers
 

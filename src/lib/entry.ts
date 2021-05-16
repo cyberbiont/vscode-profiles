@@ -42,7 +42,11 @@ export interface MaintenanceResults {
 	status: EntryMaintenanceStatus[];
 }
 
-export type OEntry = AnyObject;
+export type OEntry = {
+	extensions: {
+		excluded: string[];
+	};
+};
 
 // 🕮 <cyberbiont> da2aa1bd-b0d0-41ac-b924-72016cb985fd.md
 export default class Entry {
@@ -237,13 +241,8 @@ export default class Entry {
 
 	private isExcluded(subfolder: Dirent) {
 		// 🕮 <cyberbiont> dd5c74f1-1e5e-4db1-af97-4f537c1a9a26.md
-		const excludedExtensionsRules = [
-			`ms-vsliveshare.vsliveshare-`,
-			`ms-vscode-remote.remote-wsl-`,
-			`ms-vscode-remote.remote-ssh-`,
-			`ms-vscode-remote.remote-containers`,
-		];
-		return excludedExtensionsRules.some(rule => subfolder.name.includes(rule));
+
+		return this.cfg.extensions.excluded.some(rule => subfolder.name.includes(rule));
 	}
 
 	async getStoredExtensions() {

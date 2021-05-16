@@ -2,11 +2,11 @@ import { OActions } from './actions';
 import { OEntry } from './entry';
 import { OPaths } from './paths';
 import { OProfilesRepository } from './profilesRepository';
+import { OSettingsCycle } from './settingsCycle';
+import { OUser } from './user';
 import os from 'os';
 import path from 'path';
 import { workspace } from 'vscode';
-import { OSettingsCycle } from './settingsCycle';
-import { OUser } from './user';
 
 const homedir = os.homedir();
 const settings = workspace.getConfiguration(`profiles`);
@@ -32,7 +32,13 @@ export default class ConfigMaker {
 				symlinkify: settings.get(`extensions.symlinkify`) || true,
 				// common: [...settings.get(`extensions.common`) as string[], `cyberbiont.vscode-profiles`] ?? undefined
 				common: settings.get(`extensions.common`),
-				blacklisted: settings.get(`extensions.blacklisted`)
+				blacklisted: settings.get(`extensions.blacklisted`),
+				excluded: settings.get(`extensions.excluded`) || [
+					`ms-vsliveshare.vsliveshare`,
+					`ms-vscode-remote.remote-wsl`,
+					`ms-vscode-remote.remote-ssh`,
+					`ms-vscode-remote.remote-containers`,
+				]
 			},
 			paths: {
 				profiles:

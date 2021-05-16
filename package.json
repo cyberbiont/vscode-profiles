@@ -47,7 +47,7 @@
 					},
 					"profiles.extensions.symlinkify": {
 						"type": "boolean",
-						"description": "It true, all extensions are replaced with symlinks in profile folders"
+						"description": "If true, all extensions are replaced with symlinks in profile folders"
 					},
 					"profiles.extensions.common": {
 						"type": "array",
@@ -62,6 +62,19 @@
 							"type": "string"
 						},
 						"description": "Ids of extensions to be automatically uninstalled from all profiles."
+					},
+					"profiles.extensions.excluded": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"default": [
+							"ms-vsliveshare.vsliveshare",
+							"ms-vscode-remote.remote-wsl",
+							"ms-vscode-remote.remote-ssh",
+							"ms-vscode-remote.remote-containers"
+						],
+						"description": "A list of extensions to be excluded from symlinkification"
 					},
 					"profiles.initial": {
 						"type": "string",
