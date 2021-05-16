@@ -4,6 +4,7 @@ import VpPaths, { Path } from './paths';
 import { Dirent } from 'fs';
 import VpExtensions from './extensions';
 import VpFileSystem from './fileSystem';
+import pkg from '../../package.json';
 
 export enum EntryMaintenanceStatus {
 	WAS_OK = `no problems found`, // `no problems found`
@@ -214,9 +215,10 @@ export default class Entry {
 
 	async symlinkThisExtensionToProfile(profileName: string) {
 		// используется только в developmentMode чтобы линковать локальную версию vscode-profiles во все профили
+		const name = `${pkg.publisher}.${pkg.name}-${pkg.version}`;
 		return this.fs.symlinkCreate(
-			this.p.extensionsStorage.derive(`vscode-profiles`).fsPath,
-			this.p.profiles.derive(profileName, `vscode-profiles`),
+			this.p.extensionsStorage.derive(name).fsPath,
+			this.p.profiles.derive(profileName, name),
 		);
 	}
 
