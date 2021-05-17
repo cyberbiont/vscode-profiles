@@ -203,8 +203,9 @@ When you switch the profile, new profile folder becomes active, and this may lea
 ### Write permissions problem
 
 If you try to rename / delete extension folder, that is in use by file system, you may receive an error about write permissions. This can happen when you are switching profiles / running extension maintanance (profile maintanance is actually done each time you do the switching).
-For example, `LiveShare` extension cannot be symlinkified because it runs `vsls-agent` service from extension folder. Similar troubles may arise with 'Remote' extensions (SSH, WSL, Containers) That's why they are excluded from the process by default.
+For example, `LiveShare` extension cannot be symlinkified because it runs `vsls-agent` service from extension folder. Similar troubles may arise with 'Remote' extensions (SSH, WSL, Containers). That's why they are excluded from the process by default.
 The same may apply to other extensions; if you are having troubles, read the error log and remove the offnding extension or add it to the [excluded extensions list](#extensions.excluded)
+_Starting from version 1.1.1, all EPERM errors are ignored, so some extensions may be left unsymlinkified if their their folder is locked at the moment, but this may happen next time. You can try to temporarily disable the extension so it won't run on VS Code start and so could be successfully replaced with symlink_
 
 ### Usage with Remote SSH / WSL / Containers
 
