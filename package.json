@@ -2,7 +2,7 @@
 	"name": "vscode-profiles",
 	"displayName": "Extensions profiles",
 	"description": "Extensions management tool",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"author": {
 		"name": "Yaroslav Larin",
 		"email": "cyberbiont@gmail.com"
@@ -150,15 +150,13 @@
 		"@types/vscode": "^1.55.0",
 		"eslint-config-cyberbiont": "github:cyberbiont/eslint-config-cyberbiont",
 		"ts-cleaner": "^1.0.5",
+		"ts-essentials": "^7.0.1",
 		"ts-loader": "^8.1.0",
 		"ts-node": "^9.1.1",
 		"typescript": "^4.2.3",
 		"vscode-test": "^1.5.2",
 		"webpack": "^5.30.0",
 		"webpack-cli": "^4.6.0"
-	},
-	"dependencies": {
-		"ts-essentials": "^7.0.1"
 	},
 	"prettier": "eslint-config-cyberbiont/prettier.config.js",
 	"eslintConfig": {
