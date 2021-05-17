@@ -1,7 +1,7 @@
 name: Deploy Extension with vsce
 
 on:
-  release: 
+  release:
     types: [published]
 
 jobs:
@@ -9,9 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - run: npm install
       - uses: lannonbr/vsce-action@master
         with:
-          args: "publish -p $VSCE_TOKEN"
+          args: 'publish -p $VSCE_TOKEN'
         env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
