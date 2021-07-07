@@ -1,7 +1,7 @@
 {
 	"name": "vscode-profiles",
-	"displayName": "Extensions profiles",
-	"description": "Extensions management tool",
+	"displayName": "Extension profiles",
+	"description": "Create independent extension profiles. Momentarily switch. Bind any settings",
 	"version": "1.1.1",
 	"author": {
 		"name": "Yaroslav Larin",

@@ -139,7 +139,7 @@ Useful, if you decided to switch to another extension for some purpose, or a new
 
 ### extensions.excluded
 
-\_default: [
+_default: [
 "ms-vsliveshare.vsliveshare",
 "ms-vscode-remote.remote-wsl",
 "ms-vscode-remote.remote-ssh",
@@ -168,7 +168,7 @@ This also allows you to assign to each profile a dedicated Github gist, and save
 
 ![vscode-profiles-settings-cycler-gif](images/gif/settings_cycler.gif 'binding different themes to profiles')
 
-Example: in your global `settings.json` create a setting in `settings cycler` format, with id, that corresponds to your profile name.
+Example: in your global `settings.json` create a setting in `settings cycler` format, with id that corresponds to your profile name.
 When you switch profiles, `settings.cycle<profileName>` command will be automatically executed and appropriate settings loaded.
 If you don't have a `settings.cycle` settings block for your profile, you'll receive a notification, if `warnAboutNoSettings` option is on.
 
