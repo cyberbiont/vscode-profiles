@@ -3,6 +3,8 @@
 Define different extensions configurations and switch between them in a second.
 Bind any vscode settings to your profiles.
 
+*Note: Just letting you know that I didn't abandon this project, but due to the war in Ukraine I currently don't have a possibility to actively develop it, so sorry for being unresponsive with issues and PR's. But I have some new cool features in mind and hopefully new updated version will be released in foreseeble future, cheers!*
+
 ![vscode-profiles-basic-operation-gif](images/gif/basic_operation.gif 'creating and switching profiles')
 
 ## Motivation
