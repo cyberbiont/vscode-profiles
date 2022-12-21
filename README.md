@@ -41,7 +41,8 @@ The other way around is to create the necessary folder structure by yourself:
 
 - shut down VS Code;
 - in your `<user profile>/.vscode` directory create empty folder `profiles`;
-- move `extensions` folder inside `profiles`. this will be your starting profile; you can rename it to `Default`, for example. - Then you'll need to create the symlink to this folder, so that it would replace the `extensions` folder in its former location. Make sure that symlink has name `extensions`.
+- move `extensions` folder inside `profiles`. this will be your starting profile; you can rename it to `Default`, for example. 
+- Then you'll need to create the symlink to this folder, so that it would replace the `extensions` folder in its former location. Make sure that symlink has name `extensions`.
   On Windows, you can do it with `cmd`:
   - Open cmd with Administrator rights
   - execute command `mklink /D %USERPROFILE%\.vscode\extensions %USERPROFILE%\.vscode\profiles\extensions` (if you haven't rename your folder, otherwise pass the right name to the command).
