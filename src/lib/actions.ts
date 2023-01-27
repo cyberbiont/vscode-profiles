@@ -228,4 +228,9 @@ export default class Actions {
 		await this.profiles.rescanProfiles();
 		return name;
 	}
+
+	public async makeCommonCommand(extensionID: string) {
+		console.log(extensionID);
+		await this.profiles.addToCommonExtensions(extensionID);
+	}
 }

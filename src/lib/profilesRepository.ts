@@ -13,6 +13,7 @@ import VpExtensions from './extensions';
 import VpFileSystem from './fileSystem';
 import VpOutputChannel from './outputChannel';
 import VpPaths from './paths';
+import * as vscode from 'vscode';
 
 export type OProfilesRepository = {
 	extensions: {
@@ -171,6 +172,19 @@ export default class ProfilesRepository {
 		return installedExtensions;
 	}
 
+	async addToCommonExtensions(extensionID: string) {
+		var config = vscode.workspace.getConfiguration('profiles.extensions');
+		var commons = config.get('common') as string[];
+
+		if (commons.indexOf(extensionID) === -1) {
+			commons.push(extensionID);
+			config.update('commons', commons, true);
+		}
+	
+		console.log("Commons: " + commons + "\n Type: " + typeof (commons));
+		console.log("New common added: " + extensionID);
+	}
+	
 	private async findCorrespondingProfile(link: string) {
 		const result = Array.from(this.map).find(
 			profile => profile.path.fsPath === link,

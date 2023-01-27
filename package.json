@@ -131,8 +131,21 @@
 			{
 				"command": "vscode-profiles.maintenance",
 				"title": "Profiles: Maintenance"
+			},
+			{
+				"command": "vscode-profiles.makecommon",
+				"title": "Make Common",
+				"enablement": "false"
 			}
-		]
+		],
+		"menus": {
+			"extension/context": [
+				{
+					"command": "vscode-profiles.makecommon",
+					"group": "extension-profiles"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"compile": "tsc --build src && ts-cleaner -d out",

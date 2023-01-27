@@ -128,6 +128,11 @@ export default class App {
 				this.actions.maintenanceCommand,
 				this.actions,
 			),
+			commands.registerCommand(
+				`vscode-profiles.makecommon`,
+				this.actions.makeCommonCommand,
+				this.actions,
+			),
 		);
 	}
 	// activation events 🕮 <cyberbiont> 7b5ea811-b28e-47e1-a9b0-e26618330a99.md
